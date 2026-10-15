@@ -34,6 +34,15 @@
   - type: ActivatableUIRequiresAccess
   - type: AccessReader
     access: [["AU14AccessCorporateWEYULiaison"], ["AU14AccessCorporateWEYU"]]
+  - type: CMURankLock # Executive Specialist (WYC5) and above
+    allowedRanks:
+    - RMCRankWeYaExecutiveSpecialist # WYC5
+    - RMCRankWeYaExecutiveSupervisor # WYC6
+    - RMCRankWeYaAssistantManager # WYC7
+    - RMCRankWeYaDivisionManager # WYC8
+    - RMCRankWeYaChiefExecutive # WYC9
+    - RMCRankWeYaDeputyDirector # WYC10
+    - RMCRankWeYaDirector # WYC11
 
 # Standard Corporate Console — for use in corporate offices
 - type: entity

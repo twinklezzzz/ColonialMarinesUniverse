@@ -27,3 +27,21 @@ cmu-weyuexec-supervisors-hq = Weyland-Yutani corporate headquarters
 cmu-weyuexec-supervisors-sitedirector = the site director
 cmu-weyuexec-greeting = You are part of a Weyland-Yutani executive detail sent to inspect the site. Protect the company's interests, its assets, and above all its secrets. What happened here stays off the record.
 cmu-weyuexec-rules = You are a Weyland-Yutani executive. You are a normal human who can be killed by any threat. Protect company assets and personnel, deny everything, and avoid open combat where paperwork will do.
+
+## Directorate Protection (admin-only)
+cmu-directorate-protection-supervisors-directorate = The visiting Directorate member
+cmu-directorate-protection-supervisors-coordinator = The Directorate Protection Coordinator
+cmu-directorate-protection-greeting = You are part of a Directorate Protection detail. Your principal is a member of the Weyland-Yutani Directorate. Keep them alive and keep the visit on schedule.
+cmu-directorate-protection-rules = You are a Directorate Protection operative. Protect your principal, follow your Coordinator and do not start fights the visit doesn't need.
+
+cmu-directorate-protection-name-officer = WY Directorate Protection Officer
+cmu-directorate-protection-description-officer = Close protection for a visiting member of the Weyland-Yutani Directorate.
+cmu-directorate-protection-prefix-officer = DPO.
+
+cmu-directorate-protection-name-specialist = WY Directorate Protection Specialist
+cmu-directorate-protection-description-specialist = Senior close protection for a visiting member of the Weyland-Yutani Directorate.
+cmu-directorate-protection-prefix-specialist = DPS.
+
+cmu-directorate-protection-name-coordinator = WY Directorate Protection Coordinator
+cmu-directorate-protection-description-coordinator = Lead the protection detail for a visiting member of the Weyland-Yutani Directorate.
+cmu-directorate-protection-prefix-coordinator = DPC.

@@ -11,26 +11,63 @@
       state: spp_pvt
   - type: Skills
     skills:
-      RMCSkillEndurance: 3
+      RMCSkillCqc: 5
+      RMCSkillEndurance: 5
+      RMCSkillEngineer: 4
+      RMCSkillConstruction: 3
       RMCSkillFirearms: 3
-      RMCSkillSpecialistWeapons: 2
+      RMCSkillOverwatch: 1
+      RMCSkillMedical: 4
+      RMCSkillSurgery: 3
+      RMCSkillResearch: 1
+      RMCSkillMeleeWeapons: 2
+      RMCSkillPilot: 2
       RMCSkillPolice: 2
+      RMCSkillFireman: 5
+      RMCSkillPowerLoader: 2
+      RMCSkillVehicles: 3
+      RMCSkillJtac: 4
+      RMCSkillIntel: 2
+      RMCSkillDomestics: 2
+      RMCSkillNavigations: 1
+      RMCSkillExecution: 1
+      RMCSkillSmartGun: 1
+      RMCSkillSpecialistWeapons: 2
   - type: JobPrefix
     prefix: cmu-whiteout-prefix-gunner
+  - type: NpcFactionMember
+    factions:
+    - AUWeYu
   - type: Language
-    spokenLanguages:
-    - English
-    - Japanese
-    understoodLanguages:
-    - English
-    - Japanese
-    currentLanguage: English
-    defaultLanguage: English
+    preset: AU14LanguagePresetSynth
+  - type: LanguageLearning
+    preset: AU14LanguageLearningPresetSynth
+  - type: MeleeWeapon
+    soundHit:
+      path: /Audio/_RMC14/Weapons/synthpunch1.ogg
+      params:
+        variation: 0.15
+        volume: -1
+    angle: 30
+    animation: WeaponArcFist
+    attackRate: 1
+    damage:
+      types:
+        Blunt: 35
+  - type: Synth
+    canUseGuns: true
+  - type: CMArmor
+    immuneToAP: true
+  - type: PyroWhitelist
   name: cmu-whiteout-name-gunner
   description: cmu-whiteout-description
   playTimeTracker: CMUJobPMCWhiteoutGunner
+  requirements:
+  - !type:TotalDepartmentsTimeRequirement
+    group: CMUDepartmentsMilitary
+    time: 18000 # 5 hours
   ranks:
-    RMCRankCivilian: []
+    CMURankWYCommandoGunner: []
   startingGear: CMUGearPMCWhiteoutGunner
   spawnMenuRoleName: WY Whiteout Smartgunner (event)
   greeting: cmu-whiteout-greeting
@@ -47,6 +84,11 @@
   name: WY Whiteout Smartgunner
   components:
   - type: GhostTakeoverAvailable
+  - type: RandomMetadata
+    nameSegments:
+    - RMCNamesGreek
+    - RMCNamesNumbers
+    nameFormat: name-format-ert
   - type: GhostRoleApplySpecial
     squad: SquadPMC
   - type: GhostRole

@@ -1,0 +1,93 @@
+- type: job
+  parent: CMJobBase
+  id: CMUJobWYDirectorateProtectionOfficer
+  roundSide: ThirdParty
+  roundForce: WY
+  roundRole: WYDirectorateProtectionOfficer
+  roundComponents:
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_RMC14/Interface/map_blips.rsi
+      state: goon_standard
+    background:
+      sprite: /Textures/_RMC14/Interface/map_blips.rsi
+      state: background_goon
+  - type: Skills
+    skills:
+      RMCSkillCqc: 2
+      RMCSkillPolice: 2
+      RMCSkillFireman: 2
+      RMCSkillEndurance: 3
+      RMCSkillMeleeWeapons: 1
+      RMCSkillMedical: 2
+      RMCSkillConstruction: 1
+      RMCSkillEngineer: 1
+      RMCSkillFirearms: 3
+      RMCSkillVehicles: 1
+  - type: JobPrefix
+    prefix: cmu-directorate-protection-prefix-officer
+  name: cmu-directorate-protection-name-officer
+  description: cmu-directorate-protection-description-officer
+  playTimeTracker: CMUJobWYDirectorateProtectionOfficer
+  ranks:
+    CMURankWYSecDPO: []
+  startingGear: CMUGearWYDirectorateProtectionOfficer
+  spawnMenuRoleName: WY Directorate Protection Officer (event)
+  greeting: cmu-directorate-protection-greeting
+  icon: RMCJobIconPMCGoonStandard
+  joinNotifyCrew: false
+  supervisors: cmu-directorate-protection-supervisors-coordinator
+  accessGroups:
+  - auwy
+  hidden: false
+
+- type: entity
+  parent: AU14BaseMobSpeciesOrganicWeYu
+  id: CMUJobWYDirectorateProtectionOfficer
+  name: WY Directorate Protection Officer
+  components:
+  - type: GhostTakeoverAvailable
+  - type: GhostRoleApplySpecial
+    squad: SquadPMC
+  - type: GhostRole
+    makeSentient: true
+    allowSpeech: true
+    allowMovement: true
+    name: cmu-directorate-protection-name-officer
+    description: cmu-directorate-protection-description-officer
+    reregister: false
+    job: CMUJobWYDirectorateProtectionOfficer
+    raffle:
+      settings: short
+    rules: cmu-directorate-protection-rules
+
+- type: startingGear
+  id: CMUGearWYDirectorateProtectionOfficer
+  equipment:
+    id: CMUIDCardWYDirectorateProtectionOfficer
+    ears: RMCHeadsetDistressWeYa
+    jumpsuit: CMJumpsuitLiaisonBlack
+    outerClothing: CMArmorM4PMCCorporate
+    gloves: RMCHandsVeteranPMC
+    eyes: RMCSunglasses
+    shoes: RMCBootsPMCFilled
+    back: RMCSatchelLightpackBlack
+    belt: RMCBeltHolsterPistolWeYaMK80Fill
+    suitstorage: RMCWeaponRifleSSG45
+    pocket1: RMCPouchMagazineLarge
+    pocket2: RMCPouchFirstAidPMCFill
+  storage:
+    back:
+    - CMStunbaton
+    - RMCZipties
+    - RMCZipties
+    - RMCGrenadeFlashBang
+    - RMCMREWeYa
+    pocket1:
+    - RMCMagazineRifleSSG45AP
+    - RMCMagazineRifleSSG45AP
+    - RMCMagazineRifleSSG45AP
+    - RMCMagazineRifleSSG45AP
+
+- type: playTimeTracker
+  id: CMUJobWYDirectorateProtectionOfficer

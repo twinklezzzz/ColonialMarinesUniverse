@@ -19,8 +19,8 @@
     prefix: au14-job-prefix-civiliancorporateassistant
   - type: TacticalMapIcon
     icon:
-      sprite: /Textures/CMU14/Interface/au14colonyjobicons.rsi
-      state: corporate_assistant
+      sprite: /Textures/_RMC14/Interface/map_blips.rsi
+      state: ass_man
   - type: AssignSquad
     whitelist:
       tags:
@@ -29,25 +29,18 @@
   name: au14-job-name-civiliancorporateassistant
   playTimeTracker: AU14JobCivilianCorporateAssistant
   requirements:
-  - !type:OverallPlaytimeRequirement
-    time: 7200 # 2 hours
+  - !type:RoleTimeRequirement
+    role: AU14JobCivilianCorporateLiaison
+    time: 90000 # 25 hours
   description: au14-job-description-civiliancorporateassistant
   setPreference: true
   ranks:
-    AU14RankWYSeniorAssistant:
-    - !type:RoleTimeRequirement
-      role: AU14JobCivilianCorporateAssistant
-      time: 90000 # 25 hours
-    AU14RankWYAssistant:
-    - !type:RoleTimeRequirement
-      role: AU14JobCivilianCorporateAssistant
-      time: 36000 # 10 hours
-    AU14RankWYJuniorAssistant: []
+    RMCRankWeYaAssistantManager: []
   startingGear: AU14GearCivilianCorporateAssistant
-  icon: "AU14JobIconCorporateAssistant"
+  icon: "CMJobIconExecAssMan"
   requireAdminNotify: false
   joinNotifyCrew: false
-  supervisors: au14-job-supervisors-colonycivilian
+  supervisors: cmu-job-supervisors-corporate-division-manager
   accessGroups:
   - Colonist
   - auadmin
@@ -62,7 +55,7 @@
   equipment:
     jumpsuit: CMJumpsuitLiaisonBlack
     shoes: RMCShoesLaceup
-    id: AU14IDCardColonyCorporateLiaison
+    id: CMUIDCardCorporateAssistant
     outerClothing: AU14CivilianJacketTanPufferVest
     ears: AU14ColonyWeylandHeadset
     ears2: RMCM5CameraGear

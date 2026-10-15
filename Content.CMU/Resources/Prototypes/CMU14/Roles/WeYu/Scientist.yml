@@ -40,11 +40,8 @@
   setPreference: true
   canBeAntag: true
   playTimeTracker: AU14JobCivilianScientist
+  # Professor is reserved for the Lead Researcher so a round has one science head.
   ranks:
-    AU14RankScientistProfessor:
-    - !type:RoleTimeRequirement
-      role: AU14JobCivilianScientist
-      time: 86400 # 24 hours
     AU14RankScientistAssociate:
     - !type:RoleTimeRequirement
       role: AU14JobCivilianScientist

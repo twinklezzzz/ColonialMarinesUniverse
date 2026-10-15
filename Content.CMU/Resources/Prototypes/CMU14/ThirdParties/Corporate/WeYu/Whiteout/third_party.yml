@@ -1,10 +1,12 @@
+# Whiteout: Weyland-Yutani's combat synthetic cleanup team. Admin-only - the player and ghost
+# thresholds can't be met in a real round, so it only arrives when game staff call it.
 - type: partySpawn
   id: WYPMCWhiteoutSpawn
   leadersToSpawn:
-    CMUJobPMCWhiteout: 1
+    CMUJobPMCWhiteoutLeader: 1
   gruntsToSpawn:
+    CMUJobPMCWhiteout: 2
     CMUJobPMCWhiteoutGunner: 1
-    CMUJobPMCSynthetic: 1
   scalewithpop: false
   spawnTogether: true
 

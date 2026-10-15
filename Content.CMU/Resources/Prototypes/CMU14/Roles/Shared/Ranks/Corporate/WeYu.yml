@@ -120,3 +120,22 @@
   name: Pilot
   prefix: PLT.
   paygrade: PMC-AVO1
+
+# Whiteout (Corporate Commandos) - combat synthetics, admin-spawned only.
+- type: rank
+  id: CMURankWYCommando
+  name: Corporate Commando
+  prefix: WY-COM
+  paygrade: WY-COM
+
+- type: rank
+  id: CMURankWYCommandoGunner
+  name: Corporate Commando Gunner
+  prefix: WY-GUN
+  paygrade: WY-GUN
+
+- type: rank
+  id: CMURankWYCommandoLeader
+  name: Corporate Commando Leader
+  prefix: WY-COMLD
+  paygrade: WY-COMLD

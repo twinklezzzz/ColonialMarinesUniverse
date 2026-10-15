@@ -83,7 +83,7 @@ au14-job-description-foreman = Head of the labor department, coordinate with col
 au14-job-prefix-colonyforeman = FORM
 
 au14-job-name-civiliancorporateliaison = Liaison
-au14-job-description-civiliancorporateliaison = Ensure corporate interests are upheld and company policy is followed.
+au14-job-description-civiliancorporateliaison = Supervise the corporate office. Pass on orders from management, keep the executives working and make sure company policy is followed.
 au14-job-prefix-corporateliaison = CL
 
 au14-job-name-civiliancorporateadministrator = Corporate Administrator
@@ -216,7 +216,7 @@ au14-job-description-civiliancolonyadminassistant = Be the right hand of the Col
 au14-job-prefix-colonyadminassistant = Dep. Admin.
 
 au14-job-name-civiliancorporateassistant = Corporate Assistant
-au14-job-description-civiliancorporateassistant = Be the right hand of the Corporate Liaison.
+au14-job-description-civiliancorporateassistant = Be the right hand of the Division Manager and keep corporate management running.
 au14-job-prefix-civiliancorporateassistant = Corp. Assist.
 
 au14-job-name-civilianlaselleliaison = Laselle Liaison
