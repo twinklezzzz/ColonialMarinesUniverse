@@ -30,10 +30,8 @@
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
       state: weya_scientist
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYScience
 
   name: au14-job-name-civilianscientist
   description: au14-job-description-civilianscientist

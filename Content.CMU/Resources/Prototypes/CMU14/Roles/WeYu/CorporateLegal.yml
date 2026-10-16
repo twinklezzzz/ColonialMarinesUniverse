@@ -25,13 +25,11 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: exec_spec
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYCorporate
   name: cmu-job-name-corporate-legal-specialist
   description: cmu-job-description-corporate-legal-specialist
-  setPreference: true
+  setPreference: false # CMU14: hidden for now, re-enable with true
   playTimeTracker: CMUJobCorporateLegalSpecialist
   requirements:
   - !type:OverallPlaytimeRequirement
@@ -122,13 +120,11 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: exec_super
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYCorporate
   name: cmu-job-name-corporate-legal-supervisor
   description: cmu-job-description-corporate-legal-supervisor
-  setPreference: true
+  setPreference: false # CMU14: hidden for now, re-enable with true
   playTimeTracker: CMUJobCorporateLegalSupervisor
   requirements:
   - !type:RoleTimeRequirement

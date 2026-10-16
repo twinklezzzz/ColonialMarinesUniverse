@@ -25,11 +25,6 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: synth
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
-
   name: au14-job-name-civiliancorporateliaison
   description: au14-wyht-description
   ranks:
@@ -66,7 +61,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYCorporate
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

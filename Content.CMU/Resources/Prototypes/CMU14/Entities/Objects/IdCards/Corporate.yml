@@ -12,17 +12,6 @@
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
-  id: CMUIDCardCorporateAssistant
-  name: corporate assistant ID card
-  components:
-  - type: PresetIdCard
-    job: AU14JobCivilianCorporateAssistant
-  - type: ItemIFF
-    factions:
-    - FactionWEYU
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
   id: CMUIDCardCorporateDivisionManager
   name: division manager ID card
   components:

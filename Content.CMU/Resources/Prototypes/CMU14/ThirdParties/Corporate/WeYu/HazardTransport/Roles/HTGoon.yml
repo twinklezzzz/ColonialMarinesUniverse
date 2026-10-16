@@ -24,15 +24,10 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: synth
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
-
   name: au14-job-name-wyguard
   description: au14-wyht-description
   ranks:
-    AU14RankWYSecurityOfficer: []
+    CMURankWYSecOfficer: []
   spawnMenuRoleName: WY HT Goon (3rd party)
   startingGear: AU14GearWYHTGoon
   greeting: au14-wyht-greeting
@@ -51,7 +46,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

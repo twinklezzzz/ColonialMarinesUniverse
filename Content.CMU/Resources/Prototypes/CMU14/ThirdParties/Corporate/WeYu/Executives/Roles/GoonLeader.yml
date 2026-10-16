@@ -31,9 +31,9 @@
   description: cmu-weyuexec-description-goonleader
   playTimeTracker: CMUJobWeYuGoonLeader
   ranks:
-    RMCRankCivilian: []
+    CMURankWYSecPPC: []
   startingGear: CMUGearWeYuGoonLeader
-  spawnMenuRoleName: WY Corporate Security Lead (event)
+  spawnMenuRoleName: WY Personal Protection Coordinator (event)
   greeting: cmu-weyuexec-greeting-security
   icon: CMJobIconLiaison
   joinNotifyCrew: false
@@ -45,11 +45,11 @@
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
   id: CMUJobWeYuGoonLeader
-  name: WY Corporate Security Lead
+  name: WY Personal Protection Coordinator
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

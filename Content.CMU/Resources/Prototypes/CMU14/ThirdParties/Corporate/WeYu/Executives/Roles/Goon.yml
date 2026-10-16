@@ -30,9 +30,9 @@
   - !type:OverallPlaytimeRequirement
     time: 18000 # 5 hours
   ranks:
-    RMCRankCivilian: []
+    CMURankWYSecPPO: []
   startingGear: CMUGearWeYuGoon
-  spawnMenuRoleName: WY Corporate Security (event)
+  spawnMenuRoleName: WY Personal Protection Officer (event)
   greeting: cmu-weyuexec-greeting-security
   icon: RMCJobIconPMCGoonStandard
   joinNotifyCrew: false
@@ -44,11 +44,11 @@
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
   id: CMUJobWeYuGoon
-  name: WY Corporate Security
+  name: WY Personal Protection Officer
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

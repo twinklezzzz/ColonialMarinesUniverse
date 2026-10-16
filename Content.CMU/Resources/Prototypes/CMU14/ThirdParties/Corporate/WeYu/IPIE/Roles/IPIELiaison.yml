@@ -22,10 +22,6 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: synth
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
   - type: NpcFactionMember
     factions:
     - GOVFOR
@@ -36,7 +32,7 @@
   description: au14-ipie-lawyer-description
   playTimeTracker: AU14JobIPIELawyer
   ranks:
-    RMCRankWeYaLegalSpecialist: []
+    CMURankWeYuLegalSpecialist: []
   spawnMenuRoleName: WY IPIE Lawyer (3rd party)
   startingGear: AU14GearIPIELawyer
   greeting: au14-ipie-lawyer-greeting
@@ -57,7 +53,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYCorporate
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -83,7 +79,7 @@
     hideXenoSynthIcon: true
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYCorporate
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

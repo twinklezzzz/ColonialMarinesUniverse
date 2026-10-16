@@ -21,7 +21,7 @@
   description: au14-pmcparty-description
   playTimeTracker: AU14JobWYPMCPartyEngineer
   ranks:
-    AU14RankWeYuOperator: []
+    CMURankWYPMCTechnician: []
   spawnMenuRoleName: WY PMC Combat Engineer (3rd party, M41A/2)
   startingGear: AU14GearWYPMCPartyEngineer
   greeting: au14-pmcparty-greeting
@@ -40,7 +40,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

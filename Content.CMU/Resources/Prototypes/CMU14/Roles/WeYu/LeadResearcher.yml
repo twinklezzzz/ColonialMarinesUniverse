@@ -25,10 +25,8 @@
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
       state: weya_scientist
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYScience
   name: cmu-job-name-corporate-lead-researcher
   description: cmu-job-description-corporate-lead-researcher
   setPreference: true

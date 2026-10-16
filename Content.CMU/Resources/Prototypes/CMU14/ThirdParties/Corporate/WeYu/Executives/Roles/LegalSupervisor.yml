@@ -21,7 +21,7 @@
   description: cmu-weyuexec-description-legalsupervisor
   playTimeTracker: CMUJobWeYuLegalSupervisor
   ranks:
-    RMCRankWeYaLegalSupervisor: []
+    CMURankWeYuLegalSupervisor: []
   startingGear: CMUGearWeYuLegalSupervisor
   spawnMenuRoleName: WY Legal Supervisor (event)
   greeting: cmu-weyuexec-greeting
@@ -39,7 +39,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYCorporate
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

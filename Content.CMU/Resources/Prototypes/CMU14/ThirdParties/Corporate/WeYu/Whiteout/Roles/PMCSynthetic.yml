@@ -72,9 +72,12 @@
   id: CMUJobPMCSynthetic
   name: WY PMC Synthetic
   components:
+  # Synths don't scream.
+  - type: EmoteOnDamage
+    emoteChance: 0
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

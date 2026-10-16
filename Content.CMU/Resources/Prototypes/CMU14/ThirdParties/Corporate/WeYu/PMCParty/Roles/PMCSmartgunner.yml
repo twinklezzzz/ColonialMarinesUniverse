@@ -30,7 +30,7 @@
   description: au14-pmcparty-description
   playTimeTracker: AU14JobWYPMCPartySmartgunner
   ranks:
-    AU14RankWeYuSeniorOperator: []
+    CMURankWYPMCWeaponSpecialist: []
   spawnMenuRoleName: WY PMC Smartgun Operator (3rd party)
   startingGear: AU14GearWYPMCPartySmartgunner
   greeting: au14-pmcparty-greeting
@@ -49,7 +49,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

@@ -28,13 +28,11 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: div_man
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYCorporate
   name: cmu-job-name-corporate-division-manager
   description: cmu-job-description-corporate-division-manager
-  setPreference: true
+  setPreference: false # CMU14: hidden for now, re-enable with true
   playTimeTracker: CMUJobCorporateDivisionManager
   requirements:
   - !type:RoleTimeRequirement
@@ -128,13 +126,11 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: chief_man
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYCorporate
   name: cmu-job-name-corporate-chief-executive
   description: cmu-job-description-corporate-chief-executive
-  setPreference: true
+  setPreference: false # CMU14: hidden for now, re-enable with true
   playTimeTracker: CMUJobCorporateChiefExecutive
   requirements:
   - !type:RoleTimeRequirement

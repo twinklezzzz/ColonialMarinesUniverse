@@ -32,10 +32,8 @@
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
       state: weya_goon_lead
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYSecurity
   name: cmu-job-name-corporate-security-sergeant
   description: cmu-job-description-corporate-security-sergeant
   setPreference: true
@@ -133,13 +131,11 @@
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
       state: weya_goon_standard
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYSecurity
   name: cmu-job-name-personal-protection
   description: cmu-job-description-personal-protection
-  setPreference: true
+  setPreference: false # CMU14: hidden for now, re-enable with true
   playTimeTracker: CMUJobWYPersonalProtection
   requirements:
   - !type:RoleTimeRequirement
@@ -240,13 +236,11 @@
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
       state: weya_goon_lead
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYSecurity
   name: cmu-job-name-personal-protection-coordinator
   description: cmu-job-description-personal-protection-coordinator
-  setPreference: true
+  setPreference: false # CMU14: hidden for now, re-enable with true
   playTimeTracker: CMUJobWYPersonalProtectionCoordinator
   requirements:
   - !type:RoleTimeRequirement

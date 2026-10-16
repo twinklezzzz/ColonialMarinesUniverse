@@ -21,10 +21,8 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: junior_exec
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYCorporate
   name: cmu-job-name-corporate-executive
   description: cmu-job-description-corporate-executive
   setPreference: true

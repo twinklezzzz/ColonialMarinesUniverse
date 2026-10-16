@@ -139,3 +139,34 @@
   name: Corporate Commando Leader
   prefix: WY-COMLD
   paygrade: WY-COMLD
+
+# PMC third parties. Only the positions a party currently uses are defined.
+- type: rank
+  id: CMURankWYPMCOperator
+  name: Operator
+  prefix: PMC. OPR.
+  paygrade: PMC-OP
+
+- type: rank
+  id: CMURankWYPMCMedicalSpecialist
+  name: Medical Specialist
+  prefix: PMC. SPM.
+  paygrade: PMC-MS
+
+- type: rank
+  id: CMURankWYPMCWeaponSpecialist
+  name: Weapon Specialist
+  prefix: PMC. SPW.
+  paygrade: PMC-WS
+
+- type: rank
+  id: CMURankWYPMCTechnician
+  name: Corporate Technician
+  prefix: PMC. TEC.
+  paygrade: PMC-TEC
+
+- type: rank
+  id: CMURankWYPMCTeamLeader
+  name: Team Leader
+  prefix: PMC. TML.
+  paygrade: PMC-TL

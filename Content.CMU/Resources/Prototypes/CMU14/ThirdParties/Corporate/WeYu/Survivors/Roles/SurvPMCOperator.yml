@@ -25,15 +25,10 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: synth
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
-
   name: au14-job-name-wypmc
   description: au14-wysurv-greeting
   ranks:
-    AU14RankWeYuRecruit: []
+    CMURankWYPMCOperator: []
   spawnMenuRoleName: WY PMC Contractor (Survivor, NSG-23)
   startingGear: AU14GearWYSurvPMC
   greeting: au14-wysurv-greeting
@@ -52,7 +47,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

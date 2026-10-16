@@ -23,10 +23,6 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: synth
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
   - type: NpcFactionMember
     factions:
     - GOVFOR
@@ -37,7 +33,7 @@
   description: au14-ipie-ppo-description
   playTimeTracker: AU14JobIPIEPPO
   ranks:
-    AU14RankWYSecurityOfficer: []
+    CMURankWYSecPPO: []
   spawnMenuRoleName: WY IPIE Personal Protection Officer (3rd party)
   startingGear: AU14GearIPIEPPO
   greeting: au14-ipie-greeting
@@ -58,7 +54,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

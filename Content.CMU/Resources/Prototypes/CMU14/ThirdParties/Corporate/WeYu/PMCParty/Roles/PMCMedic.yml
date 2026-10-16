@@ -29,7 +29,7 @@
   description: au14-pmcparty-description
   playTimeTracker: AU14JobWYPMCPartyMedic
   ranks:
-    AU14RankWeYuOperator: []
+    CMURankWYPMCMedicalSpecialist: []
   spawnMenuRoleName: WY PMC Combat Lifesaver (3rd party, M41A/2)
   startingGear: AU14GearWYPMCPartyMedic
   greeting: au14-pmcparty-greeting
@@ -48,7 +48,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

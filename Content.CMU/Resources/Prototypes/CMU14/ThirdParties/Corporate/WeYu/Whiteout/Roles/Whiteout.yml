@@ -82,6 +82,11 @@
   id: CMUJobPMCWhiteout
   name: WY Whiteout Operative
   components:
+  # Synths don't scream and keep their callsign instead of a random human name.
+  - type: RandomHumanoidAppearance
+    randomizeName: false
+  - type: EmoteOnDamage
+    emoteChance: 0
   - type: GhostTakeoverAvailable
   - type: RandomMetadata
     nameSegments:
@@ -89,7 +94,7 @@
     - RMCNamesNumbers
     nameFormat: name-format-ert
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

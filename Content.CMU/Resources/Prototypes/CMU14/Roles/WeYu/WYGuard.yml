@@ -34,10 +34,8 @@
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
       state: weya_goon_standard
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYSecurity
 
   name: au14-job-name-wyguard
   description: au14-job-description-wyguard

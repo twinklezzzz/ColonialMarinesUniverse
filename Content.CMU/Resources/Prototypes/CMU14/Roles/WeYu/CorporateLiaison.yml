@@ -44,10 +44,8 @@
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
       state: hudsquad_liaison
-  - type: AssignSquad
-    whitelist:
-      tags:
-      - SquadPMC
+  - type: CMUAssignSquad
+    squad: CMUSquadWYCorporate
 
   name: au14-job-name-civiliancorporateliaison
   description: au14-job-description-civiliancorporateliaison
@@ -62,7 +60,7 @@
   icon: "CMJobIconLiaison"
   requireAdminNotify: false
   joinNotifyCrew: false
-  supervisors: cmu-job-supervisors-corporate-division-manager
+  supervisors: au14-job-supervisors-colonycivilian
   spawnMenuRoleName: au14-spawn-role-name-wy-liaison
   accessGroups:
   - Colonist

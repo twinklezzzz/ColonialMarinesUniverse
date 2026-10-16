@@ -24,7 +24,7 @@
   description: cmu-weyuexec-description-legalspecialist
   playTimeTracker: CMUJobWeYuLegalSpecialist
   ranks:
-    RMCRankWeYaLegalSpecialist: []
+    CMURankWeYuLegalSpecialist: []
   startingGear: CMUGearWeYuLegalSpecialist
   spawnMenuRoleName: WY Legal Specialist (event)
   greeting: cmu-weyuexec-greeting
@@ -42,7 +42,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYCorporate
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

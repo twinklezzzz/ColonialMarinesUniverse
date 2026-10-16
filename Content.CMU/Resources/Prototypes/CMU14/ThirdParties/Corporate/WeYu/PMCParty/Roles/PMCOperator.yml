@@ -34,7 +34,7 @@
   name: au14-job-name-wypmc-contractor
   description: au14-pmcparty-description
   ranks:
-    AU14RankWeYuRecruit: []
+    CMURankWYPMCOperator: []
   startingGear: AU14GearWYPMCPartyContractor
   greeting: au14-pmcparty-greeting
   icon: "RMCJobIconPMCStandard"
@@ -73,7 +73,7 @@
   name: au14-job-name-wypmc-contractor
   description: au14-pmcparty-description
   ranks:
-    AU14RankWeYuRecruit: []
+    CMURankWYPMCOperator: []
   spawnMenuRoleName: WY PMC Contractor (3rd party, M39B/2)
   startingGear: AU14GearWYPMCPartyContractorM39B2
   greeting: au14-pmcparty-greeting
@@ -113,7 +113,7 @@
   name: au14-job-name-wypmc-contractor
   description: au14-pmcparty-description
   ranks:
-    AU14RankWeYuRecruit: []
+    CMURankWYPMCOperator: []
   spawnMenuRoleName: WY PMC Contractor (3rd party, NSG-23)
   startingGear: AU14GearWYPMCPartyContractorNSG23
   greeting: au14-pmcparty-greeting
@@ -154,7 +154,7 @@
   name: au14-job-name-wypmc-sniper
   description: au14-pmcparty-description
   ranks:
-    AU14RankWeYuOperator: []
+    CMURankWYPMCWeaponSpecialist: []
   spawnMenuRoleName: WY PMC Sniper (3rd party, M42A)
   startingGear: AU14GearWYPMCPartyContractorM42A
   greeting: au14-pmcparty-greeting
@@ -173,7 +173,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -193,7 +193,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -213,7 +213,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
@@ -233,7 +233,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

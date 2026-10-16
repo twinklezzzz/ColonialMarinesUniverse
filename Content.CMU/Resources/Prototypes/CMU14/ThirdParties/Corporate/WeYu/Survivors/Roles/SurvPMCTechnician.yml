@@ -20,7 +20,7 @@
   name: au14-job-name-wypmc-engineer
   description: au14-wysurv-description
   ranks:
-    AU14RankWeYuOperator: []
+    CMURankWYPMCTechnician: []
   spawnMenuRoleName: cmu-spawn-role-wy-pmc-combat-engineer-survivor 
   startingGear: AU14GearWYPSurvEngineer
   greeting: au14-wysurv-greeting
@@ -39,7 +39,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true

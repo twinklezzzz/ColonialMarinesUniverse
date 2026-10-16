@@ -34,7 +34,7 @@
   description: au14-pmcparty-description
   playTimeTracker: AU14JobWYPMCPartyLeader
   ranks:
-    AU14RankWeYuEnforcerLead: []
+    CMURankWYPMCTeamLeader: []
   spawnMenuRoleName: WY PMC Leader (3rd party, M41A/2)
   startingGear: AU14GearWYPMCPartyLeader
   greeting: au14-pmcparty-greeting
@@ -53,7 +53,7 @@
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
-    squad: SquadPMC
+    squad: CMUSquadWYSecurity
   - type: GhostRole
     makeSentient: true
     allowSpeech: true
