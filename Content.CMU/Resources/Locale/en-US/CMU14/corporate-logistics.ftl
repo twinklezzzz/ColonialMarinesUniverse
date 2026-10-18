@@ -9,8 +9,10 @@ cmu-logistics-tier-light = Light
 cmu-logistics-tier-standard = Standard
 cmu-logistics-tier-heavy = Heavy
 cmu-logistics-manifest = Manifest (click to load)
-cmu-logistics-crate = {$item} | {$weight}t | hazard {$hazard} | ${$value}
-cmu-logistics-totals = Weight {$weight}/{$weightLimit}t | Hazard {$hazard}/{$hazardLimit} | Value ${$value}
+cmu-logistics-crate =
+    {$item}
+    {$weight}t · hazard {$hazard} · ${$value}
+cmu-logistics-totals = Weight {$weight}/{$weightLimit}t · Hazard {$hazard}/{$hazardLimit} · Value ${$value}
 cmu-logistics-submit = Ship it
 cmu-logistics-status-active = {$name} manifest open.
 cmu-logistics-status-result = Last shipment: ${$value} of a possible ${$best}. Paid ${$payout} to the corporate budget.

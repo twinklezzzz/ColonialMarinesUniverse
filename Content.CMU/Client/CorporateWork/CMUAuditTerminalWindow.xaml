@@ -2,7 +2,7 @@
     xmlns="https://spacestation14.io"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Content.Client.CMU14.CorporateWork"
-    Title="{Loc cmu-audit-title}" MinSize="560 480" SetSize="620 560">
+    Title="{Loc cmu-audit-title}" MinSize="600 500" SetSize="680 620">
     <BoxContainer Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True" Margin="8">
         <Label Text="{Loc cmu-audit-heading}" StyleClasses="LabelHeading" Margin="0 4" />
         <RichTextLabel Text="{Loc cmu-audit-instructions}" HorizontalExpand="True" Margin="0 2" />
@@ -16,13 +16,13 @@
         <BoxContainer Orientation="Horizontal" HorizontalExpand="True" VerticalExpand="True" SeparationOverride="8" Margin="0 4">
             <BoxContainer Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True">
                 <Label Text="{Loc cmu-audit-ledger}" Margin="0 2" />
-                <ScrollContainer HorizontalExpand="True" VerticalExpand="True">
+                <ScrollContainer HScrollEnabled="False" HorizontalExpand="True" VerticalExpand="True">
                     <BoxContainer Name="LedgerRows" Access="Public" Orientation="Vertical" HorizontalExpand="True" />
                 </ScrollContainer>
             </BoxContainer>
             <BoxContainer Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True">
                 <Label Text="{Loc cmu-audit-report}" Margin="0 2" />
-                <ScrollContainer HorizontalExpand="True" VerticalExpand="True">
+                <ScrollContainer HScrollEnabled="False" HorizontalExpand="True" VerticalExpand="True">
                     <BoxContainer Name="ReportRows" Access="Public" Orientation="Vertical" HorizontalExpand="True" />
                 </ScrollContainer>
             </BoxContainer>

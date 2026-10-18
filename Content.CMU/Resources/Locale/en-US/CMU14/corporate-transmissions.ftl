@@ -4,7 +4,9 @@ cmu-transmissions-title = Secure Transmissions
 cmu-transmissions-heading = Cipher Key Recovery
 cmu-transmissions-instructions = Find the cipher key. After each attempt the terminal tells you how many symbols are right and in place, and how many are right but in the wrong place. Symbols can repeat. Fewer attempts pay more.
 cmu-transmissions-tiers-section = Intercept a transmission
-cmu-transmissions-tier = {$name}: {$length} symbols from {$symbols}, {$attempts} attempts (up to ${$reward})
+cmu-transmissions-tier =
+    {$name}, up to ${$reward}
+    {$length} symbols from {$symbols}, {$attempts} attempts
 cmu-transmissions-tier-commercial = Commercial
 cmu-transmissions-tier-military = Military
 cmu-transmissions-tier-blacksite = Black site

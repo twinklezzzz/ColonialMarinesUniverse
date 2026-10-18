@@ -15,7 +15,9 @@ cmu-audit-ledger = Ledger
 cmu-audit-report = Submitted report (click to flag)
 cmu-audit-flag-tooltip = Flag this line as not matching the ledger.
 cmu-audit-submit = Submit audit
-cmu-audit-entry = {$item} | {$department} | ${$amount}
+cmu-audit-entry =
+    {$item}
+    {$department} · ${$amount}
 cmu-audit-status-active = {$name} case open. Find {$errors} {$errors ->
     [one] discrepancy
    *[other] discrepancies
@@ -28,13 +30,13 @@ cmu-audit-status-cooldown = Next case available in {$seconds}s.
 cmu-audit-status-idle = Pick a case to start.
 cmu-audit-cooldown = The terminal is still filing the last audit.
 
-cmu-audit-department-1 = Special Services
-cmu-audit-department-2 = Corporate Relations
-cmu-audit-department-3 = Communications
-cmu-audit-department-4 = PMC Dispatch
-cmu-audit-department-5 = Research and Development
-cmu-audit-department-6 = Economics
-cmu-audit-department-7 = Personal Protection
+cmu-audit-department-1 = Spc Serv.
+cmu-audit-department-2 = C.R.
+cmu-audit-department-3 = Comms.
+cmu-audit-department-4 = PMC Disp.
+cmu-audit-department-5 = R&D
+cmu-audit-department-6 = Eco.
+cmu-audit-department-7 = Per. Pro.
 
 cmu-audit-item-1 = Office supplies
 cmu-audit-item-2 = Coffee service contract
@@ -59,4 +61,4 @@ cmu-audit-item-20 = Security consulting
 cmu-audit-item-21 = Press release printing
 cmu-audit-item-22 = Overtime payroll
 cmu-audit-item-23 = Vehicle lease
-cmu-audit-item-24 = Disposal of sensitive materials
+cmu-audit-item-24 = Sensitive waste disposal

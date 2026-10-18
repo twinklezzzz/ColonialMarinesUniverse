@@ -2,7 +2,7 @@
     xmlns="https://spacestation14.io"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Content.Client.CMU14.CorporateWork"
-    Title="{Loc cmu-transmissions-title}" MinSize="420 480" SetSize="460 560">
+    Title="{Loc cmu-transmissions-title}" MinSize="460 500" SetSize="520 600">
     <BoxContainer Orientation="Vertical" HorizontalExpand="True" VerticalExpand="True" Margin="8">
         <Label Text="{Loc cmu-transmissions-heading}" StyleClasses="LabelHeading" Margin="0 4" />
         <RichTextLabel Text="{Loc cmu-transmissions-instructions}" HorizontalExpand="True" Margin="0 2" />
@@ -12,7 +12,7 @@
         <Label Name="StatusLabel" Access="Public" Text="" Margin="0 4" />
 
         <Label Text="{Loc cmu-transmissions-log}" Margin="0 2" />
-        <ScrollContainer HorizontalExpand="True" VerticalExpand="True">
+        <ScrollContainer HScrollEnabled="False" HorizontalExpand="True" VerticalExpand="True">
             <BoxContainer Name="AttemptRows" Access="Public" Orientation="Vertical" HorizontalExpand="True" />
         </ScrollContainer>
 
