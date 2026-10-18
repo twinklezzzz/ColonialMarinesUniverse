@@ -1,16 +1,24 @@
 <Document>
   # Weyland-Yutani Corporate Handbook
+  ## Field Operations Edition
 
-  [color=#a4885c]DRAFT: under review by staff. Subject to change.[/color]
+  [color=#a4885c]PROPRIETARY. Internal distribution only. Not for release to colonial, military or government personnel.[/color]
 
-  This handbook covers Weyland-Yutani personnel planetside: who answers to whom, what each terminal does, and how the corporation does business with the colony.
+  [italic]Building Better Worlds.[/italic]
 
-  Weyland-Yutani is a guest on the colony's land. It pays rent, holds licences the colony can revoke, and can lend the colony money. The colony needs corporate money, and the corporation needs the colony's goodwill. Most corporate play comes down to managing that relationship.
+  Welcome to the Company.
 
-  ## Contents
-  - [textlink="Structure and Ranks" link="CMUCorporateHandbookStructure"/]
+  This handbook sets out the standard operating procedure for Weyland-Yutani personnel at colonial sites. It covers the chain of command, the divisions, security, daily office procedure, and the Company's partnership with the colony it operates on.
+
+  Every employee is expected to know it. When a situation isn't covered here, act in the Company's interest and report it to your superior. When in doubt, say less.
+
+  Breaches of procedure are recorded in your personnel file and reviewed at contract renewal.
+
+  ## Sections
+  - [textlink="Chain of Command" link="CMUCorporateHandbookStructure"/]
+  - [textlink="Divisions" link="CMUCorporateHandbookDivisions"/]
   - [textlink="Corporate Security" link="CMUCorporateHandbookSecurity"/]
-  - [textlink="Corporate Terminals" link="CMUCorporateHandbookTerminals"/]
-  - [textlink="Colony Relations" link="CMUCorporateHandbookRelations"/]
-  - [textlink="Conduct" link="CMUCorporateHandbookConduct"/]
+  - [textlink="Office Procedure" link="CMUCorporateHandbookProcedure"/]
+  - [textlink="Colonial Partnership" link="CMUCorporateHandbookPartnership"/]
+  - [textlink="Conduct and Discretion" link="CMUCorporateHandbookConduct"/]
 </Document>

@@ -211,8 +211,9 @@ cmu-guide-entry-fob-security = FOB Security Squad
 cmu-guide-entry-skills = Skills
 
 cmu-guide-entry-corporate = Weyland-Yutani Corporate Handbook
-cmu-guide-entry-corporate-structure = Structure and Ranks
+cmu-guide-entry-corporate-structure = Chain of Command
+cmu-guide-entry-corporate-divisions = Divisions
 cmu-guide-entry-corporate-security = Corporate Security
-cmu-guide-entry-corporate-terminals = Corporate Terminals
-cmu-guide-entry-corporate-relations = Colony Relations
-cmu-guide-entry-corporate-conduct = Conduct
+cmu-guide-entry-corporate-procedure = Office Procedure
+cmu-guide-entry-corporate-partnership = Colonial Partnership
+cmu-guide-entry-corporate-conduct = Conduct and Discretion

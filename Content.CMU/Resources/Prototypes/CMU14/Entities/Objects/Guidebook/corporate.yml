@@ -6,9 +6,10 @@
   text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbook.xml"
   children:
   - CMUCorporateHandbookStructure
+  - CMUCorporateHandbookDivisions
   - CMUCorporateHandbookSecurity
-  - CMUCorporateHandbookTerminals
-  - CMUCorporateHandbookRelations
+  - CMUCorporateHandbookProcedure
+  - CMUCorporateHandbookPartnership
   - CMUCorporateHandbookConduct
 
 - type: guideEntry
@@ -20,37 +21,44 @@
 
 - type: guideEntry
   parent: RMC
+  id: CMUCorporateHandbookDivisions
+  name: cmu-guide-entry-corporate-divisions
+  priority: 1
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookDivisions.xml"
+
+- type: guideEntry
+  parent: RMC
   id: CMUCorporateHandbookSecurity
   name: cmu-guide-entry-corporate-security
-  priority: 1
+  priority: 2
   text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookSecurity.xml"
 
 - type: guideEntry
   parent: RMC
-  id: CMUCorporateHandbookTerminals
-  name: cmu-guide-entry-corporate-terminals
-  priority: 2
-  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookTerminals.xml"
+  id: CMUCorporateHandbookProcedure
+  name: cmu-guide-entry-corporate-procedure
+  priority: 3
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookProcedure.xml"
 
 - type: guideEntry
   parent: RMC
-  id: CMUCorporateHandbookRelations
-  name: cmu-guide-entry-corporate-relations
-  priority: 3
-  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookRelations.xml"
+  id: CMUCorporateHandbookPartnership
+  name: cmu-guide-entry-corporate-partnership
+  priority: 4
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookPartnership.xml"
 
 - type: guideEntry
   parent: RMC
   id: CMUCorporateHandbookConduct
   name: cmu-guide-entry-corporate-conduct
-  priority: 4
+  priority: 5
   text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookConduct.xml"
 
 - type: entity
   parent: RMCGuidebookBase
   id: CMUGuidebookCorporateHandbook
   name: Weyland-Yutani corporate handbook
-  description: "Company policy, bound in company colours. Every new hire gets one; few read past the welcome letter."
+  description: "Standard operating procedure for Weyland-Yutani field staff, bound in Company colours. Every new hire is issued one. Most never get past the welcome letter, and the Company prefers it that way."
   components:
   - type: Sprite
     sprite: _RMC14/Objects/Misc/Books/Other/SOP.rsi

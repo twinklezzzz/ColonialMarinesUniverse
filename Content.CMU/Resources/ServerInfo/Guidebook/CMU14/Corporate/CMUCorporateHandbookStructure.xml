@@ -1,34 +1,32 @@
 <Document>
-  # Structure and Ranks
+  # Chain of Command
 
-  ## Executive track
-  Rank is earned by time in the role and shows on your ID as a WYC paygrade.
+  Authority in the Company follows paygrade. Your paygrade is printed on your identification card. Promotion is earned through tenure and results.
 
-  - [bold]WYC1 Trainee[/bold]: new office worker.
-  - [bold]WYC2 Junior Executive[/bold]: 5 hours as an office worker.
-  - [bold]WYC3 Executive[/bold]: 15 hours.
-  - [bold]WYC4 Senior Executive[/bold]: 25 hours.
-  - [bold]WYC5 Executive Specialist[/bold]: Corporate Liaison.
-  - [bold]WYC6 Executive Supervisor[/bold]: Corporate Liaison with 25 hours in the role.
-  - [bold]WYC7 Assistant Manager[/bold]: Corporate Assistant.
-  - [bold]WYC8 Division Manager[/bold]: leads small sites. On large sites, heads a division under the Chief Executive.
-  - [bold]WYC9 Chief Executive[/bold]: leads large sites.
+  ## Executive grades
+  - [bold]WYC1 Trainee[/bold]: probationary office staff.
+  - [bold]WYC2 Junior Executive[/bold]: office staff.
+  - [bold]WYC3 Executive[/bold]: experienced office staff. May supervise trainees.
+  - [bold]WYC4 Senior Executive[/bold]: senior office staff. Runs office tasks in the Liaison's absence.
+  - [bold]WYC5 Executive Specialist[/bold]: Corporate Liaison. The Company's official representative at the site.
+  - [bold]WYC6 Executive Supervisor[/bold]: senior Corporate Liaison. Trusted with decisions of consequence.
+  - [bold]WYC7 Assistant Manager[/bold]: Corporate Assistant to site management.
+  - [bold]WYC8 Division Manager[/bold]: heads a division, or the site itself where no Chief Executive is posted.
+  - [bold]WYC9 Chief Executive[/bold]: heads a major site. Answers only to the Directorate.
 
-  Which leadership a site gets is up to the map. On a site without a manager, the Corporate Liaison is the senior corporate employee and runs the office.
-
-  ## Legal track
-  Legal Specialists (WYC5L) and Legal Supervisors (WYC6L) advise the office on contracts, colony law and liability. They don't give orders to the executive track.
-
-  ## Divisions
-  Managers claim a division at the start of the shift. The division sets their kit and what they answer for:
-  Special Services, Corporate Relations, Communications, PMC Dispatch, Research and Development, Economics, and Personal Protection.
+  ## Legal grades
+  - [bold]WYC5L Legal Specialist[/bold] and [bold]WYC6L Legal Supervisor[/bold]: Company counsel. They advise on contracts, colonial law and exposure. Counsel don't command the executive grades, but an executive who ignores counsel answers for the consequences personally.
 
   ## Science
-  The Lead Researcher runs corporate research and answers to the senior corporate employee. Scientists rank up to Associate. Research is the corporation's main source of income, so protect it.
+  The [bold]Lead Researcher[/bold] directs Company research at the site and answers to the senior executive present. Scientists answer to the Lead Researcher. Research is the Company's most valuable asset on any colony. Treat its staff, samples and records accordingly.
 
-  ## Who may use what
-  - The corporate console needs [bold]WYC5 or above[/bold].
-  - The corporate Overwatch console is rank-locked the same way.
-  - Withdrawal needs [bold]WYC6 or above[/bold].
-  - Work terminals are open to any corporate ID.
+  ## Senior employee on site
+  The highest-grade executive present is the senior employee on site. They decide disputes between departments and speak for the Company.
+  - At a minor site, this is normally a Division Manager or the Corporate Liaison.
+  - At a major site, it's the Chief Executive, supported by Division Managers.
+
+  ## Restricted systems
+  - The corporate console and the corporate Overwatch console are restricted to [bold]WYC5 and above[/bold].
+  - Divestment (see [textlink="Colonial Partnership" link="CMUCorporateHandbookPartnership"/]) can only be authorised at [bold]WYC6 and above[/bold].
+  - Work terminals are open to all Company staff.
 </Document>

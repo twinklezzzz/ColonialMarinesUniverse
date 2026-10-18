@@ -1,26 +1,28 @@
 <Document>
   # Corporate Security
 
-  Corporate Security protects corporate staff, property and research. It isn't a police force: on colony ground, colonial law and the colony's marshals come first. Security units turn out in regulation appearance.
+  Corporate Security protects Company personnel, property and research. Security staff turn out in regulation appearance at all times. A guard who looks professional is rarely asked to prove it.
 
-  ## General security
-  - [bold]Security Trainee[/bold]: new guard.
-  - [bold]Security Officer[/bold]: 5 hours as a guard.
-  - [bold]Senior Security Officer[/bold]: 25 hours as a guard.
-  - [bold]Security Sergeant[/bold]: 25 hours as a guard. Leads the guard detail and reports to corporate management.
+  ## General Security
+  - [bold]Security Trainee[/bold]: probationary guard.
+  - [bold]Security Officer[/bold]: guard.
+  - [bold]Senior Security Officer[/bold]: experienced guard. Leads patrols.
+  - [bold]Security Sergeant[/bold]: head of site security. Commands the guard detail and reports to the senior employee on site.
 
   ## Personal Protection
-  Personal Protection is close protection for senior executives. It answers to the Personal Protection Coordinator, who answers to the senior executive.
-  - [bold]Personal Protection Officer[/bold]: standard protection kit.
-  - [bold]Personal Protection Specialist[/bold]: carries the detail's special weapon.
-  - [bold]Personal Protection Coordinator[/bold]: leads the detail and can issue orders.
+  Close protection for senior executives. It answers to the Personal Protection Coordinator, and through them to the executive being protected.
+  - [bold]Personal Protection Officer[/bold]: member of the detail.
+  - [bold]Personal Protection Specialist[/bold]: the detail's heavy weapon.
+  - [bold]Personal Protection Coordinator[/bold]: leads the detail and issues its orders.
 
   ## Directorate Protection
-  Directorate Protection guards members of the Directorate. It only deploys with them, as a third party.
+  Protects members of the Directorate. It deploys only alongside them, and site staff don't give it orders.
 
-  ## Rules
-  - Guard corporate staff and property first. Don't go hunting.
-  - Don't detain colonists on colony ground without the marshals, unless someone's life is in danger.
-  - Corporate prisoners are handed to colonial authorities or held for transfer. They aren't held indefinitely.
-  - Use of force has to be proportionate. Corporate liability follows every shot you fire.
+  ## Standing orders
+  - Protect Company staff, property and research, in that order of convenience.
+  - Colonial law applies on colonial ground. Where the colony's marshals are present, let them be seen to act.
+  - Individuals of interest may be invited to the Company offices to answer questions. Most accept.
+  - Guests stay until the senior employee on site is satisfied. Give them food, water and no reason to complain afterwards.
+  - Force is proportionate, and it's reported. Reports go to Communications before anyone else.
+  - Never discuss an incident with anyone outside the Company. Refer all questions to the Corporate Liaison.
 </Document>
