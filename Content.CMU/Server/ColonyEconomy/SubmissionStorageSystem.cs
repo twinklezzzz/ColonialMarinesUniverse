@@ -1,4 +1,5 @@
 using Content.Server.CMU14.Ambassador;
+using Content.Server.CMU14.CorporateRelations;
 using Content.Server.Containers;
 using Content.Shared.CMU14.ColonyEconomy;
 using Content.Shared.Containers;
@@ -13,6 +14,7 @@ public sealed partial class SubmissionStorageSystem : EntitySystem
     [Dependency] private ColonyBudgetSystem _colonyBudget = default!;
     [Dependency] private AmbassadorConsoleSystem _ambassador = default!;
     [Dependency] private CorporateConsoleSystem _corporateConsole = default!;
+    [Dependency] private CMUCorporateRelationsSystem _relations = default!;
  
     public override void Initialize()
     {
@@ -51,16 +53,19 @@ public sealed partial class SubmissionStorageSystem : EntitySystem
         // e.g. $10 + $15 != $25 instead it equals $12.5
         float amount = sum / num;
 
-        var mult = _ambassador.GetSubmissionMultiplier();
-        var tariff = _corporateConsole.GetTariff();
+        var mult = _ambassador.GetSubmissionMultiplier() * _relations.ColonyPayoutMultiplier;
+        // A withdrawn WY no longer takes its cut.
+        var tariff = _relations.Withdrawn ? 0f : _corporateConsole.GetTariff();
         //var amount = submission.Rewards.TryGetValue()
 
         float reward;
-        if (TryComp<StackComponent>(args.Entity, out var stack))
+        TryComp<StackComponent>(args.Entity, out var stack);
+        if (stack != null)
             reward = amount * stack.Count * mult;
         else
             reward = amount * mult;
 
+        _relations.OnDelivery(args.Entity, stack?.Count ?? 1, reward);
         PredictedQueueDel(args.Entity);
 
         // Split: tariff % goes to corporate budget, remainder to colony budget

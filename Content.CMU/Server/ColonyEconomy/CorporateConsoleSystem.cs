@@ -78,6 +78,15 @@ public sealed partial class CorporateConsoleSystem : EntitySystem
     }
 
     /// <summary>
+    ///     Current corporate budget, read from the first CorporateConsoleComponent found.
+    /// </summary>
+    public float GetCorporateBudget()
+    {
+        var q = EntityQueryEnumerator<CorporateConsoleComponent>();
+        return q.MoveNext(out _, out var comp) ? comp.CorporateBudget : 0f;
+    }
+
+    /// <summary>
     ///     Adds <paramref name="amount"/> to the corporate budget on every
     ///     CorporateConsoleComponent so all terminals stay in sync.
     /// </summary>

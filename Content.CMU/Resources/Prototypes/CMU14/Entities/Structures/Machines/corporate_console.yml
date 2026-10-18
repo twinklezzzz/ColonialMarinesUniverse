@@ -22,6 +22,8 @@
         type: CorporateConsoleBui
       enum.CorporateConsoleThirdPartyUi.Key:
         type: CorporateConsoleThirdPartyBui
+      enum.CMUContractsUi.Key:
+        type: CMUContractsBui
   - type: ItemSlots
     slots:
       CashSlot:
@@ -31,6 +33,15 @@
   - type: ContainerContainer
     containers:
       CashSlot: !type:ContainerSlot {}
+  - type: CMUContractsConsole
+    side: Corporate
+    withdrawalRanks: # Executive Supervisor (WYC6) and above
+    - RMCRankWeYaExecutiveSupervisor
+    - RMCRankWeYaAssistantManager
+    - RMCRankWeYaDivisionManager
+    - RMCRankWeYaChiefExecutive
+    - RMCRankWeYaDeputyDirector
+    - RMCRankWeYaDirector
   - type: ActivatableUIRequiresAccess
   - type: AccessReader
     access: [["AU14AccessCorporateWEYULiaison"], ["AU14AccessCorporateWEYU"]]

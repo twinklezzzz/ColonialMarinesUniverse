@@ -1,3 +1,4 @@
+using Content.Shared.CMU14.CorporateRelations;
 using Content.Shared.CMU14.ColonyEconomy;
 using Robust.Client.UserInterface;
 
@@ -23,6 +24,8 @@ public sealed class AdminConsoleBui(EntityUid owner, Enum uiKey) : BoundUserInte
             if (_window.IncomeTaxInput.Text is { } text && float.TryParse(text, out var pct))
                 SendPredictedMessage(new AdminConsoleSetIncomeTaxBuiMsg(pct));
         };
+
+        _window.OpenContractsBtn.OnPressed += _ => SendMessage(new CMUContractsOpenBuiMsg());
 
         _window.OpenThirdPartyBtn.OnPressed += _ =>
         {

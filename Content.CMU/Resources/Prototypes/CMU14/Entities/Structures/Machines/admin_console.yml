@@ -27,6 +27,10 @@
         type: AdminConsoleBui
       enum.AdminConsoleThirdPartyUi.Key:
         type: AdminConsoleThirdPartyBui
+      enum.CMUContractsUi.Key:
+        type: CMUContractsBui
+  - type: CMUContractsConsole
+    side: Colony
   - type: ActivatableUIRequiresAccess
   - type: AccessReader
     access: [["AU14AccessColonyAdministrator"]]

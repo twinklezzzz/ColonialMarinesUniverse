@@ -1,0 +1,60 @@
+<controls:CMUContractsWindow
+    xmlns="https://spacestation14.io"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Content.Client.CMU14.CorporateRelations"
+    Title="{Loc cmu-contracts-title}" MinSize="620 600">
+    <ScrollContainer HorizontalExpand="True" VerticalExpand="True">
+        <BoxContainer Orientation="Vertical" HorizontalExpand="True" Margin="8">
+            <Label Name="BudgetsLabel" Access="Public" Text="" StyleClasses="LabelHeading" Margin="0 4" />
+            <Label Name="CycleLabel" Access="Public" Text="" StyleClasses="LabelSubText" Margin="0 2" />
+            <Label Name="WithdrawalLabel" Access="Public" Text="" StyleClasses="Caution" Margin="0 2" Visible="False" />
+
+            <!-- Rent and licences -->
+            <Label Text="{Loc cmu-contracts-section-rent}" Margin="0 8 0 2" />
+            <Label Name="RentLabel" Access="Public" Text="" Margin="4 2" />
+            <Label Name="LicenceLabel" Access="Public" Text="" Margin="4 2" />
+            <BoxContainer Name="ColonyControls" Access="Public" Orientation="Vertical" Visible="False" Margin="4 2">
+                <BoxContainer Orientation="Horizontal" SeparationOverride="4">
+                    <Label Text="{Loc cmu-contracts-rent-input}" />
+                    <LineEdit Name="RentInput" Access="Public" HorizontalExpand="True" />
+                    <Button Name="SetRentButton" Access="Public" Text="{Loc colony-economy-apply}" />
+                </BoxContainer>
+                <BoxContainer Orientation="Horizontal" SeparationOverride="4" Margin="0 4">
+                    <Button Name="ResearchButton" Access="Public" Text="" HorizontalExpand="True" />
+                    <Button Name="TaxButton" Access="Public" Text="" HorizontalExpand="True" />
+                </BoxContainer>
+            </BoxContainer>
+
+            <!-- Work orders -->
+            <Label Text="{Loc cmu-contracts-section-orders}" Margin="0 8 0 2" />
+            <Label Text="{Loc cmu-contracts-orders-description}" StyleClasses="LabelSubText" Margin="4 0" />
+            <BoxContainer Name="OrderRows" Access="Public" Orientation="Vertical" Margin="4 2" />
+            <BoxContainer Name="CorporateOrderControls" Access="Public" Orientation="Vertical" Visible="False" Margin="4 2">
+                <BoxContainer Orientation="Horizontal" SeparationOverride="4">
+                    <OptionButton Name="GoodSelect" Access="Public" HorizontalExpand="True" />
+                    <LineEdit Name="QuantityInput" Access="Public" PlaceHolder="{Loc cmu-contracts-quantity}" MinWidth="70" />
+                    <LineEdit Name="PremiumInput" Access="Public" PlaceHolder="{Loc cmu-contracts-premium}" MinWidth="70" />
+                    <Button Name="PostOrderButton" Access="Public" Text="{Loc cmu-contracts-post-order}" />
+                </BoxContainer>
+                <Label Name="OrderCostLabel" Access="Public" Text="" StyleClasses="LabelSubText" />
+                <Button Name="FreezeOrdersButton" Access="Public" Text="{Loc cmu-contracts-freeze-orders}" Margin="0 4" />
+            </BoxContainer>
+
+            <!-- Loans -->
+            <Label Text="{Loc cmu-contracts-section-loans}" Margin="0 8 0 2" />
+            <Label Name="LoansDescription" Access="Public" Text="" StyleClasses="LabelSubText" Margin="4 0" />
+            <BoxContainer Name="LoanRows" Access="Public" Orientation="Vertical" Margin="4 2" />
+            <BoxContainer Name="RequestLoanControls" Access="Public" Orientation="Horizontal" SeparationOverride="4" Visible="False" Margin="4 2">
+                <LineEdit Name="LoanAmountInput" Access="Public" PlaceHolder="{Loc cmu-contracts-amount}" HorizontalExpand="True" />
+                <Button Name="RequestLoanButton" Access="Public" Text="{Loc cmu-contracts-request-loan}" />
+            </BoxContainer>
+
+            <!-- Withdrawal (WY only) -->
+            <BoxContainer Name="WithdrawalControls" Access="Public" Orientation="Vertical" Visible="False">
+                <Label Text="{Loc cmu-contracts-section-withdrawal}" Margin="0 8 0 2" />
+                <Label Text="{Loc cmu-contracts-withdrawal-description}" StyleClasses="LabelSubText" Margin="4 0" />
+                <Button Name="WithdrawalButton" Access="Public" Text="" Margin="4 4" />
+            </BoxContainer>
+        </BoxContainer>
+    </ScrollContainer>
+</controls:CMUContractsWindow>

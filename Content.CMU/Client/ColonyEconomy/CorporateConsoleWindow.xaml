@@ -42,6 +42,8 @@
             <Label Text="{Loc colony-economy-third-party-support}" Margin="0 6" />
             <Button Name="OpenThirdPartyBtn" Access="Public" Text="{Loc colony-economy-open-third-party-menu}"
                     HorizontalExpand="True" Margin="0 4" />
+            <Button Name="OpenContractsBtn" Access="Public" Text="{Loc cmu-contracts-open}"
+                    HorizontalExpand="True" Margin="0 4" />
         </BoxContainer>
     </ScrollContainer>
 </controls:CorporateConsoleWindow>

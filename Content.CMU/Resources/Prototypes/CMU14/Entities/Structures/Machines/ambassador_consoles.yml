@@ -28,6 +28,8 @@
         type: AmbassadorConsoleBui
       enum.AmbassadorThirdPartyUi.Key:
         type: AmbassadorThirdPartyBui
+      enum.CMUContractsUi.Key:
+        type: CMUContractsBui
   - type: ItemSlots
     slots:
       CashSlot:
@@ -37,6 +39,8 @@
   - type: ContainerContainer
     containers:
       CashSlot: !type:ContainerSlot {}
+  - type: CMUContractsConsole
+    side: Ambassador
   - type: ActivatableUIRequiresAccess
   - type: AccessReader
     access: [["AU14AccessColonyAmbassador"]]

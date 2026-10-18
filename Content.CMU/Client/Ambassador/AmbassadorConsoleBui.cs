@@ -1,3 +1,4 @@
+using Content.Shared.CMU14.CorporateRelations;
 using Content.Shared.CMU14.Ambassador;
 using Robust.Client.UserInterface;
 
@@ -34,6 +35,8 @@ public sealed class AmbassadorConsoleBui : BoundUserInterface
                 _window.BroadcastInput.Text = "";
             }
         };
+        _window.OpenContractsBtn.OnPressed += _ => SendMessage(new CMUContractsOpenBuiMsg());
+
         _window.OpenThirdPartyBtn.OnPressed += _ =>
         {
             SendPredictedMessage(new AmbassadorOpenThirdPartyBuiMsg());
