@@ -2,9 +2,11 @@
 
 cmu-markets-title = Corporate Markets
 cmu-markets-heading = Commodity Futures
-cmu-markets-instructions = Trade commodity futures with the corporate budget. Prices move every minute. News reports come before the move, so read them first. Every trade costs a fee, both buying and selling.
+cmu-markets-instructions = Trade commodity futures with the corporate budget. Prices move every minute. News reports come before the move, so read them first. Every trade costs a fee, both buying and selling. Holdings pay a dividend every minute.
 cmu-markets-budget = Corporate budget: ${$amount}
-cmu-markets-holdings = Holdings: ${$value} of ${$cap} cap. Fee {$fee}% per trade.
+cmu-markets-holdings =
+    Holdings: ${$value} of ${$cap} cap.
+    Fee {$fee}% per trade. Dividend {$dividend}% per minute.
 cmu-markets-next-tick = Next price update in {$seconds}s.
 cmu-markets-board = Board
 cmu-markets-quote =

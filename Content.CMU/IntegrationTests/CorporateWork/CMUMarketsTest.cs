@@ -37,6 +37,9 @@ public sealed class CMUMarketsTest
                 Assert.That(-bought, Is.EqualTo((int) MathF.Ceiling(10 * price * (1 + CMUMarketsSystem.Fee))));
                 Assert.That(corporate.GetCorporateBudget(), Is.EqualTo(budget + bought).Within(0.5f));
 
+                // Holdings pay their dividend into the budget.
+                Assert.That(markets.PayDividend(), Is.EqualTo((int) MathF.Floor(10 * price * CMUMarketsSystem.Dividend)));
+
                 // Selling straight back at the same price loses the fee both ways.
                 var sold = markets.TryTrade(Commodity, 10, false, terminal, trader)!.Value;
                 Assert.That(sold + bought, Is.LessThan(0));

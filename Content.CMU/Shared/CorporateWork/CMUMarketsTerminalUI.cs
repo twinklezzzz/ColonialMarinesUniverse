@@ -21,7 +21,8 @@ public sealed class CMUMarketsTerminalBuiState(
     int corporateBudget,
     int holdingsValue,
     int holdingsCap,
-    int feePercent,
+    float feePercent,
+    float dividendPercent,
     TimeSpan nextTickAt) : BoundUserInterfaceState
 {
     public readonly List<CMUMarketQuote> Quotes = quotes;
@@ -29,7 +30,8 @@ public sealed class CMUMarketsTerminalBuiState(
     public readonly int CorporateBudget = corporateBudget;
     public readonly int HoldingsValue = holdingsValue;
     public readonly int HoldingsCap = holdingsCap;
-    public readonly int FeePercent = feePercent;
+    public readonly float FeePercent = feePercent;
+    public readonly float DividendPercent = dividendPercent;
     public readonly TimeSpan NextTickAt = nextTickAt;
 }
 

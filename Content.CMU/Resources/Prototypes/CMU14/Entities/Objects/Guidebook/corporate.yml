@@ -5,12 +5,28 @@
   priority: 4
   text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbook.xml"
   children:
+  - CMUCorporateHandbookGrades
   - CMUCorporateHandbookStructure
   - CMUCorporateHandbookDivisions
   - CMUCorporateHandbookSecurity
+  - CMUCorporateHandbookContractors
   - CMUCorporateHandbookProcedure
   - CMUCorporateHandbookPartnership
   - CMUCorporateHandbookConduct
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookGrades
+  name: cmu-guide-entry-corporate-grades
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookGrades.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookContractors
+  name: cmu-guide-entry-corporate-contractors
+  priority: 2
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookContractors.xml"
 
 - type: guideEntry
   parent: RMC

@@ -13,7 +13,8 @@ namespace Content.Server.CMU14.CorporateWork;
 /// <summary>
 ///     One market for the whole round, shared by every markets terminal. Prices drift each tick;
 ///     a news event names a commodity and a direction one tick before the move, so players who
-///     read the news can get in first. Trades cost a fee both ways, so random trading loses money.
+///     read the news can get in first. Trades cost a fee both ways, so random trading loses money,
+///     but holdings pay a small dividend every tick so a patient position earns something.
 /// </summary>
 public sealed class CMUMarketsSystem : EntitySystem
 {
@@ -25,14 +26,19 @@ public sealed class CMUMarketsSystem : EntitySystem
     [Dependency] private UserInterfaceSystem _ui = default!;
 
     public static readonly TimeSpan Tick = TimeSpan.FromSeconds(60);
-    public const float Fee = 0.03f;
+    public const float Fee = 0.02f;
+
+    /// <summary>
+    ///     Paid into the corporate budget each tick, as a fraction of the value held.
+    /// </summary>
+    public const float Dividend = 0.005f;
     public const int HoldingsCap = 5000;
     public const int MaxTradeUnits = 50;
 
     /// <summary>
     ///     How far a news event pushes its commodity on each tick it lasts.
     /// </summary>
-    public const float NewsMove = 0.08f;
+    public const float NewsMove = 0.10f;
 
     private const int NewsTicks = 3;
     private const int NewsKept = 6;
@@ -121,12 +127,14 @@ public sealed class CMUMarketsSystem : EntitySystem
             MoveMarket(market);
         }
 
+        PayDividend();
+
         UpdateAllUi();
     }
 
     private TimeSpan NextNewsDelay()
     {
-        return TimeSpan.FromSeconds(_random.Next(240, 421));
+        return TimeSpan.FromSeconds(_random.Next(150, 271));
     }
 
     private void StartNews(TimeSpan now)
@@ -227,6 +235,18 @@ public sealed class CMUMarketsSystem : EntitySystem
         return moved;
     }
 
+    /// <summary>
+    ///     Pays the per-tick dividend on everything held. Returns the amount paid.
+    /// </summary>
+    public int PayDividend()
+    {
+        var paid = (int) MathF.Floor(HoldingsValue() * Dividend);
+        if (paid > 0)
+            _corporate.AddToCorporateBudget(paid);
+
+        return paid;
+    }
+
     private int HoldingsValue()
     {
         return (int) _markets.Values.Sum(m => m.Held * m.Price);
@@ -269,7 +289,8 @@ public sealed class CMUMarketsSystem : EntitySystem
             (int) _corporate.GetCorporateBudget(),
             HoldingsValue(),
             HoldingsCap,
-            (int) (Fee * 100),
+            Fee * 100,
+            Dividend * 100,
             _nextTick);
 
         _ui.SetUiState(ent.Owner, CMUMarketsTerminalUi.Key, state);

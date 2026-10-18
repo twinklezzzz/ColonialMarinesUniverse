@@ -45,7 +45,8 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
         HoldingsLabel.Text = Loc.GetString("cmu-markets-holdings",
             ("value", state.HoldingsValue),
             ("cap", state.HoldingsCap),
-            ("fee", state.FeePercent));
+            ("fee", state.FeePercent),
+            ("dividend", state.DividendPercent));
 
         QuoteRows.RemoveAllChildren();
         foreach (var quote in state.Quotes)

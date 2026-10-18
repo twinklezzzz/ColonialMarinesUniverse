@@ -124,7 +124,7 @@ public sealed class CMUCorporateWindowsTest : GameTest
                     new("CMUMarketAtmospherics", "cmu-markets-commodity-atmospherics", 40, 40, 0, 0),
                 },
                 Enumerable.Range(0, 6).Select(_ => new CMUMarketNews(TimeSpan.Zero, "Synthetic labour expected to fall: regulators have opened an inquiry.")).ToList(),
-                12500, 1572, 5000, 3, TimeSpan.Zero));
+                12500, 1572, 5000, 2f, 0.5f, TimeSpan.Zero));
             AssertLaysOut(markets, "markets");
         });
     }

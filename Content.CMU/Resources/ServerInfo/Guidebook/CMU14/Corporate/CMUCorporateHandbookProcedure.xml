@@ -16,7 +16,8 @@
   Trade commodity futures on the Company's account.
   - Prices update every minute.
   - The newswire reports on market conditions before the market reacts. Read it before every trade.
-  - Brokerage charges 3% on every purchase and every sale.
+  - Brokerage charges 2% on every purchase and every sale.
+  - Holdings pay a dividend of 0.5% of their value every minute. Patient positions are rewarded.
   - The site may hold no more than $5000 in futures at any time.
   - Positions are not carried over when the site's books close.
 

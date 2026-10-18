@@ -211,7 +211,9 @@ cmu-guide-entry-fob-security = FOB Security Squad
 cmu-guide-entry-skills = Skills
 
 cmu-guide-entry-corporate = Weyland-Yutani Corporate Handbook
+cmu-guide-entry-corporate-grades = Grades and Callsigns
 cmu-guide-entry-corporate-structure = Chain of Command
+cmu-guide-entry-corporate-contractors = Contracted Personnel
 cmu-guide-entry-corporate-divisions = Divisions
 cmu-guide-entry-corporate-security = Corporate Security
 cmu-guide-entry-corporate-procedure = Office Procedure

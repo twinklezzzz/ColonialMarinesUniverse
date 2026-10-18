@@ -1,0 +1,31 @@
+<Document>
+  # Contracted Personnel
+
+  The Company employs armed contractors through PMC Dispatch (division 4). Contractors aren't Company office staff and don't hold office grades. They take their orders from their own leadership, and their leadership takes its orders from whoever is paying for the contract.
+
+  Site staff don't request contractors directly. Requests go through the senior employee on site to PMC Dispatch, with a justification, in writing.
+
+  ## PMC operators
+  - [bold]PMC-OP Operator[/bold] (PMC. OPR.): line operator.
+  - [bold]PMC-EN Enforcer[/bold] (PMC. ENF.): breaching and suppression.
+  - [bold]PMC-VS Vehicle Specialist[/bold] (PMC. SPV.): vehicle crew.
+  - [bold]PMC-SS Support Specialist[/bold] (PMC. SPS.): sustained fire.
+  - [bold]PMC-MS Medical Specialist[/bold] (PMC. SPM.): keeps the expensive assets breathing.
+  - [bold]PMC-WS Weapon Specialist[/bold] (PMC. SPW.): precision and heavy weapons.
+  - [bold]PMC-TEC Corporate Technician[/bold] (PMC. TEC.): field engineering.
+  - [bold]PMC-DOC Trauma Surgeon[/bold] (PMC. Dr.): contracted surgical support.
+
+  ## PMC leadership
+  - [bold]PMC-TL Team Leader[/bold] (PMC. TML.): commands the fireteam.
+  - [bold]PMC-FOL Field Operations Leader[/bold] (PMC. FOL.): commands several teams in the field.
+  - [bold]PMC-DIR Site Director[/bold]: the contractor's senior officer at a site. Not to be confused with a Company Director.
+
+  ## Corporate Commandos
+  Commandos answer directly to Company High Command. Their deployments don't appear in site records. Site staff are not told they are coming and shouldn't ask afterwards.
+  - [bold]WY-COM Corporate Commando[/bold]
+  - [bold]WY-GUN Corporate Commando Gunner[/bold]
+  - [bold]WY-COMLD Corporate Commando Leader[/bold]
+
+  ## Whiteout
+  Whiteout units are combat synthetics. They hold no rank, and they take orders only from the Company personnel they were deployed for. Only a Director can override a Whiteout unit's orders. If you see one, the situation is no longer yours to manage.
+</Document>
