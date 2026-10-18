@@ -56,9 +56,21 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
     public bool CorporateResearchLicensed => _researchLicense;
 
     /// <summary>
+    ///     Extra charge on WY's corporate ASRS orders, on top of sales tax, once the colony revokes
+    ///     WY's tax break. WY buys little, so plain sales tax alone would barely be felt.
+    /// </summary>
+    public const float RevokedTaxBreakLevy = 0.5f;
+
+    /// <summary>
     ///     Whether WY's own corporate ASRS orders skip colony sales tax. The colony can revoke this.
     /// </summary>
     public bool CorporateTaxExempt => _taxBreak;
+
+    /// <summary>
+    ///     What WY's corporate ASRS orders pay the colony on top of their price, as a fraction:
+    ///     nothing with a tax break, sales tax plus <see cref="RevokedTaxBreakLevy"/> without one.
+    /// </summary>
+    public float CorporateOrderSurcharge(float salesTax) => _taxBreak ? 0f : salesTax + RevokedTaxBreakLevy;
 
     public override void Initialize()
     {
@@ -71,6 +83,7 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
         InitializeLoans();
         InitializeWorkOrders();
         InitializeWithdrawal();
+        InitializeResearch();
     }
 
     private void OnRoundRestart(RoundRestartCleanupEvent ev)

@@ -223,8 +223,8 @@ public sealed partial class CMUCorporateRelationsSystem
     }
 
     /// <summary>
-    ///     Takes as much of every outstanding loan as each borrower can pay right now. Anything they
-    ///     can't cover stays owed and keeps falling due each cycle.
+    ///     Collects every outstanding loan in full on the spot, even from borrowers who can't cover
+    ///     it: their budget goes negative. Loans still being negotiated are dropped.
     /// </summary>
     private void CollectAllLoans()
     {
@@ -236,9 +236,7 @@ public sealed partial class CMUCorporateRelationsSystem
                 continue;
             }
 
-            var available = Math.Clamp(GetBorrowerBudget(loan.Borrower), 0f, loan.Owed);
-            if (available > 0)
-                Repay(loan, available);
+            Repay(loan, loan.Owed);
         }
     }
 }

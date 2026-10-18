@@ -57,10 +57,11 @@ cmu-contracts-call-in = Call in loan
 cmu-contracts-request-loan = Request loan
 
 cmu-contracts-section-withdrawal = Withdrawal
-cmu-contracts-withdrawal-description = The nuclear option. After a five-minute warning WY pulls out: every loan is collected on the spot, work orders and rent end, WY stops taking the tariff, and the colony pays 25% more and earns 25% less for the rest of the round. Needs WYC6 or above.
+cmu-contracts-withdrawal-description = The nuclear option. After a five-minute warning WY pulls out: every loan is collected in full on the spot, even into debt, work orders and rent end, WY stops taking the tariff, and the colony pays 25% more and earns 25% less for the rest of the round. Needs WYC6 or above.
 cmu-contracts-withdrawal-start = Begin corporate withdrawal
 cmu-contracts-withdrawal-cancel = Cancel corporate withdrawal
 
+cmu-contracts-research-blocked = Weyland-Yutani's research licence has been revoked by the colony.
 cmu-contracts-refuse-withdrawn = Weyland-Yutani has withdrawn from the colony.
 cmu-contracts-refuse-loan-exists = There is already a loan with Weyland-Yutani.
 cmu-contracts-refuse-corporate-funds = The corporate budget can't cover that.
@@ -71,9 +72,9 @@ cmu-contracts-refuse-withdrawal-rank = Only Executive Supervisors and above can 
 cmu-contracts-announce-rent-set = The colony has set Weyland-Yutani's site rent to ${$rent} per cycle.
 cmu-contracts-announce-rent-paid = Weyland-Yutani paid ${$paid} in site rent.
 cmu-contracts-announce-rent-arrears = Weyland-Yutani paid ${$paid} in site rent and is ${$arrears} in arrears.
-cmu-contracts-announce-research-revoked = The colony has revoked Weyland-Yutani's research licence. Corporate research no longer earns money.
+cmu-contracts-announce-research-revoked = The colony has revoked Weyland-Yutani's research licence. Corporate research is suspended.
 cmu-contracts-announce-research-granted = The colony has granted Weyland-Yutani a research licence.
-cmu-contracts-announce-tax-revoked = The colony has revoked Weyland-Yutani's tax break. Corporate supply orders now pay sales tax.
+cmu-contracts-announce-tax-revoked = The colony has revoked Weyland-Yutani's tax break. Corporate supply orders now pay sales tax plus a 50% levy.
 cmu-contracts-announce-tax-granted = The colony has granted Weyland-Yutani a tax break on corporate supply orders.
 cmu-contracts-announce-order-posted = Weyland-Yutani work order: {$quantity} {$good}, paying +{$premium}% over the normal price.
 cmu-contracts-announce-order-filled = Weyland-Yutani's work order for {$quantity} {$good} has been filled.

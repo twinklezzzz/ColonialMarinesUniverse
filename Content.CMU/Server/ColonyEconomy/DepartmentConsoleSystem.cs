@@ -585,14 +585,14 @@ public sealed partial class DepartmentConsoleSystem : EntitySystem
     }
 
     /// <summary>
-    ///     What an ASRS entry really costs a department. Corporate ASRS orders pay colony sales tax
-    ///     unless the colony has given WY a tax break; colony orders cost more once WY has withdrawn,
+    ///     What an ASRS entry really costs a department. Corporate ASRS orders pay colony sales tax plus a
+    ///     levy unless the colony has given WY a tax break; colony orders cost more once WY has withdrawn,
     ///     and that surcharge goes nowhere.
     /// </summary>
     private int GetEffectiveCost(int baseCost, string asrsFaction, out float taxMultiplier)
     {
         var corporateOrder = asrsFaction == "corporate";
-        taxMultiplier = corporateOrder && !_relations.CorporateTaxExempt ? _adminConsole.GetSalesTax() : 0f;
+        taxMultiplier = corporateOrder ? _relations.CorporateOrderSurcharge(_adminConsole.GetSalesTax()) : 0f;
         var priceMultiplier = corporateOrder ? 1f : _relations.ColonyPriceMultiplier;
         return (int) Math.Ceiling(baseCost * priceMultiplier * (1f + taxMultiplier));
     }

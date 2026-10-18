@@ -5,6 +5,7 @@ using Content.Shared._RMC14.Marines.Roles.Ranks;
 using Content.Shared.CMU14.CorporateRelations;
 using Content.Shared.GameTicking;
 using Content.Shared.Tag;
+using Content.Shared.UserInterface;
 using Robust.Shared.GameObjects;
 
 namespace Content.IntegrationTests.CMU14.CorporateRelations;
@@ -83,18 +84,35 @@ public sealed class CMUCorporateRelationsTest
                 Assert.That(relations.GetOwed(Faction), Is.EqualTo(1600));
             });
 
+            // Revoking WY's research licence stops its research terminals opening; the colony's still do.
+            var corporateTerminal = entities.SpawnEntity("CMUResearchDataTerminalCorporate", map.GridCoords);
+            var colonyTerminal = entities.SpawnEntity("CMUResearchDataTerminalColony", map.GridCoords);
+            Raise(adminConsole, new CMUContractsSetResearchLicenseBuiMsg(false));
+            Assert.Multiple(() =>
+            {
+                Assert.That(OpenCancelled(corporateTerminal), Is.True, "WY could still research without a licence.");
+                Assert.That(OpenCancelled(colonyTerminal), Is.False, "Revoking WY's licence blocked colony research.");
+            });
+            Raise(adminConsole, new CMUContractsSetResearchLicenseBuiMsg(true));
+            Assert.That(OpenCancelled(corporateTerminal), Is.False);
+            entities.DeleteEntity(corporateTerminal);
+            entities.DeleteEntity(colonyTerminal);
+
             // Only WYC6 and above can order the withdrawal.
             server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSpecialist");
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
             Assert.That(relations.Withdrawn, Is.False);
 
-            // Withdrawal collects every loan on the spot and turns the colony's prices up.
+            // Withdrawal collects every loan in full on the spot, even into debt, and turns the
+            // colony's prices up. UPP has spent everything, so it goes $1600 into the red.
+            ambassador.AdjustFactionBudget(Faction, -ambassador.GetFactionBudget(Faction));
             relations.Withdraw();
             Assert.Multiple(() =>
             {
                 Assert.That(relations.Withdrawn, Is.True);
                 Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.Zero);
                 Assert.That(relations.GetOwed(Faction), Is.Zero);
+                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-1600));
                 Assert.That(relations.ColonyPriceMultiplier, Is.EqualTo(1.25f));
                 Assert.That(relations.ColonyPayoutMultiplier, Is.EqualTo(0.75f));
             });
@@ -107,6 +125,13 @@ public sealed class CMUCorporateRelationsTest
         });
 
         await pair.CleanReturnAsync();
+
+        bool OpenCancelled(EntityUid terminal)
+        {
+            var attempt = new ActivatableUIOpenAttemptEvent(user, true);
+            entities.EventBus.RaiseLocalEvent(terminal, attempt);
+            return attempt.Cancelled;
+        }
 
         void Raise(EntityUid console, BoundUserInterfaceMessage message)
         {
