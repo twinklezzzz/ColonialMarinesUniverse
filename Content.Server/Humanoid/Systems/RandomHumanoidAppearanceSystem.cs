@@ -81,24 +81,22 @@ public sealed partial class RandomHumanoidAppearanceSystem : EntitySystem
         }
 
         var hairColor = GetMarkingColor(profile, HumanoidVisualLayers.Hair, Color.Black);
-        if (whitelist.BeardChance > 0f && _random.NextFloat() < whitelist.BeardChance)
-        {
-            if (whitelist.AllowedBeardStyles is { Count: > 0 })
-            {
-                profile = WithMarking(
-                    profile,
-                    HumanoidVisualLayers.FacialHair,
-                    _random.Pick(whitelist.AllowedBeardStyles));
-            }
 
-            return WithMarkingColor(profile, HumanoidVisualLayers.FacialHair, hairColor);
+        // CMU14: drop the beard the random profile rolled. The old fallback applied
+        // FacialHairShaved, which is not a marking prototype, so that random beard (any length,
+        // any color) was kept on every clean-shaven whitelisted mob.
+        profile = WithoutMarkings(profile, HumanoidVisualLayers.FacialHair);
+        if (whitelist.BeardChance > 0f && _random.NextFloat() < whitelist.BeardChance &&
+            whitelist.AllowedBeardStyles is { Count: > 0 })
+        {
+            profile = WithMarking(
+                profile,
+                HumanoidVisualLayers.FacialHair,
+                _random.Pick(whitelist.AllowedBeardStyles),
+                hairColor);
         }
 
-        return WithMarking(
-            profile,
-            HumanoidVisualLayers.FacialHair,
-            HairStyles.DefaultFacialHairStyle,
-            Color.Black);
+        return profile;
     }
 
     private HumanoidCharacterProfile WithMarking(

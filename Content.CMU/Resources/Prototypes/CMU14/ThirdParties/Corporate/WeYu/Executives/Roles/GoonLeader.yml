@@ -22,9 +22,10 @@
       RMCSkillMedical: 1
       RMCSkillConstruction: 2
       RMCSkillEngineer: 2
-      RMCSkillLeadership: 1
+      RMCSkillLeadership: 2
       RMCSkillFirearms: 2
       RMCSkillVehicles: 1
+  - type: MarineOrders # Coordinator: issue move/hold/focus orders to the detail
   - type: JobPrefix
     prefix: cmu-weyuexec-prefix-goonleader
   name: cmu-weyuexec-name-goonleader
@@ -63,36 +64,11 @@
     rules: cmu-weyuexec-rules
 
 - type: startingGear
+  parent: CMUGearWYProtectionBase
   id: CMUGearWeYuGoonLeader
   equipment:
     id: CMUIDCardWeYuGoonLeader
     ears: RMCHeadsetDistressGoonLeader
-    jumpsuit: RMCJumpsuitVeteranPMCCorporateLead
-    outerClothing: CMArmorM4PMCCorporateLead
-    gloves: RMCHandsVeteranPMC
-    head: ArmorHelmetPMCCorporateLead
-    shoes: RMCBootsPMCFilled
-    back: RMCSatchelLightpack
-    belt: RMCM77BeltPMCFilled
-    suitstorage: RMCWeaponRifleSSG45
-    pocket1: RMCPouchMagazineLarge
-    pocket2: RMCPouchFirstAidPMCFill
-  storage:
-    back:
-    - CMStunbaton
-    - RMCZipties
-    - RMCZipties
-    - RMCZipties
-    - CMCrowbar
-    - RMCMREWeYa
-    pocket1:
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
-    outerClothing:
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
 
 - type: playTimeTracker
   id: CMUJobWeYuGoonLeader

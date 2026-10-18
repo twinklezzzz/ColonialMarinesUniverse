@@ -1,0 +1,33 @@
+# Shared Personal / Directorate Protection kit, based on the IPIE PPO's equipment.
+# Officer: this kit. Specialist: this kit plus an M63B/2 SMG. Coordinator: this kit, and the
+# job gives MarineOrders. Each job's gear sets its own ID card and headset on top.
+
+- type: startingGear
+  id: CMUGearWYProtectionBase
+  equipment:
+    outerClothing: AU14WYPPOArmor
+    jumpsuit: CMJumpsuitLiaisonField
+    belt: RMCMK80BeltPMCFilled
+    shoes: RMCShoesLaceup
+    head: AU14WYPPOCap
+    back: CMSatchel
+    ears: AU14ColonyWeylandHeadset
+    pocket1: AU14PouchPoliceEquipmentSupportSynth
+    pocket2: AU14PouchIFAKFill
+  storage:
+    back:
+    - CMStunbaton
+    - RMCWeaponTaser
+
+- type: startingGear
+  parent: CMUGearWYProtectionBase
+  id: CMUGearWYProtectionSpecialistBase
+  equipment:
+    suitstorage: RMCWeaponSMGM63B2
+  storage:
+    back:
+    - CMStunbaton
+    - RMCWeaponTaser
+    - CMMagazineSMGM63AP
+    - CMMagazineSMGM63AP
+    - CMMagazineSMGM63AP

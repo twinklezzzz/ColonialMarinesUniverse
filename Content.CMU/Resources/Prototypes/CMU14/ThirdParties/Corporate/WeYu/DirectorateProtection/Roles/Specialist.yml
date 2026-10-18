@@ -62,32 +62,11 @@
     rules: cmu-directorate-protection-rules
 
 - type: startingGear
+  parent: CMUGearWYProtectionSpecialistBase
   id: CMUGearWYDirectorateProtectionSpecialist
   equipment:
     id: CMUIDCardWYDirectorateProtectionSpecialist
     ears: RMCHeadsetDistressWeYa
-    jumpsuit: CMJumpsuitLiaisonBlack
-    outerClothing: CMArmorM4PMCCorporate
-    gloves: RMCHandsVeteranPMC
-    eyes: RMCSunglasses
-    shoes: RMCBootsPMCFilled
-    back: RMCSatchelLightpackBlack
-    belt: RMCBeltHolsterPistolWeYaMK80Fill
-    suitstorage: RMCWeaponRifleSSG45
-    pocket1: RMCPouchMagazineLarge
-    pocket2: RMCPouchFirstAidPMCFill
-  storage:
-    back:
-    - CMStunbaton
-    - RMCZipties
-    - RMCZipties
-    - RMCGrenadeFlashBang
-    - RMCMREWeYa
-    pocket1:
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
 
 - type: playTimeTracker
   id: CMUJobWYDirectorateProtectionSpecialist

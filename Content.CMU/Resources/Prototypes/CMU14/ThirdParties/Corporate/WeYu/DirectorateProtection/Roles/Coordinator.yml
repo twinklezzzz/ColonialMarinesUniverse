@@ -25,6 +25,7 @@
       RMCSkillFirearms: 3
       RMCSkillVehicles: 1
       RMCSkillLeadership: 2
+  - type: MarineOrders # Coordinator: issue move/hold/focus orders to the detail
   - type: JobPrefix
     prefix: cmu-directorate-protection-prefix-coordinator
   name: cmu-directorate-protection-name-coordinator
@@ -63,32 +64,11 @@
     rules: cmu-directorate-protection-rules
 
 - type: startingGear
+  parent: CMUGearWYProtectionBase
   id: CMUGearWYDirectorateProtectionCoordinator
   equipment:
     id: CMUIDCardWYDirectorateProtectionCoordinator
     ears: RMCHeadsetDistressGoonLeader
-    jumpsuit: CMJumpsuitLiaisonBlack
-    outerClothing: CMArmorM4PMCCorporateLead
-    gloves: RMCHandsVeteranPMC
-    eyes: RMCSunglasses
-    shoes: RMCBootsPMCFilled
-    back: RMCSatchelLightpackBlack
-    belt: RMCBeltHolsterPistolWeYaMK80Fill
-    suitstorage: RMCWeaponRifleSSG45
-    pocket1: RMCPouchMagazineLarge
-    pocket2: RMCPouchFirstAidPMCFill
-  storage:
-    back:
-    - CMStunbaton
-    - RMCZipties
-    - RMCZipties
-    - RMCGrenadeFlashBang
-    - RMCMREWeYa
-    pocket1:
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
-    - RMCMagazineRifleSSG45AP
 
 - type: playTimeTracker
   id: CMUJobWYDirectorateProtectionCoordinator

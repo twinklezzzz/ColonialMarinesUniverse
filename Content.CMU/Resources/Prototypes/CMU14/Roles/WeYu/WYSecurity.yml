@@ -168,21 +168,10 @@
   roleWeight: 0.25
 
 - type: startingGear
+  parent: CMUGearWYProtectionBase # IPIE PPO kit
   id: CMUGearWYPersonalProtection
   equipment:
     id: CMUIDCardWYPersonalProtection
-    outerClothing: RMCJacketCorporateBlack
-    jumpsuit: CMJumpsuitLiaisonBlack
-    shoes: RMCShoesLaceup
-    eyes: RMCSunglasses
-    belt: RMCBeltSecurityWeYaFilled
-    back: RMCSatchelLightpackBlack
-    ears: AU14ColonyWeylandHeadset
-    suitstorage: RMCM77BeltPMCFilled
-  storage:
-    back:
-    - CMCanteen
-    - RMCGrenadeFlashBang
 
 - type: entity
   parent: CMSpawnPointJobBase
@@ -230,6 +219,7 @@
       RMCSkillPolice: 2
       RMCSkillConstruction: 2
       RMCSkillLeadership: 1
+  - type: MarineOrders # Coordinator: issue move/hold/focus orders to the detail
   - type: JobPrefix
     prefix: cmu-job-prefix-personal-protection-coordinator
   - type: TacticalMapIcon
@@ -265,21 +255,10 @@
   roleWeight: 0.25
 
 - type: startingGear
+  parent: CMUGearWYProtectionBase # IPIE PPO kit
   id: CMUGearWYPersonalProtectionCoordinator
   equipment:
     id: CMUIDCardWYPersonalProtectionCoordinator
-    outerClothing: RMCJacketCorporateBlack
-    jumpsuit: CMJumpsuitLiaisonBlack
-    shoes: RMCShoesLaceup
-    eyes: RMCSunglasses
-    belt: RMCBeltSecurityWeYaFilled
-    back: RMCSatchelLightpackBlack
-    ears: AU14ColonyWeylandHeadset
-    suitstorage: RMCM77BeltPMCFilled
-  storage:
-    back:
-    - CMCanteen
-    - RMCGrenadeFlashBang
 
 - type: entity
   parent: CMSpawnPointJobBase

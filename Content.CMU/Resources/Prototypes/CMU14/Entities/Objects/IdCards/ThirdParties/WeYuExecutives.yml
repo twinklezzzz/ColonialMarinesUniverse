@@ -93,3 +93,15 @@
   - type: ItemIFF
     factions:
     - FactionWEYU
+
+- type: entity
+  parent: CMIDCardBase
+  categories: [ HideSpawnMenu ]
+  id: CMUIDCardWeYuProtectionSpecialist
+  name: WY personal protection specialist ID card
+  components:
+  - type: PresetIdCard
+    job: CMUJobWeYuProtectionSpecialist
+  - type: ItemIFF
+    factions:
+    - FactionWEYU

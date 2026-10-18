@@ -62,35 +62,11 @@
     rules: cmu-weyuexec-rules
 
 - type: startingGear
+  parent: CMUGearWYProtectionBase
   id: CMUGearWeYuGoon
   equipment:
     id: CMUIDCardWeYuGoon
     ears: RMCHeadsetDistressGoon
-    jumpsuit: RMCJumpsuitVeteranPMCCorporate
-    outerClothing: CMArmorM4PMCCorporate
-    gloves: RMCHandsVeteranPMC
-    head: ArmorHelmetPMCCorporate
-    shoes: RMCBootsPMCFilled
-    back: RMCSatchelLightpack
-    belt: RMCM77BeltPMCFilled
-    suitstorage: RMCWeaponRifleM54C
-    pocket1: RMCPouchMagazine
-    pocket2: RMCPouchFirstAidPMCFill
-  storage:
-    back:
-    - CMStunbaton
-    - RMCZipties
-    - RMCZipties
-    - RMCZipties
-    - CMCrowbar
-    - RMCMREWeYa
-    pocket1:
-    - CMMagazineRifleM54C
-    - CMMagazineRifleM54C
-    - CMMagazineRifleM54C
-    outerClothing:
-    - CMMagazineRifleM54CAP
-    - CMMagazineRifleM54CAP
 
 - type: playTimeTracker
   id: CMUJobWeYuGoon
