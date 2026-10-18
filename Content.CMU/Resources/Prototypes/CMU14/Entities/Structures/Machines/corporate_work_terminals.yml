@@ -1,0 +1,41 @@
+# Corporate minigame terminals. Any Weyland-Yutani ID opens them, whatever the rank, so office
+# staff have paid work to do. Earnings go to the corporate budget.
+
+- type: entity
+  parent: RMCCommunicationsConsoleBase
+  id: CMUCorporateAuditTerminal
+  name: records & audit terminal
+  description: A Weyland-Yutani records terminal. Cross-checks submitted expense reports against the ledger, one discrepancy at a time.
+  suffix: Corporate, WY
+  components:
+  - type: Sprite
+    sprite: _RMC14/Structures/Machines/computer.rsi
+    state: computer_generic
+  - type: ApcPowerReceiver
+    powerLoad: 0
+    needsPower: false
+  - type: ActivatableUI
+    key: enum.CMUAuditTerminalUi.Key
+  - type: UserInterface
+    interfaces:
+      enum.CMUAuditTerminalUi.Key:
+        type: CMUAuditTerminalBui
+  - type: ActivatableUIRequiresAccess
+  - type: AccessReader
+    access: [["AU14AccessCorporateWEYU"], ["AU14AccessCorporateWEYULiaison"]]
+  - type: CMUAuditTerminal
+    items: CMUAuditItems
+    departments: CMUAuditDepartments
+    tiers:
+    - name: cmu-audit-tier-routine
+      rows: 6
+      errors: 1
+      reward: 100
+    - name: cmu-audit-tier-standard
+      rows: 9
+      errors: 2
+      reward: 250
+    - name: cmu-audit-tier-forensic
+      rows: 12
+      errors: 3
+      reward: 400
