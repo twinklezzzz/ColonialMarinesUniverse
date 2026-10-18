@@ -209,3 +209,10 @@ cmu-guide-entry-lore-ua-politics = Politics
 cmu-guide-entry-overwatch = Overwatch
 cmu-guide-entry-fob-security = FOB Security Squad
 cmu-guide-entry-skills = Skills
+
+cmu-guide-entry-corporate = Weyland-Yutani Corporate Handbook
+cmu-guide-entry-corporate-structure = Structure and Ranks
+cmu-guide-entry-corporate-security = Corporate Security
+cmu-guide-entry-corporate-terminals = Corporate Terminals
+cmu-guide-entry-corporate-relations = Colony Relations
+cmu-guide-entry-corporate-conduct = Conduct

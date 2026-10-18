@@ -1,0 +1,26 @@
+<Document>
+  # Colony Relations
+
+  Business with the colony runs on a [bold]payment cycle of 20 minutes[/bold]. Rent and loan instalments fall due at the end of each cycle. All of it is managed from the Contracts screen on the corporate, colonial administration and ambassador consoles.
+
+  ## What the colony holds over the corporation
+  - [bold]Site lease[/bold]: the colony sets the corporation's rent, up to $1500 per cycle. Rent the corporation can't pay builds up as arrears.
+  - [bold]Research licence[/bold]: if the colony revokes it, corporate research stops paying entirely.
+  - [bold]Tax break[/bold]: if the colony revokes it, corporate supply orders pay sales tax plus a 50% levy.
+  - [bold]Tariffs[/bold]: the colony's transit tariff applies to corporate shipments.
+
+  ## What the corporation holds over the colony
+  - [bold]Debt[/bold]: the colony starts every shift owing the corporation $1500.
+  - [bold]Loans[/bold]: the colony's ambassador asks for a loan of up to $10000, and the two sides negotiate the interest. It's repaid in three instalments. Each missed instalment adds a 10% penalty.
+  - [bold]Work orders[/bold]: the corporation can post up to three orders for colony goods, paying a premium of 5–40% over market. Delivered goods go into corporate stock and resell at a loss, so a work order is a deliberate expense: a favour, a bribe, or support for a colony the corporation needs. It isn't a way to make money.
+  - [bold]Withdrawal[/bold]: see below.
+
+  ## Withdrawal
+  Withdrawal is the nuclear option. It needs WYC6 or above, and the colony gets a five-minute warning first. When it goes through:
+  - Every loan is collected in full on the spot, even if that puts the colony into debt.
+  - Work orders and rent end.
+  - The corporation stops taking the tariff.
+  - For the rest of the shift, the colony pays 25% more and earns 25% less.
+
+  Withdrawal hurts the corporation too. It loses its rent relationship, its work orders and its standing with the colony. Only use it when the relationship has already failed, and expect to answer for it.
+</Document>

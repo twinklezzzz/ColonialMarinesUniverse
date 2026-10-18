@@ -1,0 +1,59 @@
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbook
+  name: cmu-guide-entry-corporate
+  priority: 4
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbook.xml"
+  children:
+  - CMUCorporateHandbookStructure
+  - CMUCorporateHandbookSecurity
+  - CMUCorporateHandbookTerminals
+  - CMUCorporateHandbookRelations
+  - CMUCorporateHandbookConduct
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookStructure
+  name: cmu-guide-entry-corporate-structure
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookStructure.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookSecurity
+  name: cmu-guide-entry-corporate-security
+  priority: 1
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookSecurity.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookTerminals
+  name: cmu-guide-entry-corporate-terminals
+  priority: 2
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookTerminals.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookRelations
+  name: cmu-guide-entry-corporate-relations
+  priority: 3
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookRelations.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookConduct
+  name: cmu-guide-entry-corporate-conduct
+  priority: 4
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookConduct.xml"
+
+- type: entity
+  parent: RMCGuidebookBase
+  id: CMUGuidebookCorporateHandbook
+  name: Weyland-Yutani corporate handbook
+  description: "Company policy, bound in company colours. Every new hire gets one; few read past the welcome letter."
+  components:
+  - type: Sprite
+    sprite: _RMC14/Objects/Misc/Books/Other/SOP.rsi
+  - type: GuideHelp
+    guides:
+    - CMUCorporateHandbook
