@@ -16,6 +16,7 @@
   - AU14RoundJobProfileThirdParty
   roundRole: WYGuard
   roundComponents:
+  - type: RegulationAppearance
   - type: Skills
     skills:
       RMCSkillOverwatch: 1

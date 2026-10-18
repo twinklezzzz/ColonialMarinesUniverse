@@ -114,6 +114,18 @@ public sealed class CMUCorporateWindowsTest : GameTest
                 Enumerable.Range(0, 9).Select(_ => new CMUTransmissionsAttempt(new[] { 0, 1, 2, 3, 4 }, 2, 2)).ToList(),
                 TimeSpan.Zero, null));
             AssertLaysOut(transmissions, "transmissions");
+
+            var markets = new CMUMarketsTerminalWindow();
+            markets.UpdateState(new CMUMarketsTerminalBuiState(
+                new List<CMUMarketQuote>
+                {
+                    new("CMUMarketPhoron", "cmu-markets-commodity-phoron", 131, 120, 12, 118),
+                    new("CMUMarketSynthetics", "cmu-markets-commodity-synthetics", 140, 150, 0, 0),
+                    new("CMUMarketAtmospherics", "cmu-markets-commodity-atmospherics", 40, 40, 0, 0),
+                },
+                Enumerable.Range(0, 6).Select(_ => new CMUMarketNews(TimeSpan.Zero, "Synthetic labour expected to fall: regulators have opened an inquiry.")).ToList(),
+                12500, 1572, 5000, 3, TimeSpan.Zero));
+            AssertLaysOut(markets, "markets");
         });
     }
 

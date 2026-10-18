@@ -114,3 +114,27 @@
       symbols: 8
       attempts: 10
       reward: 600
+
+- type: entity
+  parent: RMCCommunicationsConsoleBase
+  id: CMUCorporateMarketsTerminal
+  name: corporate markets terminal
+  description: A Weyland-Yutani trading terminal. Buys and sells commodity futures with the corporate budget. Read the news.
+  suffix: Corporate, WY
+  components:
+  - type: Sprite
+    sprite: _RMC14/Structures/Machines/computer.rsi
+    state: computer_generic
+  - type: ApcPowerReceiver
+    powerLoad: 0
+    needsPower: false
+  - type: ActivatableUI
+    key: enum.CMUMarketsTerminalUi.Key
+  - type: UserInterface
+    interfaces:
+      enum.CMUMarketsTerminalUi.Key:
+        type: CMUMarketsTerminalBui
+  - type: ActivatableUIRequiresAccess
+  - type: AccessReader
+    access: [["AU14AccessCorporateWEYU"], ["AU14AccessCorporateWEYULiaison"]]
+  - type: CMUMarketsTerminal

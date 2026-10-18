@@ -1,0 +1,38 @@
+# Commodities traded on the corporate markets terminal. Prices drift around basePrice each
+# market tick by up to volatility, and news events push one commodity for a few ticks.
+
+- type: cmuMarketCommodity
+  id: CMUMarketPhoron
+  name: cmu-markets-commodity-phoron
+  basePrice: 120
+  volatility: 0.07
+
+- type: cmuMarketCommodity
+  id: CMUMarketTitanium
+  name: cmu-markets-commodity-titanium
+  basePrice: 60
+  volatility: 0.04
+
+- type: cmuMarketCommodity
+  id: CMUMarketAtmospherics
+  name: cmu-markets-commodity-atmospherics
+  basePrice: 40
+  volatility: 0.03
+
+- type: cmuMarketCommodity
+  id: CMUMarketPharmaceuticals
+  name: cmu-markets-commodity-pharmaceuticals
+  basePrice: 80
+  volatility: 0.05
+
+- type: cmuMarketCommodity
+  id: CMUMarketSynthetics
+  name: cmu-markets-commodity-synthetics
+  basePrice: 150
+  volatility: 0.06
+
+- type: cmuMarketCommodity
+  id: CMUMarketArms
+  name: cmu-markets-commodity-arms
+  basePrice: 100
+  volatility: 0.08
