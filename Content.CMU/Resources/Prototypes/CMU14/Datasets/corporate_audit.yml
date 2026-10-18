@@ -10,3 +10,9 @@
   values:
     prefix: cmu-audit-department-
     count: 7
+
+- type: localizedDataset
+  id: CMULogisticsCargo
+  values:
+    prefix: cmu-logistics-cargo-
+    count: 16
