@@ -13,3 +13,7 @@ cmu-whiteout-name-leader = WY Whiteout Commando Leader
 cmu-whiteout-description-leader = The lead combat synthetic of a Weyland-Yutani Whiteout team. You answer only to the Directorate.
 cmu-whiteout-prefix-leader = WHL
 cmu-whiteout-supervisors-directorate = The Weyland-Yutani Directorate
+cmu-whiteout-name-dogcatcher = WY Whiteout Dog Catcher
+cmu-whiteout-prefix-dogcatcher = WHD
+cmu-whiteout-description-dogcatcher = A Weyland-Yutani Whiteout combat synthetic trained for live specimen recovery. Everyone else on the team is there to leave nothing behind. The Dog Catcher is there to bring something back.
+cmu-whiteout-greeting-dogcatcher = You are a Weyland-Yutani Whiteout Dog Catcher. The rest of the team sterilises the site. Your orders are to recover a live specimen: stun it with capture slugs, restrain it, and deliver it intact. The company denies your existence. Good hunting.

@@ -45,3 +45,15 @@
   - type: ItemIFF
     factions:
     - FactionWEYU
+
+- type: entity
+  parent: CMIDCardBase
+  categories: [ HideSpawnMenu ]
+  id: CMUIDCardPMCWhiteoutDogCatcher
+  name: WY whiteout dog catcher ID card
+  components:
+  - type: PresetIdCard
+    job: CMUJobPMCWhiteoutDogCatcher
+  - type: ItemIFF
+    factions:
+    - FactionWEYU

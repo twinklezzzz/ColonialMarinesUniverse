@@ -135,6 +135,12 @@
   paygrade: WY-GUN
 
 - type: rank
+  id: CMURankWYCommandoDogCatcher
+  name: Corporate Commando Dog Catcher
+  prefix: WY-DOG
+  paygrade: WY-DOG
+
+- type: rank
   id: CMURankWYCommandoLeader
   name: Corporate Commando Leader
   prefix: WY-COMLD

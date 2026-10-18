@@ -7,6 +7,7 @@
   gruntsToSpawn:
     CMUJobPMCWhiteout: 2
     CMUJobPMCWhiteoutGunner: 1
+    CMUJobPMCWhiteoutDogCatcher: 1
   scalewithpop: false
   spawnTogether: true
 
