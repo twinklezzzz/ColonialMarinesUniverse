@@ -121,7 +121,6 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         SubscribeLocalEvent<RoundRestartCleanupEvent>(_ => Reset());
         SubscribeLocalEvent<CMUMarketsTerminalComponent, BoundUIOpenedEvent>(OnUiOpened);
         SubscribeLocalEvent<CMUMarketsTerminalComponent, CMUMarketsTradeBuiMsg>(OnTrade);
-        InitializeAccounts();
     }
 
     private void Reset()

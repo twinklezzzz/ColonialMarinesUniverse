@@ -16,10 +16,6 @@ public sealed partial class CMUMarketsSystem
 
     private const string BankPrefix = "bank:";
 
-    private void InitializeAccounts()
-    {
-    }
-
     /// <summary>
     ///     Who <paramref name="user"/> trades as at <paramref name="terminal"/>, or null if they have
     ///     no usable account.
