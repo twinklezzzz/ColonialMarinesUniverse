@@ -35,6 +35,11 @@ public sealed partial class CMUCorporateRelationsSystem
     public bool Withdrawn => _withdrawn;
 
     /// <summary>
+    ///     Whether a withdrawal has been ordered and is counting down.
+    /// </summary>
+    public bool WithdrawalPending => _withdrawalAt != null;
+
+    /// <summary>
     ///     Multiplier on prices the colony pays (colony ASRS orders, cash vendors).
     /// </summary>
     public float ColonyPriceMultiplier => _withdrawn ? 1 + WithdrawalPenalty : 1;
@@ -62,29 +67,20 @@ public sealed partial class CMUCorporateRelationsSystem
             return;
         }
 
+        // Once ordered there's no calling it off.
         if (args.Start && _withdrawalAt == null)
         {
             _withdrawalAt = _timing.CurTime + WithdrawalCountdown;
             Announce("cmu-contracts-announce-withdrawal-started", ("minutes", (int) WithdrawalCountdown.TotalMinutes));
             CallWithdrawalTeam();
         }
-        else if (!args.Start && _withdrawalAt != null)
-        {
-            _withdrawalAt = null;
-            Announce("cmu-contracts-announce-withdrawal-cancelled");
-
-            // Recall the shuttle if nobody has boarded it yet.
-            if (_thirdParty.CancelQueuedThirdParty(WithdrawalTeam))
-                _withdrawalTeamCalled = false;
-        }
 
         UpdateAllUi();
     }
 
     /// <summary>
-    ///     Calls the corporate shuttle to collect WY staff. Calling the withdrawal off recalls it,
-    ///     unless its crew has already spawned; then it comes anyway, and corporate is left to
-    ///     explain why.
+    ///     Calls the corporate shuttle to collect WY staff. A withdrawal can't be called off, so
+    ///     neither can the shuttle.
     /// </summary>
     private void CallWithdrawalTeam()
     {
@@ -117,7 +113,9 @@ public sealed partial class CMUCorporateRelationsSystem
             return;
 
         _withdrawalAt = null;
+        var budget = _corporate.GetCorporateBudget();
         CollectAllLoans();
+        _markets.IgnoreCorporateIncome(_corporate.GetCorporateBudget() - budget);
         CloseAllWorkOrders();
         _withdrawn = true;
         _markets.ReportSetback(CompanyForce, WithdrawalShock, "Colonization", "cmu-markets-setback-withdrawal");

@@ -60,6 +60,11 @@ public sealed partial class CMUMarketsSystem : EntitySystem
 
     public const string CorporateAccount = "corporate";
 
+    /// <summary>
+    ///     The round force whose company stock follows how the corporation is doing.
+    /// </summary>
+    public const string CorporateForce = "WY";
+
     private const int NewsCandles = 3;
     private const int NewsKept = 8;
     private const int CandlesKept = 90;
@@ -135,6 +140,9 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         _markets.Clear();
         _news.Clear();
         _portfolios.Clear();
+        _firstDeathReported.Clear();
+        _massCasualtyReported.Clear();
+        _corporateMarketFlow = 0;
         _started = false;
         _civilianNewsShown = 0;
     }
@@ -157,6 +165,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         _nextCandle = now + CandleLength;
         _nextStep = now + StepLength;
         _nextNews = now + NextNewsDelay();
+        _lastCorporateBudget = _corporate.GetCorporateBudget();
     }
 
     public override void Update(float frameTime)
@@ -200,6 +209,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
                 PlanCandle(market, now);
 
             PayDividends();
+            UpdateRoundEvents();
             changed = true;
         }
 

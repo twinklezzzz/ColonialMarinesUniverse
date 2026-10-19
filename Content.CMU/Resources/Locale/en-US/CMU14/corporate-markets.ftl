@@ -89,3 +89,6 @@ cmu-markets-news-setback = [color=#ff4e5e]▼ {$symbol}[/color] {$company} {$rea
 cmu-markets-news-gap = [color=#46ff8e]▲ {$symbol}[/color] {$company} moves to fill the gap left by {$rival}.
 cmu-markets-setback-licence = has lost its research licence on the colony.
 cmu-markets-setback-withdrawal = is pulling out of the colony.
+cmu-markets-setback-casualties = has suffered mass casualties at its colony site.
+cmu-markets-news-casualty = [color=#ffb454]● {$symbol}[/color] {$company} confirms the first casualties among its staff on the colony.
+cmu-markets-news-earnings = [color=#46ff8e]▲ {$symbol}[/color] {$company} posts strong earnings from its colony operations.

@@ -153,4 +153,109 @@ public sealed class CMUMarketsTest
         });
         await pair.CleanReturnAsync();
     }
+
+    [Test]
+    public async Task ProfitLiftsTheCompanyButTradingDoesNot()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        await server.WaitAssertion(() =>
+        {
+            var entities = server.EntMan;
+            var markets = server.System<CMUMarketsSystem>();
+            var corporate = server.System<CorporateConsoleSystem>();
+            var terminal = entities.SpawnEntity("CMUCorporateMarketsTerminal", map.GridCoords);
+            var console = entities.SpawnEntity("AU14CorporateConsole", map.GridCoords);
+            try
+            {
+                const string wy = "CMUStockWeylandYutani";
+                corporate.AddToCorporateBudget(50000);
+                markets.GetPrice(wy);
+                markets.UpdateRoundEvents();
+
+                // $1000 earned in a minute lifts the stock and makes the news.
+                var before = markets.GetPrice(wy)!.Value;
+                corporate.AddToCorporateBudget(1000);
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + 10 * CMUMarketsSystem.IncomeShockPer100)).Within(0.05f));
+                Assert.That(markets.GetVisibleNews(false), Has.Count.EqualTo(1));
+
+                // Trading on the corporate account isn't earnings.
+                var trader = markets.GetTrader((terminal, entities.GetComponent<CMUMarketsTerminalComponent>(terminal)), terminal)!;
+                markets.TryTrade(Commodity, 40, true, trader, terminal, terminal);
+                markets.TryTrade(Commodity, 40, false, trader, terminal, terminal);
+                markets.UpdateRoundEvents();
+                before = markets.GetPrice(wy)!.Value;
+                markets.TryTrade(Commodity, 40, true, trader, terminal, terminal);
+                markets.TryTrade(Commodity, 40, false, trader, terminal, terminal);
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f), "Trading moved the company's stock.");
+            }
+            finally
+            {
+                entities.DeleteEntity(terminal);
+                entities.DeleteEntity(console);
+            }
+        });
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task OnlyMassCasualtiesHitTheStock()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        await server.WaitAssertion(() =>
+        {
+            var entities = server.EntMan;
+            var markets = server.System<CMUMarketsSystem>();
+            var minds = server.System<Content.Server.Mind.MindSystem>();
+            var roles = server.System<Content.Shared.Roles.SharedRoleSystem>();
+            var mobState = server.System<Content.Shared.Mobs.Systems.MobStateSystem>();
+            var terminal = entities.SpawnEntity("RMCPersonalDesktop", map.GridCoords);
+            var staff = new List<EntityUid>();
+            try
+            {
+                const string wy = "CMUStockWeylandYutani";
+                for (var i = 0; i < 4; i++)
+                {
+                    var body = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+                    var mind = minds.CreateMind(null);
+                    minds.TransferTo(mind, body, mind: mind.Comp);
+                    roles.MindAddJobRole(mind, mind.Comp, silent: true, jobPrototype: "AU14JobWYGuard");
+                    staff.Add(body);
+                }
+
+                markets.GetPrice(wy);
+                Assert.That(markets.CountCasualties(wy).Staff, Is.EqualTo(4));
+
+                // Half dead isn't more than half: news of the first casualties, but no change in price.
+                mobState.ChangeMobState(staff[0], Content.Shared.Mobs.MobState.Dead);
+                mobState.ChangeMobState(staff[1], Content.Shared.Mobs.MobState.Dead);
+                var before = markets.GetPrice(wy)!.Value;
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f), "Ordinary losses moved the stock.");
+                Assert.That(markets.GetVisibleNews(false), Has.Count.EqualTo(1), "The first casualty didn't make the newswire.");
+
+                // Three of four dead is a mass-casualty event.
+                mobState.ChangeMobState(staff[2], Content.Shared.Mobs.MobState.Dead);
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + CMUMarketsSystem.MassCasualtyShock)).Within(0.05f));
+
+                // And only once.
+                before = markets.GetPrice(wy)!.Value;
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f));
+            }
+            finally
+            {
+                entities.DeleteEntity(terminal);
+                foreach (var body in staff)
+                    entities.DeleteEntity(body);
+            }
+        });
+        await pair.CleanReturnAsync();
+    }
 }

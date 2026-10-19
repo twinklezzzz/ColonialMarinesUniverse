@@ -74,7 +74,7 @@ public sealed partial class CMUContractsWindow : DefaultWindow
                 OnRequestLoan?.Invoke(amount);
         };
 
-        WithdrawalButton.OnPressed += _ => OnWithdrawal?.Invoke(_state?.WithdrawalAt == null);
+        WithdrawalButton.OnPressed += _ => OnWithdrawal?.Invoke(true);
     }
 
     public void UpdateState(CMUContractsBuiState state)
@@ -126,7 +126,9 @@ public sealed partial class CMUContractsWindow : DefaultWindow
 
         // Withdrawal
         TabContainer.SetTabVisible(WithdrawalTab, corporate && !state.Withdrawn);
-        WithdrawalButton.Text = Loc.GetString(state.WithdrawalAt == null ? "cmu-contracts-withdrawal-start" : "cmu-contracts-withdrawal-cancel");
+        // Once ordered a withdrawal can't be called off.
+        WithdrawalButton.Text = Loc.GetString(state.WithdrawalAt == null ? "cmu-contracts-withdrawal-start" : "cmu-contracts-withdrawal-locked");
+        WithdrawalButton.Disabled = state.WithdrawalAt != null;
 
         UpdateTimers();
     }

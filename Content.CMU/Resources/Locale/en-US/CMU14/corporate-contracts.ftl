@@ -57,9 +57,9 @@ cmu-contracts-call-in = Call in loan
 cmu-contracts-request-loan = Request loan
 
 cmu-contracts-section-withdrawal = Withdrawal
-cmu-contracts-withdrawal-description = The nuclear option. After a five-minute warning WY pulls out: every loan is collected in full on the spot, even into debt, work orders and rent end, WY stops taking the tariff, and the colony pays 25% more and earns 25% less for the rest of the round. Needs WYC6 or above.
+cmu-contracts-withdrawal-description = The nuclear option, and there is no calling it off. After a five-minute warning WY pulls out: every loan is collected in full on the spot, even into debt, work orders and rent end, WY stops taking the tariff, and the colony pays 25% more and earns 25% less for the rest of the round. Needs WYC6 or above.
 cmu-contracts-withdrawal-start = Begin corporate withdrawal
-cmu-contracts-withdrawal-cancel = Cancel corporate withdrawal
+cmu-contracts-withdrawal-locked = Withdrawal ordered. It cannot be called off.
 
 cmu-contracts-research-blocked = Weyland-Yutani's research licence has been revoked by the colony.
 cmu-contracts-refuse-withdrawn = Weyland-Yutani has withdrawn from the colony.
@@ -88,8 +88,7 @@ cmu-contracts-announce-loan-repaid = {$borrower} has repaid its debt to Weyland-
 cmu-contracts-announce-loan-missed = {$borrower} missed a loan payment to Weyland-Yutani. It now owes ${$owed}.
 cmu-contracts-announce-loan-called-paid = Weyland-Yutani has called in its loan. {$borrower} paid the ${$owed} balance.
 cmu-contracts-announce-loan-called-short = Weyland-Yutani has called in its loan. {$borrower} can't pay and now owes ${$owed}, all due next cycle.
-cmu-contracts-announce-withdrawal-started = Weyland-Yutani has begun withdrawing from the colony. Withdrawal in {$minutes} minutes.
-cmu-contracts-announce-withdrawal-cancelled = Weyland-Yutani has called off its withdrawal.
+cmu-contracts-announce-withdrawal-started = Weyland-Yutani has begun withdrawing from the colony. Withdrawal in {$minutes} minutes. All outstanding loans will be called in.
 cmu-contracts-announce-withdrawal-done = Weyland-Yutani has withdrawn from the colony. All outstanding loans have been collected. Colony prices rise and payouts fall by {$percent}%.
 
 cmu-work-order-good-steel-ore = steel ore

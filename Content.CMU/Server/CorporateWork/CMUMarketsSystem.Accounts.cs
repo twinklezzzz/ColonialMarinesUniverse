@@ -51,6 +51,7 @@ public sealed partial class CMUMarketsSystem
                 return false;
 
             _corporate.AddToCorporateBudget(-amount);
+            _corporateMarketFlow -= amount;
             return true;
         }
 
@@ -73,6 +74,7 @@ public sealed partial class CMUMarketsSystem
         if (key == CorporateAccount)
         {
             _corporate.AddToCorporateBudget(amount);
+            _corporateMarketFlow += amount;
             return true;
         }
 

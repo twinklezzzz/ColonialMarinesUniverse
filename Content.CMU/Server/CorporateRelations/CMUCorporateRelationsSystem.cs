@@ -120,6 +120,10 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
     {
         base.Update(frameTime);
 
+        // An ordered withdrawal always runs to the end, colony or not.
+        var now = _timing.CurTime;
+        UpdateWithdrawal(now);
+
         if (!_started)
         {
             // Wait for a colony to exist; there is nothing to rent or owe without one.
@@ -130,9 +134,7 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
             Start();
         }
 
-        var now = _timing.CurTime;
         UpdateWorkOrders(now);
-        UpdateWithdrawal(now);
 
         if (now >= _nextCycleAt)
         {

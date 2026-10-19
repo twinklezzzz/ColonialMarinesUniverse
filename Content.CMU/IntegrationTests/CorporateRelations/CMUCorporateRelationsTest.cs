@@ -113,10 +113,9 @@ public sealed class CMUCorporateRelationsTest
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
             Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
 
-            // Calling it off recalls the shuttle while nobody has boarded, and starting again calls it back.
+            // Once ordered it can't be called off, and asking again doesn't call a second shuttle.
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(false));
-            Assert.That(thirdParties.GetQueuedThirdParties().Any(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.False,
-                "Cancelling the withdrawal didn't recall the shuttle.");
+            Assert.That(relations.WithdrawalPending, Is.True, "The withdrawal was called off.");
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
             Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
 
@@ -156,5 +155,50 @@ public sealed class CMUCorporateRelationsTest
             // As object, so the bus dispatches on the message's own type.
             entities.EventBus.RaiseLocalEvent(console, (object) message);
         }
+    }
+
+    [Test]
+    public async Task WithdrawalCountdownCollectsTheDebts()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        var relations = server.System<CMUCorporateRelationsSystem>();
+        var colony = server.System<ColonyBudgetSystem>();
+
+        EntityUid corporateConsole = default, user = default;
+        await server.WaitPost(() =>
+        {
+            entities.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
+            entities.SpawnEntity("AU14AdminConsole", map.GridCoords);
+            corporateConsole = entities.SpawnEntity("AU14CorporateConsole", map.GridCoords);
+            user = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+            colony.SetBudget(500);
+        });
+        await server.WaitRunTicks(2);
+
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.EqualTo(CMUCorporateRelationsSystem.StartingDebt));
+            server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSupervisor");
+            entities.EventBus.RaiseLocalEvent(corporateConsole, (object) new CMUContractsWithdrawalBuiMsg(true) { Actor = user });
+            Assert.That(relations.WithdrawalPending, Is.True);
+        });
+
+        // Let the whole countdown run out on its own.
+        var ticks = (int) ((CMUCorporateRelationsSystem.WithdrawalCountdown.TotalSeconds + 2) / server.Timing.TickPeriod.TotalSeconds);
+        await server.WaitRunTicks(ticks);
+
+        await server.WaitAssertion(() =>
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(relations.Withdrawn, Is.True, "The countdown ran out without a withdrawal.");
+                Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.Zero, "The colony's debt wasn't collected.");
+                Assert.That(colony.GetBudget(), Is.EqualTo(500 - CMUCorporateRelationsSystem.StartingDebt).Within(1), "The debt wasn't forced into the red.");
+            });
+        });
+        await pair.CleanReturnAsync();
     }
 }
