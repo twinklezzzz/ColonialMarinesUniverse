@@ -1,4 +1,6 @@
+using Content.Server.CMU14.Ops.ThirdParty;
 using Content.Shared._RMC14.Marines.Roles.Ranks;
+using Content.Shared.CMU14.Threats;
 using Content.Shared.CMU14.CorporateRelations;
 
 namespace Content.Server.CMU14.CorporateRelations;
@@ -15,8 +17,16 @@ public sealed partial class CMUCorporateRelationsSystem
     /// </summary>
     public const float WithdrawalPenalty = 0.25f;
 
+    /// <summary>
+    ///     The company's own shuttle that comes down to collect corporate staff.
+    /// </summary>
+    public const string WithdrawalTeam = "CMUWYWithdrawal";
+
+    [Dependency] private ThirdPartySystem _thirdParty = default!;
+
     private TimeSpan? _withdrawalAt;
     private bool _withdrawn;
+    private bool _withdrawalTeamCalled;
 
     /// <summary>
     ///     Whether WY has pulled out of the colony this round. Unlike other factions' withdrawals
@@ -56,6 +66,7 @@ public sealed partial class CMUCorporateRelationsSystem
         {
             _withdrawalAt = _timing.CurTime + WithdrawalCountdown;
             Announce("cmu-contracts-announce-withdrawal-started", ("minutes", (int) WithdrawalCountdown.TotalMinutes));
+            CallWithdrawalTeam();
         }
         else if (!args.Start && _withdrawalAt != null)
         {
@@ -64,6 +75,23 @@ public sealed partial class CMUCorporateRelationsSystem
         }
 
         UpdateAllUi();
+    }
+
+    /// <summary>
+    ///     Calls the corporate shuttle to collect WY staff. Once a round: the shuttle stays if the
+    ///     withdrawal is called off, and corporate is left to explain why it came.
+    /// </summary>
+    private void CallWithdrawalTeam()
+    {
+        if (_withdrawalTeamCalled ||
+            !_prototypes.TryIndex<ThirdPartyPrototype>(WithdrawalTeam, out var party) ||
+            !_prototypes.TryIndex(party.PartySpawn, out var spawn))
+        {
+            return;
+        }
+
+        _withdrawalTeamCalled = true;
+        _thirdParty.SpawnThirdParty(party, spawn, false, overrideDropship: true);
     }
 
     private void UpdateWithdrawal(TimeSpan now)

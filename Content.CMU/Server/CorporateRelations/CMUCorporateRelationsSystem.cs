@@ -98,6 +98,7 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
         _workOrdersFrozen = false;
         _withdrawalAt = null;
         _withdrawn = false;
+        _withdrawalTeamCalled = false;
     }
 
     public override void Update(float frameTime)

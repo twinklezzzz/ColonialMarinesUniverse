@@ -1,6 +1,8 @@
+using System.Linq;
 using Content.Server.CMU14.Ambassador;
 using Content.Server.CMU14.ColonyEconomy;
 using Content.Server.CMU14.CorporateRelations;
+using Content.Server.CMU14.Ops.ThirdParty;
 using Content.Shared._RMC14.Marines.Roles.Ranks;
 using Content.Shared.CMU14.CorporateRelations;
 using Content.Shared.GameTicking;
@@ -102,6 +104,18 @@ public sealed class CMUCorporateRelationsTest
             server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSpecialist");
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
             Assert.That(relations.Withdrawn, Is.False);
+            var thirdParties = server.System<ThirdPartySystem>();
+            Assert.That(thirdParties.GetQueuedThirdParties().Any(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.False,
+                "A WYC5 called the withdrawal shuttle.");
+
+            // A WYC6 starts the countdown, which calls the company shuttle to collect corporate staff.
+            server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSupervisor");
+            Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
+            Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
+            Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(false));
+            Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
+            Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1),
+                "Restarting the countdown called a second shuttle.");
 
             // Withdrawal collects every loan in full on the spot, even into debt, and turns the
             // colony's prices up. UPP has spent everything, so it goes $1600 into the red.
