@@ -163,7 +163,7 @@ public sealed partial class XenoHiveSystem : SharedXenoHiveSystem
         TryAssignPathogenHive(ent.Owner);
     }
 
-    private void TryAssignPathogenHive(EntityUid uid, int attempt = 0) // CMU14: bounded retry
+    private void TryAssignPathogenHive(EntityUid uid)
     {
         if (TerminatingOrDeleted(uid))
             return;
@@ -179,17 +179,11 @@ public sealed partial class XenoHiveSystem : SharedXenoHiveSystem
             return;
         }
 
-        // CMU14 Begin: a zero-delay timer added from inside the timer loop runs again in the same
-        // frame, so with no Pathogen hive on the map (an admin spawn outside a Pathogen round) this
-        // spun until the server ran out of memory. Retry once a second, and give up after a while.
-        if (attempt >= 30)
-        {
-            Log.Warning($"TryAssignPathogenHive: no CMUPathogenHive for {ToPrettyString(uid)}, leaving it hiveless");
-            return;
-        }
-
+        // CMU14 Begin
+        // a 0 ms timer re-ran every tick for as long as no pathogen hive existed (admin spawns, rounds without one)
+        // and spun test threads forever. map-placed members can wait a while for the hive, so keep retrying, just slowly
         Log.Debug($"TryAssignPathogenHive: CMUPathogenHive not found for {ToPrettyString(uid)}, retrying");
-        Timer.Spawn(1000, () => TryAssignPathogenHive(uid, attempt + 1));
+        Timer.Spawn(TimeSpan.FromSeconds(1), () => TryAssignPathogenHive(uid));
         // CMU14 End
     }
 
