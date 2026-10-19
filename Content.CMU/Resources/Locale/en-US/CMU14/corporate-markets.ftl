@@ -35,11 +35,31 @@ cmu-markets-refuse-held = You don't hold that many units.
 cmu-markets-refuse-no-account = No account to trade from. Hold your ID card.
 
 cmu-markets-commodity-phoron = Phoron
-cmu-markets-commodity-titanium = Titanium ore
+cmu-markets-commodity-minerals = Minerals
 cmu-markets-commodity-atmospherics = Atmospheric processors
 cmu-markets-commodity-pharmaceuticals = Pharmaceuticals
 cmu-markets-commodity-synthetics = Synthetic labour
 cmu-markets-commodity-arms = Arms contracts
+cmu-markets-commodity-fuel = Fuel
+cmu-markets-commodity-food = Foodstuffs
+cmu-markets-commodity-freight = Freight services
+cmu-markets-commodity-construction = Construction materials
+
+cmu-markets-stock-weyland-yutani = Weyland-Yutani Corp.
+cmu-markets-stock-lasalle = Lasalle Bionational
+cmu-markets-stock-seegson = Seegson
+cmu-markets-stock-hyperdyne = Hyperdyne Corporation
+cmu-markets-stock-prodigy = Prodigy Corporation
+cmu-markets-stock-kelland = Kelland Mining Company
+cmu-markets-stock-lock-mart = Lock-Mart Industries
+cmu-markets-stock-armat = Armat Battlefield Systems
+cmu-markets-stock-grant = Grant Corporation
+cmu-markets-stock-chigusa = Chigusa Corporation
+cmu-markets-stock-aegis = AEGIS Armaments
+cmu-markets-stock-gemba = Gemba Systec
+cmu-markets-stock-karnak = Karnak
+cmu-markets-stock-koorlander = Koorlander Corp
+cmu-markets-stock-souta = Souta Corp
 
 cmu-markets-news-up = [color=#46ff8e]▲ {$symbol}[/color] {$commodity} expected to climb: {$story}
 cmu-markets-news-down = [color=#ff4e5e]▼ {$symbol}[/color] {$commodity} expected to fall: {$story}
@@ -52,3 +72,15 @@ cmu-markets-story-down-1 = a new deposit has been surveyed.
 cmu-markets-story-down-2 = a competitor has flooded the market.
 cmu-markets-story-down-3 = colonial demand is falling short of forecasts.
 cmu-markets-story-down-4 = regulators have opened an inquiry.
+
+cmu-markets-stock-story-up-1 = it has won a major Colonial Marine contract.
+cmu-markets-stock-story-up-2 = quarterly earnings beat every forecast.
+cmu-markets-stock-story-up-3 = a merger is rumoured.
+cmu-markets-stock-story-up-4 = it has opened a new colony charter.
+cmu-markets-stock-story-down-1 = an ICC investigation has been opened.
+cmu-markets-stock-story-down-2 = a facility has gone dark on the frontier.
+cmu-markets-stock-story-down-3 = a product recall has been announced.
+cmu-markets-stock-story-down-4 = its board is in open revolt.
+
+cmu-markets-tab-goods = Goods
+cmu-markets-tab-stocks = Stocks

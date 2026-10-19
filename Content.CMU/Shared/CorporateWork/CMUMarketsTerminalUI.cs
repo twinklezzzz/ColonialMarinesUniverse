@@ -17,6 +17,7 @@ public readonly record struct CMUMarketCandle(float Open, float High, float Low,
 [Serializable, NetSerializable]
 public sealed class CMUMarketQuote(
     string id,
+    CMUMarketKind kind,
     string symbol,
     string name,
     float price,
@@ -27,6 +28,7 @@ public sealed class CMUMarketQuote(
     List<int> newsCandles)
 {
     public readonly string Id = id;
+    public readonly CMUMarketKind Kind = kind;
     public readonly string Symbol = symbol;
     public readonly string Name = name;
     public readonly float Price = price;

@@ -1,0 +1,139 @@
+# Company stock, traded only on the civilian app. The listed companies come from the
+# Corporations page of the lore guidebook. Norcomm is a UPP state company and Tyrell has
+# collapsed, so neither is listed. Smaller companies are thinner markets: a colonist's money
+# moves them further.
+
+- type: cmuMarketCommodity
+  id: CMUStockWeylandYutani
+  kind: Stock
+  name: cmu-markets-stock-weyland-yutani
+  symbol: WY
+  basePrice: 320
+  volatility: 0.02
+  liquidity: 60000
+
+- type: cmuMarketCommodity
+  id: CMUStockLasalle
+  kind: Stock
+  name: cmu-markets-stock-lasalle
+  symbol: LSB
+  basePrice: 140
+  volatility: 0.035
+  liquidity: 30000
+
+- type: cmuMarketCommodity
+  id: CMUStockSeegson
+  kind: Stock
+  name: cmu-markets-stock-seegson
+  symbol: SGS
+  basePrice: 45
+  volatility: 0.04
+  liquidity: 25000
+
+- type: cmuMarketCommodity
+  id: CMUStockHyperdyne
+  kind: Stock
+  name: cmu-markets-stock-hyperdyne
+  symbol: HYD
+  basePrice: 110
+  volatility: 0.045
+  liquidity: 25000
+
+- type: cmuMarketCommodity
+  id: CMUStockProdigy
+  kind: Stock
+  name: cmu-markets-stock-prodigy
+  symbol: PRDG
+  basePrice: 12
+  volatility: 0.07
+  liquidity: 12000
+
+- type: cmuMarketCommodity
+  id: CMUStockKelland
+  kind: Stock
+  name: cmu-markets-stock-kelland
+  symbol: KMCC
+  basePrice: 75
+  volatility: 0.03
+  liquidity: 35000
+
+- type: cmuMarketCommodity
+  id: CMUStockLockMart
+  kind: Stock
+  name: cmu-markets-stock-lock-mart
+  symbol: LKMT
+  basePrice: 160
+  volatility: 0.025
+  liquidity: 40000
+
+- type: cmuMarketCommodity
+  id: CMUStockArmat
+  kind: Stock
+  name: cmu-markets-stock-armat
+  symbol: ARMT
+  basePrice: 130
+  volatility: 0.03
+  liquidity: 40000
+
+- type: cmuMarketCommodity
+  id: CMUStockGrant
+  kind: Stock
+  name: cmu-markets-stock-grant
+  symbol: GRNT
+  basePrice: 90
+  volatility: 0.035
+  liquidity: 25000
+
+- type: cmuMarketCommodity
+  id: CMUStockChigusa
+  kind: Stock
+  name: cmu-markets-stock-chigusa
+  symbol: CHGS
+  basePrice: 105
+  volatility: 0.035
+  liquidity: 30000
+
+- type: cmuMarketCommodity
+  id: CMUStockAegis
+  kind: Stock
+  name: cmu-markets-stock-aegis
+  symbol: AEGS
+  basePrice: 65
+  volatility: 0.05
+  liquidity: 18000
+
+- type: cmuMarketCommodity
+  id: CMUStockGemba
+  kind: Stock
+  name: cmu-markets-stock-gemba
+  symbol: GMBA
+  basePrice: 38
+  volatility: 0.03
+  liquidity: 20000
+
+- type: cmuMarketCommodity
+  id: CMUStockKarnak
+  kind: Stock
+  name: cmu-markets-stock-karnak
+  symbol: KRNK
+  basePrice: 28
+  volatility: 0.035
+  liquidity: 18000
+
+- type: cmuMarketCommodity
+  id: CMUStockKoorlander
+  kind: Stock
+  name: cmu-markets-stock-koorlander
+  symbol: KOOR
+  basePrice: 22
+  volatility: 0.03
+  liquidity: 16000
+
+- type: cmuMarketCommodity
+  id: CMUStockSouta
+  kind: Stock
+  name: cmu-markets-stock-souta
+  symbol: SOUT
+  basePrice: 15
+  volatility: 0.04
+  liquidity: 14000

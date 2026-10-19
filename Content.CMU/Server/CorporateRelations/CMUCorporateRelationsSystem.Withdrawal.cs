@@ -115,6 +115,7 @@ public sealed partial class CMUCorporateRelationsSystem
         CollectAllLoans();
         CloseAllWorkOrders();
         _withdrawn = true;
+        _markets.Shock(CompanyStock, -0.15f);
 
         Announce("cmu-contracts-announce-withdrawal-done", ("percent", (int) (WithdrawalPenalty * 100)));
         UpdateAllUi();

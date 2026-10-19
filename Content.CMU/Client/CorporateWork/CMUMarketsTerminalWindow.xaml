@@ -34,7 +34,13 @@
             <!-- Watchlist, order ticket, position -->
             <BoxContainer Orientation="Vertical" MinWidth="250" SetWidth="250" SeparationOverride="4">
                 <Label Text="{Loc cmu-markets-watchlist}" />
-                <BoxContainer Name="QuoteRows" Access="Public" Orientation="Vertical" HorizontalExpand="True" />
+                <BoxContainer Name="KindTabs" Access="Public" Orientation="Horizontal" SeparationOverride="2">
+                    <Button Name="GoodsTab" Access="Public" Text="{Loc cmu-markets-tab-goods}" ToggleMode="True" HorizontalExpand="True" />
+                    <Button Name="StocksTab" Access="Public" Text="{Loc cmu-markets-tab-stocks}" ToggleMode="True" HorizontalExpand="True" />
+                </BoxContainer>
+                <ScrollContainer HScrollEnabled="False" HorizontalExpand="True" VerticalExpand="True" MinHeight="160">
+                    <BoxContainer Name="QuoteRows" Access="Public" Orientation="Vertical" HorizontalExpand="True" />
+                </ScrollContainer>
 
                 <Label Text="{Loc cmu-markets-order}" Margin="0 8 0 0" />
                 <LineEdit Name="UnitsInput" Access="Public" Text="1" PlaceHolder="{Loc cmu-markets-units}" />

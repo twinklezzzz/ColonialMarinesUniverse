@@ -12,6 +12,7 @@ namespace Content.Server.CMU14.CorporateWork;
 
 /// <summary>
 ///     One market for the whole round, shared by the corporate terminal and the civilian app.
+///     Goods (commodities and services) trade on both; company stock only on the civilian app.
 ///
 ///     Prices move in one-minute candles, stepping every few seconds inside each candle. News
 ///     names a commodity and a direction ahead of the move: the corporate terminal sees it as soon
@@ -108,7 +109,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         public float CostBasis;
     }
 
-    private sealed record NewsItem(TimeSpan PublishedAt, TimeSpan MovesAt, string Headline);
+    private sealed record NewsItem(TimeSpan PublishedAt, TimeSpan MovesAt, string Headline, CMUMarketKind Kind);
 
     /// <summary>
     ///     Who is trading and where their money comes from.
@@ -221,7 +222,13 @@ public sealed partial class CMUMarketsSystem : EntitySystem
 
     private void StartNews(TimeSpan now)
     {
-        BreakNews(_random.Pick(_markets.Keys.ToList()), _random.Prob(0.5f));
+        // Pick the kind first so goods news stays as frequent however many stocks are listed.
+        var kind = _random.Prob(0.5f) ? CMUMarketKind.Goods : CMUMarketKind.Stock;
+        var candidates = _markets.Values.Where(m => m.Commodity.Kind == kind).ToList();
+        if (candidates.Count == 0)
+            candidates = _markets.Values.ToList();
+
+        BreakNews(_random.Pick(candidates).Commodity.ID, _random.Prob(0.5f));
     }
 
     /// <summary>
@@ -245,8 +252,8 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         var headline = Loc.GetString(up ? "cmu-markets-news-up" : "cmu-markets-news-down",
             ("commodity", Loc.GetString(market.Commodity.Name)),
             ("symbol", market.Commodity.Symbol),
-            ("story", Loc.GetString($"cmu-markets-story-{(up ? "up" : "down")}-{_random.Next(1, 5)}")));
-        _news.Insert(0, new NewsItem(now, movesAt, headline));
+            ("story", Loc.GetString($"cmu-markets-{(market.Commodity.Kind == CMUMarketKind.Stock ? "stock-" : "")}story-{(up ? "up" : "down")}-{_random.Next(1, 5)}")));
+        _news.Insert(0, new NewsItem(now, movesAt, headline, market.Commodity.Kind));
         if (_news.Count > NewsKept)
             _news.RemoveAt(_news.Count - 1);
 
@@ -262,7 +269,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
     {
         var now = _timing.CurTime;
         return _news
-            .Where(n => corporate || now >= n.MovesAt - CivilianNewsLead)
+            .Where(n => corporate ? n.Kind == CMUMarketKind.Goods : now >= n.MovesAt - CivilianNewsLead)
             .Select(n => new CMUMarketNews(corporate ? n.PublishedAt : n.MovesAt - CivilianNewsLead, n.Headline))
             .ToList();
     }
@@ -339,6 +346,10 @@ public sealed partial class CMUMarketsSystem : EntitySystem
     {
         EnsureMarkets();
         if (!_markets.TryGetValue(commodity, out var market) || units <= 0)
+            return null;
+
+        // The company doesn't play the stock market from a site terminal.
+        if (trader.Corporate && market.Commodity.Kind != CMUMarketKind.Goods)
             return null;
 
         units = Math.Min(units, MaxTradeUnits);
@@ -428,6 +439,19 @@ public sealed partial class CMUMarketsSystem : EntitySystem
     }
 
     /// <summary>
+    ///     Moves a listing at once by <paramref name="change"/> (e.g. -0.15), for events elsewhere in
+    ///     the round that the market would react to. Does nothing before the market opens.
+    /// </summary>
+    public void Shock(string commodity, float change)
+    {
+        if (!_started || !_markets.TryGetValue(commodity, out var market))
+            return;
+
+        SetPrice(market, market.Price * (1 + change));
+        UpdateAllUi();
+    }
+
+    /// <summary>
     ///     Current price of a commodity, for tests and admin tools.
     /// </summary>
     public float? GetPrice(string commodity)
@@ -456,6 +480,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
             _portfolios.TryGetValue(trader.Key, out portfolio);
 
         var quotes = _markets.Values
+            .Where(m => !corporate || m.Commodity.Kind == CMUMarketKind.Goods)
             .Select(m =>
             {
                 var held = portfolio?.GetValueOrDefault(m.Commodity.ID);
@@ -465,6 +490,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
                 var news = m.NewsAt.Select(n => n - firstClosed).Where(n => n >= 0 && n < candles.Count).ToList();
                 return new CMUMarketQuote(
                     m.Commodity.ID,
+                    m.Commodity.Kind,
                     m.Commodity.Symbol,
                     m.Commodity.Name,
                     m.Price,

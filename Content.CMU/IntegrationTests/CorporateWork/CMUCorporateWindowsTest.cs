@@ -1,3 +1,4 @@
+using Robust.Client.UserInterface.Controls;
 using System.Linq;
 using System.Numerics;
 using Content.Client.CMU14.CorporateRelations;
@@ -132,15 +133,21 @@ public sealed class CMUCorporateWindowsTest : GameTest
                 markets.UpdateState(new CMUMarketsTerminalBuiState(
                     new List<CMUMarketQuote>
                     {
-                        new("CMUMarketPhoron", "PHR", "cmu-markets-commodity-phoron", price, 3.2f, 12, 118, candles, new List<int> { 10, 42 }),
-                        new("CMUMarketSynthetics", "SYN", "cmu-markets-commodity-synthetics", 140, -6.7f, 0, 0, candles, new List<int>()),
-                        new("CMUMarketAtmospherics", "ATM", "cmu-markets-commodity-atmospherics", 40, 0, 0, 0, new List<CMUMarketCandle>(), new List<int>()),
+                        new("CMUMarketPhoron", CMUMarketKind.Goods, "PHR", "cmu-markets-commodity-phoron", price, 3.2f, 12, 118, candles, new List<int> { 10, 42 }),
+                        new("CMUMarketSynthetics", CMUMarketKind.Goods, "SYN", "cmu-markets-commodity-synthetics", 140, -6.7f, 0, 0, candles, new List<int>()),
+                        new("CMUMarketAtmospherics", CMUMarketKind.Goods, "ATM", "cmu-markets-commodity-atmospherics", 40, 0, 0, 0, new List<CMUMarketCandle>(), new List<int>()),
+                        new("CMUStockWeylandYutani", CMUMarketKind.Stock, "WY", "cmu-markets-stock-weyland-yutani", 318, 1.1f, 2, 300, candles, new List<int>()),
                     },
-                    Enumerable.Range(0, 8).Select(_ => new CMUMarketNews(TimeSpan.FromMinutes(83), "SYN Synthetic labour expected to fall: regulators have opened an inquiry.")).ToList(),
+                    Enumerable.Range(0, 8).Select(_ => new CMUMarketNews(TimeSpan.FromMinutes(83), "[color=#ff4e5e]▼ SYN[/color] Synthetic labour expected to fall: regulators have opened an inquiry.")).ToList(),
                     corporate,
                     corporate ? "Weyland-Yutani corporate account" : "Account #48213",
                     12500, 1572, corporate ? 10000 : 1500, 2f, 0.5f, TimeSpan.Zero));
                 AssertLaysOut(markets, "markets");
+
+                // Headlines carry colour markup. Fed in as plain text it gets escaped and shows up
+                // on screen as literal [color=...] tags.
+                foreach (var row in markets.NewsRows.Children.OfType<RichTextLabel>())
+                    Assert.That(row.Text, Does.Not.Contain("\\["), "A news line rendered its markup as text.");
             }
         });
     }

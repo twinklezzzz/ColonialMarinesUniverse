@@ -3,6 +3,7 @@ using Content.Server.Chat.Systems;
 using Content.Server.CMU14.Ambassador;
 using Content.Server.CMU14.Chat;
 using Content.Server.CMU14.ColonyEconomy;
+using Content.Server.CMU14.CorporateWork;
 using Content.Server.Popups;
 using Content.Shared.CMU14.Ambassador;
 using Content.Shared.CMU14.ColonyEconomy;
@@ -28,6 +29,7 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
     [Dependency] private ChatSystem _chat = default!;
     [Dependency] private ColonyBudgetSystem _colonyBudget = default!;
     [Dependency] private CorporateConsoleSystem _corporate = default!;
+    [Dependency] private CMUMarketsSystem _markets = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private PopupSystem _popup = default!;
     [Dependency] private IPrototypeManager _prototypes = default!;
@@ -37,6 +39,11 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
     public static readonly TimeSpan Cycle = TimeSpan.FromMinutes(20);
     public const int RentCap = 1500;
     public const string ColonyBorrower = "colony";
+
+    /// <summary>
+    ///     Weyland-Yutani's own stock, which the colony's moves against the company knock down.
+    /// </summary>
+    public const string CompanyStock = "CMUStockWeylandYutani";
 
     private static readonly SoundSpecifier AnnouncementSound = new SoundPathSpecifier("/Audio/Announcements/announce.ogg");
     private static readonly TimeSpan UiRefresh = TimeSpan.FromSeconds(5);
@@ -190,6 +197,7 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
             return;
 
         _researchLicense = args.Granted;
+        _markets.Shock(CompanyStock, args.Granted ? 0.04f : -0.06f);
         Announce(args.Granted ? "cmu-contracts-announce-research-granted" : "cmu-contracts-announce-research-revoked");
         UpdateAllUi();
     }
@@ -200,6 +208,7 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
             return;
 
         _taxBreak = args.Granted;
+        _markets.Shock(CompanyStock, args.Granted ? 0.02f : -0.03f);
         Announce(args.Granted ? "cmu-contracts-announce-tax-granted" : "cmu-contracts-announce-tax-revoked");
         UpdateAllUi();
     }

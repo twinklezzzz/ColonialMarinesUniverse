@@ -60,6 +60,15 @@ public sealed class CMUMarketsTest
                 Assert.That(markets.HoldingsValue(civ.Key), Is.GreaterThan(0));
                 Assert.That(markets.HoldingsValue(wy.Key), Is.Zero, "Civilian and corporate holdings were mixed.");
 
+                // Company stock is for colonists only.
+                Assert.That(markets.TryTrade("CMUStockArmat", 1, true, wy, terminal, card), Is.Null, "The corporate terminal bought stock.");
+                Assert.That(markets.TryTrade("CMUStockArmat", 1, true, civ, desktop, card), Is.Not.Null);
+
+                // Corporate events move the company's own stock.
+                var stock = markets.GetPrice("CMUStockWeylandYutani")!.Value;
+                markets.Shock("CMUStockWeylandYutani", -0.15f);
+                Assert.That(markets.GetPrice("CMUStockWeylandYutani")!.Value, Is.EqualTo(stock * 0.85f).Within(0.01f));
+
                 // An empty account can't buy.
                 id.AccountBalance = 0;
                 Assert.That(markets.TryTrade(Commodity, 1, true, civ, desktop, card), Is.Null);

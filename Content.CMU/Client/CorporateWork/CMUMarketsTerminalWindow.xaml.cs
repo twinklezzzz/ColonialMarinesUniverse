@@ -21,6 +21,7 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
 
     private CMUMarketsTerminalBuiState? _state;
     private string? _selected;
+    private CMUMarketKind _kind = CMUMarketKind.Goods;
 
     public CMUMarketsTerminalWindow()
     {
@@ -31,6 +32,8 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
         BuyButton.OnPressed += _ => Trade(true);
         SellButton.OnPressed += _ => Trade(false);
         UnitsInput.OnTextChanged += _ => UpdateEstimate();
+        GoodsTab.OnPressed += _ => SetKind(CMUMarketKind.Goods);
+        StocksTab.OnPressed += _ => SetKind(CMUMarketKind.Stock);
 
         foreach (var amount in Quick)
         {
@@ -48,6 +51,14 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
 
     private CMUMarketQuote? Selected => _state?.Quotes.FirstOrDefault(q => q.Id == _selected);
 
+    private void SetKind(CMUMarketKind kind)
+    {
+        _kind = kind;
+        _selected = null;
+        if (_state != null)
+            UpdateState(_state);
+    }
+
     private void Trade(bool buy)
     {
         if (_selected != null && Units > 0)
@@ -57,8 +68,18 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
     public void UpdateState(CMUMarketsTerminalBuiState state)
     {
         _state = state;
-        if (_selected == null || state.Quotes.All(q => q.Id != _selected))
-            _selected = state.Quotes.FirstOrDefault()?.Id;
+
+        // Only the civilian app lists stocks, so the corporate terminal has nothing to switch to.
+        KindTabs.Visible = state.Quotes.Any(q => q.Kind == CMUMarketKind.Stock);
+        if (!KindTabs.Visible)
+            _kind = CMUMarketKind.Goods;
+
+        GoodsTab.Pressed = _kind == CMUMarketKind.Goods;
+        StocksTab.Pressed = _kind == CMUMarketKind.Stock;
+
+        var listed = state.Quotes.Where(q => q.Kind == _kind).ToList();
+        if (_selected == null || listed.All(q => q.Id != _selected))
+            _selected = listed.FirstOrDefault()?.Id;
 
         Title = Loc.GetString(state.Corporate ? "cmu-markets-title" : "cmu-markets-title-civilian");
         AccountLabel.Text = state.AccountName ?? Loc.GetString("cmu-markets-no-account");
@@ -78,7 +99,7 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
     private void RebuildWatchlist(CMUMarketsTerminalBuiState state)
     {
         QuoteRows.RemoveAllChildren();
-        foreach (var quote in state.Quotes)
+        foreach (var quote in state.Quotes.Where(q => q.Kind == _kind))
         {
             var id = quote.Id;
             var row = new Button
@@ -89,7 +110,7 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
             };
 
             var line = new BoxContainer { Orientation = BoxContainer.LayoutOrientation.Horizontal, HorizontalExpand = true };
-            line.AddChild(new Label { Text = quote.Symbol, MinWidth = 44 });
+            line.AddChild(new Label { Text = quote.Symbol, MinWidth = 52 });
             line.AddChild(new Label { Text = $"{quote.Price:0.0}", HorizontalExpand = true, Align = Label.AlignMode.Right });
             line.AddChild(new Label
             {
@@ -121,11 +142,15 @@ public sealed partial class CMUMarketsTerminalWindow : DefaultWindow
 
         foreach (var news in state.News)
         {
-            var label = new RichTextLabel { HorizontalExpand = true, Margin = new Thickness(0, 1) };
-            label.SetMessage(Loc.GetString("cmu-markets-news-line",
-                ("time", $"{(int) news.At.TotalHours:00}:{news.At.Minutes:00}"),
-                ("headline", news.Headline)));
-            NewsRows.AddChild(label);
+            // Text, not SetMessage(string): only Text parses the colour markup.
+            NewsRows.AddChild(new RichTextLabel
+            {
+                HorizontalExpand = true,
+                Margin = new Thickness(0, 1),
+                Text = Loc.GetString("cmu-markets-news-line",
+                    ("time", $"{(int) news.At.TotalHours:00}:{news.At.Minutes:00}"),
+                    ("headline", news.Headline)),
+            });
         }
     }
 

@@ -3,7 +3,17 @@ using Robust.Shared.Prototypes;
 namespace Content.Shared.CMU14.CorporateWork;
 
 /// <summary>
-///     Something traded on the corporate markets terminal.
+///     What a listing is. Goods trade on both the corporate terminal and the civilian app;
+///     company stock only on the civilian app.
+/// </summary>
+public enum CMUMarketKind : byte
+{
+    Goods,
+    Stock,
+}
+
+/// <summary>
+///     Something traded on the markets: a good, commodity or service, or a company's stock.
 /// </summary>
 [Prototype("cmuMarketCommodity")]
 public sealed partial class CMUMarketCommodityPrototype : IPrototype
@@ -13,6 +23,9 @@ public sealed partial class CMUMarketCommodityPrototype : IPrototype
 
     [DataField(required: true)]
     public LocId Name;
+
+    [DataField]
+    public CMUMarketKind Kind = CMUMarketKind.Goods;
 
     /// <summary>
     ///     Ticker shown on the board, e.g. PHR.
