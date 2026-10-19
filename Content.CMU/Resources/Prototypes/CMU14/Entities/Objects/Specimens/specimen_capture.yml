@@ -1,0 +1,64 @@
+# Live xenonid capture: capture slugs sedate, the harness binds a downed specimen, and the
+# containment bag holds a bound one so it can be hauled. See CMUSpecimenCaptureSystem.
+
+- type: entity
+  parent: BaseItem
+  id: CMUSpecimenHarness
+  name: specimen restraint harness
+  description: Reinforced Weyland-Yutani restraint webbing for binding a downed xenonid. Holds for a few minutes before the specimen tears through it, longer if it's bagged.
+  components:
+  - type: Sprite
+    sprite: Objects/Misc/cablecuffs.rsi
+    state: cuff
+    color: "#9fd8b0"
+  - type: Item
+    size: Small
+  - type: CMUSpecimenHarness
+
+- type: entity
+  parent: BaseItem
+  id: CMUSpecimenBagFolded
+  name: specimen containment bag
+  description: A folded Weyland-Yutani containment bag, rated for one bound xenonid. Use it on a restrained specimen to bag it.
+  components:
+  - type: Sprite
+    sprite: _RMC14/Objects/Medical/stasisbag.rsi
+    state: bodybag_folded
+    color: "#9fd8b0"
+  - type: Item
+    size: Normal
+  - type: CMUSpecimenBagFolded
+    deployed: CMUSpecimenBag
+
+- type: entity
+  parent: BaseStructureDynamic
+  id: CMUSpecimenBag
+  name: specimen containment bag
+  description: A Weyland-Yutani containment bag, rated for one bound xenonid. Keeps the specimen sedated and secure while it's hauled.
+  components:
+  - type: Sprite
+    sprite: _RMC14/Objects/Medical/stasisbag.rsi
+    drawdepth: Items
+    layers:
+    - state: bodybag_open
+      map: [ "enum.CMUSpecimenBagVisuals.Occupied" ]
+      color: "#9fd8b0"
+  - type: Appearance
+  - type: GenericVisualizer
+    visuals:
+      enum.CMUSpecimenBagVisuals.Occupied:
+        enum.CMUSpecimenBagVisuals.Occupied:
+          True: { state: bodybag_closed }
+          False: { state: bodybag_open }
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-0.4,-0.4,0.4,0.4"
+        density: 60
+        mask:
+        - ItemMask
+  - type: InteractionOutline
+  - type: CMUSpecimenBag
+    folded: CMUSpecimenBagFolded

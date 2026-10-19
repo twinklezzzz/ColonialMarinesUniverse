@@ -1,0 +1,77 @@
+using Content.Shared.CMU14.Specimens;
+using Content.Shared.Standing;
+using Content.Shared.Stunnable;
+using Robust.Shared.Containers;
+using Robust.Shared.GameObjects;
+
+namespace Content.IntegrationTests.CMU14.Specimens;
+
+[TestFixture]
+[TestOf(typeof(CMUSpecimenCaptureSystem))]
+public sealed class CMUSpecimenCaptureTest
+{
+    [Test]
+    public async Task SedateRestrainContainAndBreakFree()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        var capture = server.System<CMUSpecimenCaptureSystem>();
+        var container = server.System<SharedContainerSystem>();
+        var standing = server.System<StandingStateSystem>();
+
+        EntityUid xeno = default;
+        EntityUid bag = default;
+        await server.WaitAssertion(() =>
+        {
+            xeno = entities.SpawnEntity("CMXenoDrone", map.GridCoords);
+
+            // One hit short of the threshold leaves it standing; the next one puts it under.
+            var threshold = (int) capture.GetSedationThreshold(xeno);
+            for (var i = 0; i < threshold - 1; i++)
+                Assert.That(capture.Sedate(xeno, 1, TimeSpan.FromSeconds(30)), Is.False);
+
+            Assert.That(capture.Sedate(xeno, 1, TimeSpan.FromSeconds(30)), Is.True);
+            Assert.That(entities.HasComponent<StunnedComponent>(xeno), Is.True);
+
+            capture.Restrain(xeno, TimeSpan.FromSeconds(60));
+        });
+
+        // Well past any ordinary xeno stun, the restraint still holds it down.
+        await server.WaitRunTicks((int) (45 / server.Timing.TickPeriod.TotalSeconds));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True);
+            Assert.That(standing.IsDown(xeno), Is.True);
+
+            bag = entities.SpawnEntity("CMUSpecimenBag", map.GridCoords);
+            var bagEnt = new Entity<CMUSpecimenBagComponent>(bag, entities.GetComponent<CMUSpecimenBagComponent>(bag));
+            Assert.That(capture.TryContain(bagEnt, xeno), Is.True);
+            Assert.That(container.IsEntityInContainer(xeno), Is.True);
+            Assert.That(capture.GetSpecimen(bagEnt), Is.EqualTo(xeno));
+        });
+
+        // Bagged, the breakout timer is paused.
+        await server.WaitRunTicks((int) (40 / server.Timing.TickPeriod.TotalSeconds));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True, "A bagged specimen broke free.");
+
+            // Destroying the bag drops the specimen instead of deleting it.
+            entities.DeleteEntity(bag);
+            Assert.That(entities.EntityExists(xeno), Is.True);
+            Assert.That(container.IsEntityInContainer(xeno), Is.False);
+        });
+
+        // Out of the bag, the harness gives way.
+        await server.WaitRunTicks((int) (40 / server.Timing.TickPeriod.TotalSeconds));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.False);
+            entities.DeleteEntity(xeno);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+}

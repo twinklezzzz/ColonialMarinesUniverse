@@ -1,5 +1,6 @@
-# Weyland-Yutani specimen capture shells. A tranquiliser slug that barely hurts, but stuns and
-# slows a xenonid long enough to restrain it. Issued to the Whiteout Dog Catcher.
+# Weyland-Yutani specimen capture shells. A tranquiliser slug that barely hurts. Each hit staggers
+# a xenonid and builds sedation; enough hits close together put it under so it can be harnessed.
+# Issued to the Whiteout Dog Catcher.
 
 - type: entity
   parent: CMShellShotgunBase
@@ -69,6 +70,7 @@
       superSlowTime: 3
   - type: RMCStaminaDamageOnCollide
     damage: 45
+  - type: CMUSedateOnHit
   - type: RMCProjectileAccuracy
     accuracy: 100
 
