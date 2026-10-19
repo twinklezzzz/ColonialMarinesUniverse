@@ -14,11 +14,10 @@ public sealed class CMUMarketsTerminalBui(EntityUid owner, Enum uiKey) : BoundUs
         _window.OnTrade += (commodity, units, buy) => SendMessage(new CMUMarketsTradeBuiMsg(commodity, units, buy));
     }
 
-    protected override void UpdateState(BoundUserInterfaceState state)
+    // Each viewer gets their own view of the market, so it comes as a message rather than state.
+    protected override void ReceiveMessage(BoundUserInterfaceMessage message)
     {
-        if (_window == null || state is not CMUMarketsTerminalBuiState s)
-            return;
-
-        _window.UpdateState(s);
+        if (_window != null && message is CMUMarketsTerminalBuiState state)
+            _window.UpdateState(state);
     }
 }

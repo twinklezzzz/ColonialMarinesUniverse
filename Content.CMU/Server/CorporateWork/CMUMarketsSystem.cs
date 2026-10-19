@@ -11,12 +11,15 @@ using Robust.Shared.Timing;
 namespace Content.Server.CMU14.CorporateWork;
 
 /// <summary>
-///     One market for the whole round, shared by every markets terminal. Prices drift each tick;
-///     a news event names a commodity and a direction one tick before the move, so players who
-///     read the news can get in first. Trades cost a fee both ways, so random trading loses money,
-///     but holdings pay a small dividend every tick so a patient position earns something.
+///     One market for the whole round, shared by the corporate terminal and the civilian app.
+///
+///     Prices move in one-minute candles, stepping every few seconds inside each candle. News
+///     names a commodity and a direction ahead of the move: the corporate terminal sees it as soon
+///     as it breaks, civilians only shortly before the move starts. Every trade moves the price by
+///     its size against the commodity's liquidity and fills at the midpoint of that move, so a
+///     big buyer pushes the price up for everyone, and no trade can be undone at a profit.
 /// </summary>
-public sealed class CMUMarketsSystem : EntitySystem
+public sealed partial class CMUMarketsSystem : EntitySystem
 {
     [Dependency] private CorporateConsoleSystem _corporate = default!;
     [Dependency] private IGameTiming _timing = default!;
@@ -25,79 +28,128 @@ public sealed class CMUMarketsSystem : EntitySystem
     [Dependency] private IRobustRandom _random = default!;
     [Dependency] private UserInterfaceSystem _ui = default!;
 
-    public static readonly TimeSpan Tick = TimeSpan.FromSeconds(60);
+    public static readonly TimeSpan CandleLength = TimeSpan.FromSeconds(60);
+    public static readonly TimeSpan StepLength = TimeSpan.FromSeconds(5);
+
+    /// <summary>
+    ///     How long before a move civilians get to read the news about it.
+    /// </summary>
+    public static readonly TimeSpan CivilianNewsLead = TimeSpan.FromSeconds(10);
+
     public const float Fee = 0.02f;
 
     /// <summary>
-    ///     Paid into the corporate budget each tick, as a fraction of the value held.
+    ///     Paid to every holder at the close of each candle, as a fraction of the value held.
     /// </summary>
     public const float Dividend = 0.005f;
-    public const int HoldingsCap = 5000;
-    public const int MaxTradeUnits = 50;
+
+    public const int CorporateHoldingsCap = 10000;
+    public const int CivilianHoldingsCap = 1500;
+    public const int MaxTradeUnits = CMUMarketsLimits.MaxTradeUnits;
 
     /// <summary>
-    ///     How far a news event pushes its commodity on each tick it lasts.
+    ///     The most a single trade can move a price.
+    /// </summary>
+    public const float MaxImpact = 0.08f;
+
+    /// <summary>
+    ///     How far a news event pushes its commodity in each candle it lasts.
     /// </summary>
     public const float NewsMove = 0.10f;
 
-    private const int NewsTicks = 3;
-    private const int NewsKept = 6;
+    public const string CorporateAccount = "corporate";
+
+    private const int NewsCandles = 3;
+    private const int NewsKept = 8;
+    private const int CandlesKept = 90;
     private const float MeanReversion = 0.05f;
+    private const float StepNoise = 0.15f;
     private const float MinPriceFactor = 0.4f;
     private const float MaxPriceFactor = 2.5f;
 
     private readonly Dictionary<string, Market> _markets = new();
-    private readonly List<CMUMarketNews> _news = new();
-    private TimeSpan _nextTick;
+    private readonly List<NewsItem> _news = new();
+    private readonly Dictionary<string, Dictionary<string, Position>> _portfolios = new();
+    private TimeSpan _nextCandle;
+    private TimeSpan _nextStep;
     private TimeSpan _nextNews;
+    private bool _started;
+    private int _civilianNewsShown;
 
     private sealed class Market
     {
         public required CMUMarketCommodityPrototype Commodity;
         public float Price;
-        public float PreviousPrice;
-        public int Held;
-        public float CostBasis;
+        public readonly List<CMUMarketCandle> Candles = new();
+        public CMUMarketCandle Current;
 
         /// <summary>
-        ///     Signed push per tick from the current news event, and ticks it has left.
-        ///     A new event waits one tick before it starts pushing.
+        ///     Change spread over the steps of the current candle.
+        /// </summary>
+        public float StepDrift;
+
+        /// <summary>
+        ///     Signed push per candle from the current news, when it starts, and candles left.
         /// </summary>
         public float Push;
-        public int PushTicks;
-        public bool PushPending;
+        public TimeSpan PushFrom;
+        public int PushCandles;
+
+        /// <summary>
+        ///     Candles closed since the round started, so news can be pinned to a candle.
+        /// </summary>
+        public int Closed;
+        public readonly List<int> NewsAt = new();
     }
+
+    private sealed class Position
+    {
+        public int Held;
+        public float CostBasis;
+    }
+
+    private sealed record NewsItem(TimeSpan PublishedAt, TimeSpan MovesAt, string Headline);
+
+    /// <summary>
+    ///     Who is trading and where their money comes from.
+    /// </summary>
+    public sealed record Trader(string Key, string Name, int Cap, bool Corporate);
 
     public override void Initialize()
     {
         SubscribeLocalEvent<RoundRestartCleanupEvent>(_ => Reset());
         SubscribeLocalEvent<CMUMarketsTerminalComponent, BoundUIOpenedEvent>(OnUiOpened);
         SubscribeLocalEvent<CMUMarketsTerminalComponent, CMUMarketsTradeBuiMsg>(OnTrade);
+        InitializeAccounts();
     }
 
     private void Reset()
     {
         _markets.Clear();
         _news.Clear();
+        _portfolios.Clear();
+        _started = false;
+        _civilianNewsShown = 0;
     }
 
     private void EnsureMarkets()
     {
-        if (_markets.Count > 0)
+        if (_started)
             return;
 
+        _started = true;
+        var now = _timing.CurTime;
         foreach (var commodity in _prototypes.EnumeratePrototypes<CMUMarketCommodityPrototype>().OrderBy(c => c.ID))
         {
-            _markets[commodity.ID] = new Market
-            {
-                Commodity = commodity,
-                Price = commodity.BasePrice,
-                PreviousPrice = commodity.BasePrice,
-            };
+            var market = new Market { Commodity = commodity, Price = commodity.BasePrice };
+            market.Current = new CMUMarketCandle(market.Price, market.Price, market.Price, market.Price, 0);
+            _markets[commodity.ID] = market;
+            PlanCandle(market, now);
         }
 
-        _nextTick = _timing.CurTime + Tick;
-        _nextNews = _timing.CurTime + NextNewsDelay();
+        _nextCandle = now + CandleLength;
+        _nextStep = now + StepLength;
+        _nextNews = now + NextNewsDelay();
     }
 
     public override void Update(float frameTime)
@@ -105,31 +157,61 @@ public sealed class CMUMarketsSystem : EntitySystem
         base.Update(frameTime);
 
         // Only run the market while someone could trade on it.
-        var terminals = EntityQueryEnumerator<CMUMarketsTerminalComponent>();
-        if (!terminals.MoveNext(out _, out _))
+        if (!_started && !AnyTerminal())
             return;
 
         EnsureMarkets();
         var now = _timing.CurTime;
+        var changed = false;
+
         if (now >= _nextNews)
         {
             _nextNews = now + NextNewsDelay();
             StartNews(now);
-            UpdateAllUi();
         }
 
-        if (now < _nextTick)
-            return;
-
-        _nextTick += Tick;
-        foreach (var market in _markets.Values)
+        while (now >= _nextStep)
         {
-            MoveMarket(market);
+            _nextStep += StepLength;
+            if (_nextStep > _nextCandle)
+                continue;
+
+            foreach (var market in _markets.Values)
+                Step(market);
+
+            changed = true;
         }
 
-        PayDividend();
+        if (now >= _nextCandle)
+        {
+            foreach (var market in _markets.Values)
+                CloseCandle(market);
 
-        UpdateAllUi();
+            _nextCandle += CandleLength;
+            _nextStep = now + StepLength;
+            foreach (var market in _markets.Values)
+                PlanCandle(market, now);
+
+            PayDividends();
+            changed = true;
+        }
+
+        // Civilians' view of the news changes on its own schedule.
+        var civilianNews = _news.Count(n => now >= n.MovesAt - CivilianNewsLead);
+        if (civilianNews != _civilianNewsShown)
+        {
+            _civilianNewsShown = civilianNews;
+            changed = true;
+        }
+
+        if (changed)
+            UpdateAllUi();
+    }
+
+    private bool AnyTerminal()
+    {
+        var terminals = EntityQueryEnumerator<CMUMarketsTerminalComponent>();
+        return terminals.MoveNext(out _, out _);
     }
 
     private TimeSpan NextNewsDelay()
@@ -139,126 +221,219 @@ public sealed class CMUMarketsSystem : EntitySystem
 
     private void StartNews(TimeSpan now)
     {
-        var market = _random.Pick(_markets.Values.ToList());
-        var up = _random.Prob(0.5f);
+        BreakNews(_random.Pick(_markets.Keys.ToList()), _random.Prob(0.5f));
+    }
+
+    /// <summary>
+    ///     Publishes news that <paramref name="commodity"/> is about to move. Returns when the move starts.
+    /// </summary>
+    internal TimeSpan BreakNews(string commodity, bool up)
+    {
+        EnsureMarkets();
+        var now = _timing.CurTime;
+        var market = _markets[commodity];
+
+        // The move starts one full candle after the next one opens.
+        var movesAt = _nextCandle + CandleLength;
         market.Push = up ? NewsMove : -NewsMove;
-        market.PushTicks = NewsTicks;
-        market.PushPending = true;
+        market.PushFrom = movesAt;
+        market.PushCandles = NewsCandles;
+        // Pinned to the candle forming now.
+        market.NewsAt.Add(market.Closed);
+        market.NewsAt.RemoveAll(n => n < market.Closed - CandlesKept);
 
         var headline = Loc.GetString(up ? "cmu-markets-news-up" : "cmu-markets-news-down",
             ("commodity", Loc.GetString(market.Commodity.Name)),
+            ("symbol", market.Commodity.Symbol),
             ("story", Loc.GetString($"cmu-markets-story-{(up ? "up" : "down")}-{_random.Next(1, 5)}")));
-        _news.Insert(0, new CMUMarketNews(now, headline));
+        _news.Insert(0, new NewsItem(now, movesAt, headline));
         if (_news.Count > NewsKept)
             _news.RemoveAt(_news.Count - 1);
+
+        UpdateAllUi();
+        return movesAt;
     }
 
-    private void MoveMarket(Market market)
+    /// <summary>
+    ///     The news a trader can read right now. The corporate side sees it as it breaks;
+    ///     civilians only <see cref="CivilianNewsLead"/> before the move.
+    /// </summary>
+    public List<CMUMarketNews> GetVisibleNews(bool corporate)
+    {
+        var now = _timing.CurTime;
+        return _news
+            .Where(n => corporate || now >= n.MovesAt - CivilianNewsLead)
+            .Select(n => new CMUMarketNews(corporate ? n.PublishedAt : n.MovesAt - CivilianNewsLead, n.Headline))
+            .ToList();
+    }
+
+    /// <summary>
+    ///     Decides where a commodity is heading over the next candle.
+    /// </summary>
+    private void PlanCandle(Market market, TimeSpan candleStart)
     {
         var basePrice = market.Commodity.BasePrice;
         var change = _random.NextFloat(-market.Commodity.Volatility, market.Commodity.Volatility);
         change += MeanReversion * (basePrice - market.Price) / basePrice;
 
-        if (market.PushPending)
-        {
-            market.PushPending = false;
-        }
-        else if (market.PushTicks > 0)
+        if (market.PushCandles > 0 && candleStart >= market.PushFrom)
         {
             change += market.Push;
-            market.PushTicks--;
+            market.PushCandles--;
         }
 
-        market.PreviousPrice = market.Price;
-        market.Price = Math.Clamp(market.Price * (1 + change), basePrice * MinPriceFactor, basePrice * MaxPriceFactor);
+        market.StepDrift = change / (float) (CandleLength / StepLength);
+    }
+
+    private void Step(Market market)
+    {
+        var noise = _random.NextFloat(-market.Commodity.Volatility, market.Commodity.Volatility) * StepNoise;
+        SetPrice(market, market.Price * (1 + market.StepDrift + noise));
+    }
+
+    private void SetPrice(Market market, float price)
+    {
+        var basePrice = market.Commodity.BasePrice;
+        market.Price = Math.Clamp(price, basePrice * MinPriceFactor, basePrice * MaxPriceFactor);
+        var c = market.Current;
+        market.Current = c with
+        {
+            High = MathF.Max(c.High, market.Price),
+            Low = MathF.Min(c.Low, market.Price),
+            Close = market.Price,
+        };
+    }
+
+    private void CloseCandle(Market market)
+    {
+        market.Candles.Add(market.Current);
+        market.Closed++;
+        if (market.Candles.Count > CandlesKept)
+            market.Candles.RemoveAt(0);
+
+        market.Current = new CMUMarketCandle(market.Price, market.Price, market.Price, market.Price, 0);
     }
 
     private void OnUiOpened(Entity<CMUMarketsTerminalComponent> ent, ref BoundUIOpenedEvent args)
     {
         EnsureMarkets();
-        UpdateUi(ent);
+        UpdateUi(ent, args.Actor);
     }
 
     private void OnTrade(Entity<CMUMarketsTerminalComponent> ent, ref CMUMarketsTradeBuiMsg args)
     {
-        TryTrade(args.Commodity, args.Units, args.Buy, ent, args.Actor);
+        if (GetTrader(ent, args.Actor) is not { } trader)
+        {
+            _popup.PopupEntity(Loc.GetString("cmu-markets-refuse-no-account"), ent, args.Actor);
+            return;
+        }
+
+        TryTrade(args.Commodity, args.Units, args.Buy, trader, ent, args.Actor);
     }
 
     /// <summary>
-    ///     Buys or sells <paramref name="units"/> with the corporate budget. Returns the money moved
-    ///     (negative when buying), or null if the trade was refused.
+    ///     Buys or sells <paramref name="units"/> for <paramref name="trader"/>. Returns the money
+    ///     moved (negative when buying), or null if the trade was refused.
     /// </summary>
-    public int? TryTrade(string commodity, int units, bool buy, EntityUid terminal, EntityUid user)
+    public int? TryTrade(string commodity, int units, bool buy, Trader trader, EntityUid terminal, EntityUid user)
     {
         EnsureMarkets();
         if (!_markets.TryGetValue(commodity, out var market) || units <= 0)
             return null;
 
         units = Math.Min(units, MaxTradeUnits);
-        var price = (int) MathF.Round(market.Price);
+        var position = GetPosition(trader.Key, commodity);
+        if (!buy && position.Held < units)
+        {
+            _popup.PopupEntity(Loc.GetString("cmu-markets-refuse-held"), terminal, user);
+            return null;
+        }
+
+        // The trade moves the price and fills halfway along that move.
+        var before = market.Price;
+        var impact = MathF.Min(MaxImpact, units * before / market.Commodity.Liquidity);
+        var after = before * (buy ? 1 + impact : 1 - impact);
+        var fill = (before + after) / 2;
         int moved;
 
         if (buy)
         {
-            var cost = (int) MathF.Ceiling(units * price * (1 + Fee));
-            if (HoldingsValue() + units * price > HoldingsCap)
+            var cost = (int) MathF.Ceiling(units * fill * (1 + Fee));
+            if (HoldingsValue(trader.Key) + units * fill > trader.Cap)
             {
-                _popup.PopupEntity(Loc.GetString("cmu-markets-refuse-cap", ("cap", HoldingsCap)), terminal, user);
+                _popup.PopupEntity(Loc.GetString("cmu-markets-refuse-cap", ("cap", trader.Cap)), terminal, user);
                 return null;
             }
 
-            if (_corporate.GetCorporateBudget() < cost)
+            if (!TryDebit(trader, cost))
             {
                 _popup.PopupEntity(Loc.GetString("cmu-markets-refuse-funds"), terminal, user);
                 return null;
             }
 
-            market.Held += units;
-            market.CostBasis += cost;
+            position.Held += units;
+            position.CostBasis += cost;
             moved = -cost;
         }
         else
         {
-            if (market.Held < units)
-            {
-                _popup.PopupEntity(Loc.GetString("cmu-markets-refuse-held"), terminal, user);
-                return null;
-            }
-
-            market.CostBasis -= market.CostBasis * units / market.Held;
-            market.Held -= units;
-            moved = (int) MathF.Floor(units * price * (1 - Fee));
+            moved = (int) MathF.Floor(units * fill * (1 - Fee));
+            position.CostBasis -= position.CostBasis * units / position.Held;
+            position.Held -= units;
+            Credit(trader, moved);
         }
 
-        _corporate.AddToCorporateBudget(moved);
+        SetPrice(market, after);
+        market.Current = market.Current with { Volume = market.Current.Volume + units };
         UpdateAllUi();
         return moved;
     }
 
-    /// <summary>
-    ///     Pays the per-tick dividend on everything held. Returns the amount paid.
-    /// </summary>
-    public int PayDividend()
+    private Position GetPosition(string account, string commodity)
     {
-        var paid = (int) MathF.Floor(HoldingsValue() * Dividend);
-        if (paid > 0)
-            _corporate.AddToCorporateBudget(paid);
+        if (!_portfolios.TryGetValue(account, out var portfolio))
+            _portfolios[account] = portfolio = new Dictionary<string, Position>();
 
-        return paid;
+        if (!portfolio.TryGetValue(commodity, out var position))
+            portfolio[commodity] = position = new Position();
+
+        return position;
     }
 
-    private int HoldingsValue()
+    public int HoldingsValue(string account)
     {
-        return (int) _markets.Values.Sum(m => m.Held * m.Price);
+        if (!_portfolios.TryGetValue(account, out var portfolio))
+            return 0;
+
+        return (int) portfolio.Sum(p => _markets.TryGetValue(p.Key, out var m) ? p.Value.Held * m.Price : 0);
+    }
+
+    /// <summary>
+    ///     Pays the dividend on everything every account holds. Returns the total paid.
+    /// </summary>
+    public int PayDividends()
+    {
+        var total = 0;
+        foreach (var account in _portfolios.Keys.ToList())
+        {
+            var paid = (int) MathF.Floor(HoldingsValue(account) * Dividend);
+            if (paid <= 0)
+                continue;
+
+            if (CreditAccount(account, paid))
+                total += paid;
+        }
+
+        return total;
     }
 
     /// <summary>
     ///     Current price of a commodity, for tests and admin tools.
     /// </summary>
-    public int? GetPrice(string commodity)
+    public float? GetPrice(string commodity)
     {
         EnsureMarkets();
-        return _markets.TryGetValue(commodity, out var market) ? (int) MathF.Round(market.Price) : null;
+        return _markets.TryGetValue(commodity, out var market) ? market.Price : null;
     }
 
     private void UpdateAllUi()
@@ -266,33 +441,55 @@ public sealed class CMUMarketsSystem : EntitySystem
         var query = EntityQueryEnumerator<CMUMarketsTerminalComponent>();
         while (query.MoveNext(out var uid, out var comp))
         {
-            if (_ui.IsUiOpen(uid, CMUMarketsTerminalUi.Key))
-                UpdateUi((uid, comp));
+            foreach (var actor in _ui.GetActors(uid, CMUMarketsTerminalUi.Key))
+                UpdateUi((uid, comp), actor);
         }
     }
 
-    private void UpdateUi(Entity<CMUMarketsTerminalComponent> ent)
+    private void UpdateUi(Entity<CMUMarketsTerminalComponent> ent, EntityUid actor)
     {
+        var trader = GetTrader(ent, actor);
+        var now = _timing.CurTime;
+        var corporate = ent.Comp.Corporate;
+        Dictionary<string, Position>? portfolio = null;
+        if (trader != null)
+            _portfolios.TryGetValue(trader.Key, out portfolio);
+
         var quotes = _markets.Values
-            .Select(m => new CMUMarketQuote(
-                m.Commodity.ID,
-                m.Commodity.Name,
-                (int) MathF.Round(m.Price),
-                (int) MathF.Round(m.PreviousPrice),
-                m.Held,
-                m.Held > 0 ? (int) MathF.Round(m.CostBasis / m.Held) : 0))
+            .Select(m =>
+            {
+                var held = portfolio?.GetValueOrDefault(m.Commodity.ID);
+                var previous = m.Candles.Count > 0 ? m.Candles[^1].Close : m.Current.Open;
+                var candles = new List<CMUMarketCandle>(m.Candles) { m.Current };
+                var firstClosed = m.Closed - m.Candles.Count;
+                var news = m.NewsAt.Select(n => n - firstClosed).Where(n => n >= 0 && n < candles.Count).ToList();
+                return new CMUMarketQuote(
+                    m.Commodity.ID,
+                    m.Commodity.Symbol,
+                    m.Commodity.Name,
+                    m.Price,
+                    previous > 0 ? (m.Price - previous) * 100 / previous : 0,
+                    held?.Held ?? 0,
+                    held is { Held: > 0 } ? (int) MathF.Round(held.CostBasis / held.Held) : 0,
+                    candles,
+                    corporate ? news : new List<int>());
+            })
             .ToList();
+
+        var visibleNews = GetVisibleNews(corporate);
 
         var state = new CMUMarketsTerminalBuiState(
             quotes,
-            _news.ToList(),
-            (int) _corporate.GetCorporateBudget(),
-            HoldingsValue(),
-            HoldingsCap,
+            visibleNews,
+            corporate,
+            trader?.Name,
+            trader == null ? 0 : GetBalance(trader),
+            trader == null ? 0 : HoldingsValue(trader.Key),
+            trader?.Cap ?? (corporate ? CorporateHoldingsCap : CivilianHoldingsCap),
             Fee * 100,
             Dividend * 100,
-            _nextTick);
+            _nextCandle);
 
-        _ui.SetUiState(ent.Owner, CMUMarketsTerminalUi.Key, state);
+        _ui.ServerSendUiMessage(ent.Owner, CMUMarketsTerminalUi.Key, state, actor);
     }
 }

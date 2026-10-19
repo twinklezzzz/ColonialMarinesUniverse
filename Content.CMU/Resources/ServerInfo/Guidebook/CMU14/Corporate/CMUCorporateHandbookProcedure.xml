@@ -14,11 +14,12 @@
 
   ## Corporate Markets
   Trade commodity futures on the Company's account.
-  - Prices update every minute.
-  - The newswire reports on market conditions before the market reacts. Read it before every trade.
+  - Prices move continuously and close a candle every minute.
+  - The Company newswire reports on market conditions as soon as they're known, well before the market reacts. Colonists trading from their personal desktops only hear about it moments before the move. Use that lead.
+  - The Company trades in size, and size moves prices. A large purchase lifts the price for everyone who buys after it.
   - Brokerage charges 2% on every purchase and every sale.
-  - Holdings pay a dividend of 0.5% of their value every minute. Patient positions are rewarded.
-  - The site may hold no more than $5000 in futures at any time.
+  - Holdings pay a dividend of 0.5% of their value every minute.
+  - The site may hold no more than $10000 in futures at any time.
   - Positions are not carried over when the site's books close.
 
   ## Research

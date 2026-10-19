@@ -14,6 +14,12 @@ public sealed partial class CMUMarketCommodityPrototype : IPrototype
     [DataField(required: true)]
     public LocId Name;
 
+    /// <summary>
+    ///     Ticker shown on the board, e.g. PHR.
+    /// </summary>
+    [DataField(required: true)]
+    public string Symbol = string.Empty;
+
     [DataField(required: true)]
     public int BasePrice;
 
@@ -22,4 +28,11 @@ public sealed partial class CMUMarketCommodityPrototype : IPrototype
     /// </summary>
     [DataField]
     public float Volatility = 0.05f;
+
+    /// <summary>
+    ///     How much money it takes to move the price. A trade worth this much moves it 100%,
+    ///     before the per-trade cap. Lower means a thinner, jumpier market.
+    /// </summary>
+    [DataField]
+    public float Liquidity = 40000f;
 }

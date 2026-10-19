@@ -115,17 +115,33 @@ public sealed class CMUCorporateWindowsTest : GameTest
                 TimeSpan.Zero, null));
             AssertLaysOut(transmissions, "transmissions");
 
-            var markets = new CMUMarketsTerminalWindow();
-            markets.UpdateState(new CMUMarketsTerminalBuiState(
-                new List<CMUMarketQuote>
-                {
-                    new("CMUMarketPhoron", "cmu-markets-commodity-phoron", 131, 120, 12, 118),
-                    new("CMUMarketSynthetics", "cmu-markets-commodity-synthetics", 140, 150, 0, 0),
-                    new("CMUMarketAtmospherics", "cmu-markets-commodity-atmospherics", 40, 40, 0, 0),
-                },
-                Enumerable.Range(0, 6).Select(_ => new CMUMarketNews(TimeSpan.Zero, "Synthetic labour expected to fall: regulators have opened an inquiry.")).ToList(),
-                12500, 1572, 5000, 2f, 0.5f, TimeSpan.Zero));
-            AssertLaysOut(markets, "markets");
+            // A random walk of candles, with a few news markers, at both trader types.
+            var random = new Random(4);
+            var candles = new List<CMUMarketCandle>();
+            var price = 120f;
+            for (var i = 0; i < 60; i++)
+            {
+                var close = price * (1 + (float) (random.NextDouble() - 0.5) * 0.08f);
+                candles.Add(new CMUMarketCandle(price, MathF.Max(price, close) * 1.01f, MathF.Min(price, close) * 0.99f, close, random.Next(0, 40)));
+                price = close;
+            }
+
+            foreach (var corporate in new[] { true, false })
+            {
+                var markets = new CMUMarketsTerminalWindow();
+                markets.UpdateState(new CMUMarketsTerminalBuiState(
+                    new List<CMUMarketQuote>
+                    {
+                        new("CMUMarketPhoron", "PHR", "cmu-markets-commodity-phoron", price, 3.2f, 12, 118, candles, new List<int> { 10, 42 }),
+                        new("CMUMarketSynthetics", "SYN", "cmu-markets-commodity-synthetics", 140, -6.7f, 0, 0, candles, new List<int>()),
+                        new("CMUMarketAtmospherics", "ATM", "cmu-markets-commodity-atmospherics", 40, 0, 0, 0, new List<CMUMarketCandle>(), new List<int>()),
+                    },
+                    Enumerable.Range(0, 8).Select(_ => new CMUMarketNews(TimeSpan.FromMinutes(83), "SYN Synthetic labour expected to fall: regulators have opened an inquiry.")).ToList(),
+                    corporate,
+                    corporate ? "Weyland-Yutani corporate account" : "Account #48213",
+                    12500, 1572, corporate ? 10000 : 1500, 2f, 0.5f, TimeSpan.Zero));
+                AssertLaysOut(markets, "markets");
+            }
         });
     }
 

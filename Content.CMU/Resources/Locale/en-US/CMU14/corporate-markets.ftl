@@ -1,28 +1,38 @@
-## Corporate Markets terminal
+## Commodity markets: the corporate terminal and the civilian desktop app
 
-cmu-markets-title = Corporate Markets
-cmu-markets-heading = Commodity Futures
-cmu-markets-instructions = Trade commodity futures with the corporate budget. Prices move every minute. News reports come before the move, so read them first. Every trade costs a fee, both buying and selling. Holdings pay a dividend every minute.
-cmu-markets-budget = Corporate budget: ${$amount}
-cmu-markets-holdings =
-    Holdings: ${$value} of ${$cap} cap.
-    Fee {$fee}% per trade. Dividend {$dividend}% per minute.
-cmu-markets-next-tick = Next price update in {$seconds}s.
-cmu-markets-board = Board
-cmu-markets-quote =
-    {$name}
-    ${$price}  ({$change}%)
-cmu-markets-quote-held = Held {$held} @ ${$average}
+cmu-markets-title = Weyland-Yutani Markets
+cmu-markets-title-civilian = ColonyNet Brokerage
+cmu-markets-watchlist = Watchlist
+cmu-markets-order = Order
 cmu-markets-units = Units
 cmu-markets-buy = Buy
 cmu-markets-sell = Sell
+cmu-markets-estimate = Buy ≈ ${$buy}  ·  Sell ≈ ${$sell}
+cmu-markets-position = Position
+cmu-markets-position-held = {$held} {$symbol} @ ${$average}
+cmu-markets-position-none = No {$symbol} held.
+cmu-markets-pnl = Unrealised P/L: {$amount ->
+    [0] $0
+   *[other] ${$amount}
+}
+cmu-markets-account-corporate = Weyland-Yutani corporate account
+cmu-markets-account-personal = Account #{$number}
+cmu-markets-no-account = Hold your ID card to trade.
+cmu-markets-balance = Balance: ${$amount}
+cmu-markets-holdings = Holdings: ${$value} of ${$cap} cap
+cmu-markets-fees = Fee {$fee}% per trade · Dividend {$dividend}% per minute
+cmu-markets-next-tick = Candle closes in {$seconds}s
 cmu-markets-news = Newswire
 cmu-markets-no-news = No reports yet.
-cmu-markets-news-line = [color=#c8c8a0]{$headline}[/color]
+cmu-markets-news-line = [color=#7f8c7f]{$time}[/color] {$headline}
+cmu-markets-chart-empty = Waiting for the market to open.
+cmu-markets-chart-now = now
+cmu-markets-chart-ago = -{$minutes}m
 
-cmu-markets-refuse-cap = That would take holdings past the ${$cap} cap.
-cmu-markets-refuse-funds = The corporate budget can't cover that trade.
+cmu-markets-refuse-cap = That would take your holdings past the ${$cap} cap.
+cmu-markets-refuse-funds = Insufficient funds for that trade.
 cmu-markets-refuse-held = You don't hold that many units.
+cmu-markets-refuse-no-account = No account to trade from. Hold your ID card.
 
 cmu-markets-commodity-phoron = Phoron
 cmu-markets-commodity-titanium = Titanium ore
@@ -31,8 +41,8 @@ cmu-markets-commodity-pharmaceuticals = Pharmaceuticals
 cmu-markets-commodity-synthetics = Synthetic labour
 cmu-markets-commodity-arms = Arms contracts
 
-cmu-markets-news-up = {$commodity} expected to climb: {$story}
-cmu-markets-news-down = {$commodity} expected to fall: {$story}
+cmu-markets-news-up = [color=#46ff8e]▲ {$symbol}[/color] {$commodity} expected to climb: {$story}
+cmu-markets-news-down = [color=#ff4e5e]▼ {$symbol}[/color] {$commodity} expected to fall: {$story}
 
 cmu-markets-story-up-1 = supply disrupted on the outer rim.
 cmu-markets-story-up-2 = a major colonial charter is placing bulk orders.
