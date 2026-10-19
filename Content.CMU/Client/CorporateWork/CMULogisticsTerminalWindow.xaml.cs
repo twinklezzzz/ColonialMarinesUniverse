@@ -25,6 +25,7 @@ public sealed partial class CMULogisticsTerminalWindow : DefaultWindow
         RobustXamlLoader.Load(this);
         IoCManager.InjectDependencies(this);
         CrtLobbyTheme.ApplyWindow(this, useCrtTypography: true);
+        CMUTerminalLayout.StylePanel(WorkPanel);
         SubmitButton.OnPressed += _ => OnSubmit?.Invoke(LoadedIndexes().ToList());
     }
 
@@ -45,6 +46,7 @@ public sealed partial class CMULogisticsTerminalWindow : DefaultWindow
                     ("crates", tier.Crates),
                     ("reward", tier.Reward)),
                 HorizontalExpand = true,
+                MinHeight = 34,
             };
             button.OnPressed += _ => OnStart?.Invoke(index);
             TierButtons.AddChild(button);
@@ -68,6 +70,7 @@ public sealed partial class CMULogisticsTerminalWindow : DefaultWindow
                 ToggleMode = true,
                 Pressed = sameCase && i < picks.Count && picks[i],
                 HorizontalExpand = true,
+                MinHeight = 34,
             };
             button.OnToggled += _ => UpdateTotals();
             _crateButtons.Add(button);

@@ -25,6 +25,7 @@ public sealed partial class CMUAuditTerminalWindow : DefaultWindow
         RobustXamlLoader.Load(this);
         IoCManager.InjectDependencies(this);
         CrtLobbyTheme.ApplyWindow(this, useCrtTypography: true);
+        CMUTerminalLayout.StylePanel(WorkPanel);
 
         SubmitButton.OnPressed += _ =>
         {
@@ -55,15 +56,16 @@ public sealed partial class CMUAuditTerminalWindow : DefaultWindow
                     ("errors", tier.Errors),
                     ("reward", tier.Reward)),
                 HorizontalExpand = true,
+                MinHeight = 34,
             };
             button.OnPressed += _ => OnStart?.Invoke(index);
             TierButtons.AddChild(button);
         }
 
         LedgerRows.RemoveAllChildren();
-        foreach (var entry in state.Ledger)
+        for (var i = 0; i < state.Ledger.Count; i++)
         {
-            LedgerRows.AddChild(new Label { Text = FormatEntry(entry), Margin = new Thickness(0, 3) });
+            LedgerRows.AddChild(CMUTerminalLayout.Row(new Label { Text = FormatEntry(state.Ledger[i]) }, i));
         }
 
         // Another player opening the terminal re-sends the same case; keep this player's flags.
@@ -79,6 +81,7 @@ public sealed partial class CMUAuditTerminalWindow : DefaultWindow
                 ToggleMode = true,
                 Pressed = sameCase && i < flags.Count && flags[i],
                 HorizontalExpand = true,
+                MinHeight = 32,
                 ToolTip = Loc.GetString("cmu-audit-flag-tooltip"),
             };
             _reportButtons.Add(button);

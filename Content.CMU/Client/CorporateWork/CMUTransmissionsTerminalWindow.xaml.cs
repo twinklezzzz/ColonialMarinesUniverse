@@ -25,6 +25,7 @@ public sealed partial class CMUTransmissionsTerminalWindow : DefaultWindow
         RobustXamlLoader.Load(this);
         IoCManager.InjectDependencies(this);
         CrtLobbyTheme.ApplyWindow(this, useCrtTypography: true);
+        CMUTerminalLayout.StylePanel(WorkPanel);
 
         ClearButton.OnPressed += _ =>
         {
@@ -66,22 +67,23 @@ public sealed partial class CMUTransmissionsTerminalWindow : DefaultWindow
                     ("attempts", tier.Attempts),
                     ("reward", tier.Reward)),
                 HorizontalExpand = true,
+                MinHeight = 34,
             };
             button.OnPressed += _ => OnStart?.Invoke(index);
             TierButtons.AddChild(button);
         }
 
         AttemptRows.RemoveAllChildren();
-        foreach (var attempt in state.Attempts)
+        for (var i = 0; i < state.Attempts.Count; i++)
         {
-            AttemptRows.AddChild(new Label
+            var attempt = state.Attempts[i];
+            AttemptRows.AddChild(CMUTerminalLayout.Row(new Label
             {
                 Text = Loc.GetString("cmu-transmissions-attempt",
                     ("guess", string.Join(" ", attempt.Guess.Select(Symbol))),
                     ("exact", attempt.Exact),
                     ("misplaced", attempt.Misplaced)),
-                Margin = new Thickness(0, 2),
-            });
+            }, i));
         }
 
         SymbolButtons.RemoveAllChildren();
@@ -90,7 +92,7 @@ public sealed partial class CMUTransmissionsTerminalWindow : DefaultWindow
             for (var s = 0; s < state.Tiers[active].Symbols; s++)
             {
                 var symbol = s;
-                var button = new Button { Text = Symbol(s), HorizontalExpand = true };
+                var button = new Button { Text = Symbol(s), HorizontalExpand = true, MinHeight = 40 };
                 button.OnPressed += _ =>
                 {
                     if (_state?.ActiveTier is { } tier && _input.Count < _state.Tiers[tier].Length)
