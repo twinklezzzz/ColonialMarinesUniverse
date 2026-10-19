@@ -184,7 +184,11 @@ public sealed partial class CMUCorporateRelationsSystem
     {
         _workOrders.Remove(order);
         if (order.Escrow > 0)
+        {
+            // WY's own money coming back, not earnings.
             _corporate.AddToCorporateBudget(order.Escrow);
+            _markets.IgnoreCorporateIncome(order.Escrow);
+        }
     }
 
     private string GoodName(WorkOrder order)

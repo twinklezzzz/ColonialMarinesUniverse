@@ -30,6 +30,7 @@ public sealed partial class CorporateConsoleSystem : EntitySystem
     [Dependency] private ColonyBudgetSystem _colonyBudget = default!;
     [Dependency] private TagSystem _tag = default!;
     [Dependency] private PopupSystem _popup = default!;
+    [Dependency] private Content.Server.CMU14.CorporateWork.CMUMarketsSystem _markets = default!;
     [Dependency] private Robust.Shared.Timing.IGameTiming _timing = default!;
 
     private static readonly ProtoId<TagPrototype> CurrencyTag = "Currency";
@@ -201,6 +202,9 @@ public sealed partial class CorporateConsoleSystem : EntitySystem
         while (q.MoveNext(out _, out var c))
             c.CorporateBudget += stackCount;
 
+        // Cash paid in isn't earnings; counting it would let staff pump the company's stock.
+        _markets.IgnoreCorporateIncome(stackCount);
+
         QueueDel(args.Entity);
         UpdateAllUi();
     }
@@ -225,6 +229,9 @@ public sealed partial class CorporateConsoleSystem : EntitySystem
         var q = EntityQueryEnumerator<CorporateConsoleComponent>();
         while (q.MoveNext(out _, out var c))
             c.CorporateBudget += stackCount;
+
+        // Cash paid in isn't earnings; counting it would let staff pump the company's stock.
+        _markets.IgnoreCorporateIncome(stackCount);
 
         QueueDel(args.Used);
         UpdateAllUi();

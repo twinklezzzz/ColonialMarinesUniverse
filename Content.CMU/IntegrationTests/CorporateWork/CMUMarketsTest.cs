@@ -1,3 +1,4 @@
+using Content.Shared.GameTicking;
 using Content.Server.CMU14.ColonyEconomy;
 using Content.Server.CMU14.CorporateWork;
 using Content.Shared.Access.Components;
@@ -20,6 +21,8 @@ public sealed class CMUMarketsTest
         var map = await pair.CreateTestMap();
         await server.WaitAssertion(() =>
         {
+            // The market lives for the whole round, and test servers are reused between tests.
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
             var entities = server.EntMan;
             var markets = server.System<CMUMarketsSystem>();
             var corporate = server.System<CorporateConsoleSystem>();
@@ -95,6 +98,8 @@ public sealed class CMUMarketsTest
         TimeSpan movesAt = default;
         await server.WaitAssertion(() =>
         {
+            // The market lives for the whole round, and test servers are reused between tests.
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
             terminal = server.EntMan.SpawnEntity("CMUCorporateMarketsTerminal", map.GridCoords);
             movesAt = markets.BreakNews(Commodity, true);
             Assert.That(markets.GetVisibleNews(true), Is.Not.Empty, "The corporate terminal didn't get the news as it broke.");
@@ -120,6 +125,8 @@ public sealed class CMUMarketsTest
         var map = await pair.CreateTestMap();
         await server.WaitAssertion(() =>
         {
+            // The market lives for the whole round, and test servers are reused between tests.
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
             var markets = server.System<CMUMarketsSystem>();
             var terminal = server.EntMan.SpawnEntity("RMCPersonalDesktop", map.GridCoords);
             try
@@ -162,6 +169,8 @@ public sealed class CMUMarketsTest
         var map = await pair.CreateTestMap();
         await server.WaitAssertion(() =>
         {
+            // The market lives for the whole round, and test servers are reused between tests.
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
             var entities = server.EntMan;
             var markets = server.System<CMUMarketsSystem>();
             var corporate = server.System<CorporateConsoleSystem>();
@@ -191,6 +200,14 @@ public sealed class CMUMarketsTest
                 markets.TryTrade(Commodity, 40, false, trader, terminal, terminal);
                 markets.UpdateRoundEvents();
                 Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f), "Trading moved the company's stock.");
+
+                // Nor is cash paid into the console: staff could pump the stock with their own money.
+                var cash = entities.SpawnEntity("RMCSpaceCash1000", map.GridCoords);
+                var budget = corporate.GetCorporateBudget();
+                entities.EventBus.RaiseLocalEvent(console, new Content.Shared.Interaction.InteractUsingEvent(console, cash, console, entities.GetComponent<Robust.Shared.GameObjects.TransformComponent>(console).Coordinates));
+                Assert.That(corporate.GetCorporateBudget(), Is.GreaterThan(budget), "The deposit didn't reach the budget.");
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f), "Depositing cash moved the company's stock.");
             }
             finally
             {
@@ -209,6 +226,8 @@ public sealed class CMUMarketsTest
         var map = await pair.CreateTestMap();
         await server.WaitAssertion(() =>
         {
+            // The market lives for the whole round, and test servers are reused between tests.
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
             var entities = server.EntMan;
             var markets = server.System<CMUMarketsSystem>();
             var minds = server.System<Content.Server.Mind.MindSystem>();
