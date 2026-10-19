@@ -41,9 +41,17 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
     public const string ColonyBorrower = "colony";
 
     /// <summary>
-    ///     Weyland-Yutani's own stock, which the colony's moves against the company knock down.
+    ///     The round force whose company stock moves with how WY is doing in the colony.
+    /// </summary>
+    public const string CompanyForce = "WY";
+
+    /// <summary>
+    ///     Weyland-Yutani's own stock.
     /// </summary>
     public const string CompanyStock = "CMUStockWeylandYutani";
+
+    public const float LicenceLossShock = -0.15f;
+    public const float WithdrawalShock = -0.5f;
 
     private static readonly SoundSpecifier AnnouncementSound = new SoundPathSpecifier("/Audio/Announcements/announce.ogg");
     private static readonly TimeSpan UiRefresh = TimeSpan.FromSeconds(5);
@@ -197,7 +205,10 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
             return;
 
         _researchLicense = args.Granted;
-        _markets.Shock(CompanyStock, args.Granted ? 0.04f : -0.06f);
+        if (args.Granted)
+            _markets.Shock(CompanyStock, 0.04f);
+        else
+            _markets.ReportSetback(CompanyForce, LicenceLossShock, "Research", "cmu-markets-setback-licence");
         Announce(args.Granted ? "cmu-contracts-announce-research-granted" : "cmu-contracts-announce-research-revoked");
         UpdateAllUi();
     }

@@ -180,7 +180,26 @@ public sealed partial class ThirdPartySystem : EntitySystem
     /// <summary>
     ///     Returns the list of queued third parties that have not yet spawned.
     /// </summary>
-    public List<ThirdPartyPrototype> GetQueuedThirdParties()
+    /// <summary>
+    ///     Calls off every queued, not yet spawned party of <paramref name="partyId"/>. Returns true
+    ///     if any were called off.
+    /// </summary>
+    public bool CancelQueuedThirdParty(string partyId)
+    {
+        var cancelled = false;
+        foreach (var (id, party) in _queuedParties.ToList())
+        {
+            if (party.ID != partyId)
+                continue;
+
+            _queuedParties.Remove(id);
+            cancelled |= _forceInterest.CancelForce(id);
+        }
+
+        return cancelled;
+    }
+
+        public List<ThirdPartyPrototype> GetQueuedThirdParties()
     {
         return _queuedParties.Where(pair => _forceInterest.IsPending(pair.Key)).Select(pair => pair.Value).ToList();
     }

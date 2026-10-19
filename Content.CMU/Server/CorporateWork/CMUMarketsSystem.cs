@@ -81,6 +81,12 @@ public sealed partial class CMUMarketsSystem : EntitySystem
     {
         public required CMUMarketCommodityPrototype Commodity;
         public float Price;
+
+        /// <summary>
+        ///     What the market thinks this is worth, which prices drift back towards. Starts at the
+        ///     base price; lasting events in the round (a withdrawal, research income) move it.
+        /// </summary>
+        public float Fundamental;
         public readonly List<CMUMarketCandle> Candles = new();
         public CMUMarketCandle Current;
 
@@ -121,6 +127,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         SubscribeLocalEvent<RoundRestartCleanupEvent>(_ => Reset());
         SubscribeLocalEvent<CMUMarketsTerminalComponent, BoundUIOpenedEvent>(OnUiOpened);
         SubscribeLocalEvent<CMUMarketsTerminalComponent, CMUMarketsTradeBuiMsg>(OnTrade);
+        InitializeEvents();
     }
 
     private void Reset()
@@ -141,7 +148,7 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         var now = _timing.CurTime;
         foreach (var commodity in _prototypes.EnumeratePrototypes<CMUMarketCommodityPrototype>().OrderBy(c => c.ID))
         {
-            var market = new Market { Commodity = commodity, Price = commodity.BasePrice };
+            var market = new Market { Commodity = commodity, Price = commodity.BasePrice, Fundamental = commodity.BasePrice };
             market.Current = new CMUMarketCandle(market.Price, market.Price, market.Price, market.Price, 0);
             _markets[commodity.ID] = market;
             PlanCandle(market, now);
@@ -252,12 +259,16 @@ public sealed partial class CMUMarketsSystem : EntitySystem
             ("commodity", Loc.GetString(market.Commodity.Name)),
             ("symbol", market.Commodity.Symbol),
             ("story", Loc.GetString($"cmu-markets-{(market.Commodity.Kind == CMUMarketKind.Stock ? "stock-" : "")}story-{(up ? "up" : "down")}-{_random.Next(1, 5)}")));
-        _news.Insert(0, new NewsItem(now, movesAt, headline, market.Commodity.Kind));
-        if (_news.Count > NewsKept)
-            _news.RemoveAt(_news.Count - 1);
-
+        AddNews(now, movesAt, headline, market.Commodity.Kind);
         UpdateAllUi();
         return movesAt;
+    }
+
+    private void AddNews(TimeSpan publishedAt, TimeSpan movesAt, string headline, CMUMarketKind kind)
+    {
+        _news.Insert(0, new NewsItem(publishedAt, movesAt, headline, kind));
+        if (_news.Count > NewsKept)
+            _news.RemoveAt(_news.Count - 1);
     }
 
     /// <summary>
@@ -278,9 +289,8 @@ public sealed partial class CMUMarketsSystem : EntitySystem
     /// </summary>
     private void PlanCandle(Market market, TimeSpan candleStart)
     {
-        var basePrice = market.Commodity.BasePrice;
         var change = _random.NextFloat(-market.Commodity.Volatility, market.Commodity.Volatility);
-        change += MeanReversion * (basePrice - market.Price) / basePrice;
+        change += MeanReversion * (market.Fundamental - market.Price) / market.Fundamental;
 
         if (market.PushCandles > 0 && candleStart >= market.PushFrom)
         {
@@ -439,14 +449,21 @@ public sealed partial class CMUMarketsSystem : EntitySystem
 
     /// <summary>
     ///     Moves a listing at once by <paramref name="change"/> (e.g. -0.15), for events elsewhere in
-    ///     the round that the market would react to. Does nothing before the market opens.
+    ///     the round that the market would react to. A lasting shock also moves what the listing is
+    ///     worth, so the price doesn't drift back. Does nothing before the market opens.
     /// </summary>
-    public void Shock(string commodity, float change)
+    public void Shock(string commodity, float change, bool lasting = true)
     {
         if (!_started || !_markets.TryGetValue(commodity, out var market))
             return;
 
         SetPrice(market, market.Price * (1 + change));
+        if (lasting)
+        {
+            var basePrice = market.Commodity.BasePrice;
+            market.Fundamental = Math.Clamp(market.Fundamental * (1 + change), basePrice * MinPriceFactor, basePrice * MaxPriceFactor);
+        }
+
         UpdateAllUi();
     }
 

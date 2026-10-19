@@ -13,6 +13,7 @@ public sealed class CMUSpecimenCaptureTest
     [TestCase("CMXenoDrone")]
     [TestCase("CMU14XenoNeomorph")]
     [TestCase("AU14Wendigo")]
+    [TestCase("CMUWendigoLab")]
     [TestCase("CMUXenoAbomination")]
     [TestCase("AU14BiomorphGrunt")]
     [TestCase("AU14BiomorphSpider")]

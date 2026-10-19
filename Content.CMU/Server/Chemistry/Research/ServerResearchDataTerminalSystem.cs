@@ -74,6 +74,7 @@ public sealed partial class ServerResearchDataTerminalSystem : SharedResearchDat
     [Dependency] private CorporateConsoleSystem _corpo = default!;
     [Dependency] private Content.Server.CMU14.CorporateRelations.CMUCorporateRelationsSystem _relations = default!;
     [Dependency] private ColonyBudgetSystem _colbud = default!;
+    [Dependency] private Content.Server.CMU14.CorporateWork.CMUMarketsSystem _markets = default!;
     [Dependency] private SharedRequisitionsSystem _reqsys = default!;
     [Dependency] private IConfigurationManager _cfg = default!;
     [Dependency] private ILogManager _logman = default!;
@@ -255,7 +256,10 @@ public sealed partial class ServerResearchDataTerminalSystem : SharedResearchDat
             {
                 // The colony can revoke WY's research licence; unlicensed research earns nothing.
                 if (_relations.CorporateResearchLicensed)
+                {
                     _corpo.AddToCorporateBudget(ResearchCashRewardMult * proto.Reward);
+                    _markets.ReportIncome(Content.Server.CMU14.CorporateRelations.CMUCorporateRelationsSystem.CompanyForce, ResearchCashRewardMult * proto.Reward);
+                }
                 return;
             }
             if (string.Equals(faction, "colony", StringComparison.OrdinalIgnoreCase))

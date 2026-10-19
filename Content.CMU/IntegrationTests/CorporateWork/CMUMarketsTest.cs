@@ -111,4 +111,46 @@ public sealed class CMUMarketsTest
         });
         await pair.CleanReturnAsync();
     }
+
+    [Test]
+    public async Task RoundEventsMoveCompanyStock()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        await server.WaitAssertion(() =>
+        {
+            var markets = server.System<CMUMarketsSystem>();
+            var terminal = server.EntMan.SpawnEntity("RMCPersonalDesktop", map.GridCoords);
+            try
+            {
+                const string wy = "CMUStockWeylandYutani";
+                const string chigusa = "CMUStockChigusa";
+                markets.GetPrice(wy);
+
+                // Research income lifts the company that earned it.
+                var before = markets.GetPrice(wy)!.Value;
+                markets.ReportIncome("WY", 1000);
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + 10 * CMUMarketsSystem.IncomeShockPer100)).Within(0.05f));
+
+                // Withdrawing halves the stock, and a rival in the sector that isn't in the round fills the gap.
+                before = markets.GetPrice(wy)!.Value;
+                var rivalBefore = markets.GetPrice(chigusa)!.Value;
+                Assert.That(markets.IsInRound(chigusa), Is.False);
+                markets.ReportSetback("WY", -0.5f, "Colonization", "cmu-markets-setback-withdrawal");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * 0.5f).Within(0.05f));
+                    Assert.That(markets.GetPrice(chigusa)!.Value, Is.EqualTo(rivalBefore * (1 + CMUMarketsSystem.GapFill)).Within(0.05f));
+                    Assert.That(markets.GetVisibleNews(false), Has.Count.EqualTo(2), "Colonists didn't hear about the setback at once.");
+                    Assert.That(markets.GetVisibleNews(true), Is.Empty, "Stock news reached the corporate terminal.");
+                });
+            }
+            finally
+            {
+                server.EntMan.DeleteEntity(terminal);
+            }
+        });
+        await pair.CleanReturnAsync();
+    }
 }

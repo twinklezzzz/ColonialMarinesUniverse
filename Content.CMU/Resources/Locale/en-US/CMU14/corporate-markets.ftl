@@ -84,3 +84,8 @@ cmu-markets-stock-story-down-4 = its board is in open revolt.
 
 cmu-markets-tab-goods = Goods
 cmu-markets-tab-stocks = Stocks
+
+cmu-markets-news-setback = [color=#ff4e5e]▼ {$symbol}[/color] {$company} {$reason}
+cmu-markets-news-gap = [color=#46ff8e]▲ {$symbol}[/color] {$company} moves to fill the gap left by {$rival}.
+cmu-markets-setback-licence = has lost its research licence on the colony.
+cmu-markets-setback-withdrawal = is pulling out of the colony.

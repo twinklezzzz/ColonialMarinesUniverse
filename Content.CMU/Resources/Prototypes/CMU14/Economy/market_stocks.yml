@@ -2,6 +2,10 @@
 # Corporations page of the lore guidebook. Norcomm is a UPP state company and Tyrell has
 # collapsed, so neither is listed. Smaller companies are thinner markets: a colonist's money
 # moves them further.
+#
+# roundForces ties a company to the jobs that work for it: research income lifts its stock, staff
+# deaths drag it down, and setbacks tank it. sectors are its lines of business: when a company in
+# the round has a setback in a sector, a rival there that isn't in the round fills the gap.
 
 - type: cmuMarketCommodity
   id: CMUStockWeylandYutani
@@ -11,6 +15,8 @@
   basePrice: 320
   volatility: 0.02
   liquidity: 60000
+  roundForces: [WY, WYPMC]
+  sectors: [Research, Synthetics, Arms, Colonization]
 
 - type: cmuMarketCommodity
   id: CMUStockLasalle
@@ -20,6 +26,8 @@
   basePrice: 140
   volatility: 0.035
   liquidity: 30000
+  roundForces: [LASELLE]
+  sectors: [Research, Biotech]
 
 - type: cmuMarketCommodity
   id: CMUStockSeegson
@@ -29,6 +37,7 @@
   basePrice: 45
   volatility: 0.04
   liquidity: 25000
+  sectors: [Synthetics, Stations]
 
 - type: cmuMarketCommodity
   id: CMUStockHyperdyne
@@ -38,6 +47,7 @@
   basePrice: 110
   volatility: 0.045
   liquidity: 25000
+  sectors: [Synthetics, Arms]
 
 - type: cmuMarketCommodity
   id: CMUStockProdigy
@@ -47,6 +57,8 @@
   basePrice: 12
   volatility: 0.07
   liquidity: 12000
+  roundForces: [PSC]
+  sectors: [Security]
 
 - type: cmuMarketCommodity
   id: CMUStockKelland
@@ -56,6 +68,7 @@
   basePrice: 75
   volatility: 0.03
   liquidity: 35000
+  sectors: [Mining]
 
 - type: cmuMarketCommodity
   id: CMUStockLockMart
@@ -65,6 +78,7 @@
   basePrice: 160
   volatility: 0.025
   liquidity: 40000
+  sectors: [Transport]
 
 - type: cmuMarketCommodity
   id: CMUStockArmat
@@ -74,6 +88,7 @@
   basePrice: 130
   volatility: 0.03
   liquidity: 40000
+  sectors: [Arms]
 
 - type: cmuMarketCommodity
   id: CMUStockGrant
@@ -83,6 +98,7 @@
   basePrice: 90
   volatility: 0.035
   liquidity: 25000
+  sectors: [Research]
 
 - type: cmuMarketCommodity
   id: CMUStockChigusa
@@ -92,6 +108,7 @@
   basePrice: 105
   volatility: 0.035
   liquidity: 30000
+  sectors: [Research, Colonization, Mining]
 
 - type: cmuMarketCommodity
   id: CMUStockAegis
@@ -101,6 +118,7 @@
   basePrice: 65
   volatility: 0.05
   liquidity: 18000
+  sectors: [Arms, Research]
 
 - type: cmuMarketCommodity
   id: CMUStockGemba
@@ -110,6 +128,7 @@
   basePrice: 38
   volatility: 0.03
   liquidity: 20000
+  sectors: [Electronics, Transport]
 
 - type: cmuMarketCommodity
   id: CMUStockKarnak
@@ -119,6 +138,7 @@
   basePrice: 28
   volatility: 0.035
   liquidity: 18000
+  sectors: [Electronics]
 
 - type: cmuMarketCommodity
   id: CMUStockKoorlander
@@ -128,6 +148,7 @@
   basePrice: 22
   volatility: 0.03
   liquidity: 16000
+  sectors: [Consumer]
 
 - type: cmuMarketCommodity
   id: CMUStockSouta
@@ -137,3 +158,4 @@
   basePrice: 15
   volatility: 0.04
   liquidity: 14000
+  sectors: [Consumer]

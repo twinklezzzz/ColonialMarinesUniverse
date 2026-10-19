@@ -1,6 +1,7 @@
 using Content.Shared._RMC14.Stun;
 using Content.Shared._RMC14.Xenonids;
 using Content.Shared.CMU14.Threats.Mobs.Biomorph;
+using Content.Shared.CMU14.Threats.Mobs.Wendigo.Pack;
 using Content.Shared.ActionBlocker;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
@@ -25,8 +26,8 @@ namespace Content.Shared.CMU14.Specimens;
 ///     Live xenonid capture: capture slugs sedate, a restraint harness binds a downed xenonid,
 ///     and a containment bag holds a bound one so it can be hauled away.
 ///
-///     Works on every hostile creature: xenonids and their variants (neomorphs, wendigos, the
-///     abomination) and the flesh biomorphs. Biomorphs can't be knocked over, so they're held with
+///     Works on every hostile creature: xenonids and their variants (neomorphs, the abomination),
+///     wendigos (natural and lab-made) and the flesh biomorphs. Biomorphs can't be knocked over, so they're held with
 ///     a plain stun instead of paralysis.
 ///
 ///     RMC cuts every stun on a xenonid to two thirds and won't re-stun one that's already down,
@@ -130,7 +131,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     /// </summary>
     public bool IsSpecimen(EntityUid uid)
     {
-        return HasComp<XenoComponent>(uid) || HasComp<BiomorphComponent>(uid);
+        return HasComp<XenoComponent>(uid) || HasComp<BiomorphComponent>(uid) || HasComp<CMUWendigoPackComponent>(uid);
     }
 
     /// <summary>

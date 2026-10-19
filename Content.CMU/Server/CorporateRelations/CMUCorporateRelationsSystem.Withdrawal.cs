@@ -72,14 +72,19 @@ public sealed partial class CMUCorporateRelationsSystem
         {
             _withdrawalAt = null;
             Announce("cmu-contracts-announce-withdrawal-cancelled");
+
+            // Recall the shuttle if nobody has boarded it yet.
+            if (_thirdParty.CancelQueuedThirdParty(WithdrawalTeam))
+                _withdrawalTeamCalled = false;
         }
 
         UpdateAllUi();
     }
 
     /// <summary>
-    ///     Calls the corporate shuttle to collect WY staff. Once a round: the shuttle stays if the
-    ///     withdrawal is called off, and corporate is left to explain why it came.
+    ///     Calls the corporate shuttle to collect WY staff. Calling the withdrawal off recalls it,
+    ///     unless its crew has already spawned; then it comes anyway, and corporate is left to
+    ///     explain why.
     /// </summary>
     private void CallWithdrawalTeam()
     {
@@ -115,7 +120,7 @@ public sealed partial class CMUCorporateRelationsSystem
         CollectAllLoans();
         CloseAllWorkOrders();
         _withdrawn = true;
-        _markets.Shock(CompanyStock, -0.15f);
+        _markets.ReportSetback(CompanyForce, WithdrawalShock, "Colonization", "cmu-markets-setback-withdrawal");
 
         Announce("cmu-contracts-announce-withdrawal-done", ("percent", (int) (WithdrawalPenalty * 100)));
         UpdateAllUi();

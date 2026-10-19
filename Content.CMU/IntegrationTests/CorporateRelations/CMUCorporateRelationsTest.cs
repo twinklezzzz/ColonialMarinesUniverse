@@ -112,10 +112,13 @@ public sealed class CMUCorporateRelationsTest
             server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSupervisor");
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
             Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
+
+            // Calling it off recalls the shuttle while nobody has boarded, and starting again calls it back.
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(false));
+            Assert.That(thirdParties.GetQueuedThirdParties().Any(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.False,
+                "Cancelling the withdrawal didn't recall the shuttle.");
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
-            Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1),
-                "Restarting the countdown called a second shuttle.");
+            Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
 
             // Withdrawal collects every loan in full on the spot, even into debt, and turns the
             // colony's prices up. UPP has spent everything, so it goes $1600 into the red.

@@ -2,11 +2,11 @@
 - type: entity
   parent: CMIDCardBase
   categories: [ HideSpawnMenu ]
-  id: CMUIDCardWYCorporatePilot
-  name: WY corporate pilot ID card
+  id: CMUIDCardWYCommercialPilot
+  name: WY commercial pilot ID card
   components:
   - type: PresetIdCard
-    job: CMUJobWYCorporatePilot
+    job: CMUJobWYCommercialPilot
   - type: ItemIFF
     factions:
     - FactionWEYU

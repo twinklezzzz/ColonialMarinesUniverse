@@ -1,9 +1,9 @@
 - type: job
   parent: CMJobBase
-  id: CMUJobWYCorporatePilot
+  id: CMUJobWYCommercialPilot
   roundSide: ThirdParty
   roundForce: WY
-  roundRole: WYCorporatePilot
+  roundRole: WYCommercialPilot
   roundComponents:
   - type: TacticalMapIcon
     icon:
@@ -28,11 +28,11 @@
     prefix: cmu-wy-withdrawal-prefix-pilot
   name: cmu-wy-withdrawal-name-pilot
   description: cmu-wy-withdrawal-description-pilot
-  playTimeTracker: CMUJobWYCorporatePilot
+  playTimeTracker: CMUJobWYCommercialPilot
   ranks:
     RMCRankWeYaPilotOfficer: []
-  startingGear: CMUGearWYCorporatePilot
-  spawnMenuRoleName: WY Corporate Pilot (withdrawal)
+  startingGear: CMUGearWYCommercialPilot
+  spawnMenuRoleName: WY Commercial Pilot (withdrawal)
   greeting: cmu-wy-withdrawal-greeting-pilot
   icon: RMCJobIconPMCGoonLead
   joinNotifyCrew: false
@@ -43,8 +43,8 @@
 
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
-  id: CMUJobWYCorporatePilot
-  name: WY Corporate Pilot
+  id: CMUJobWYCommercialPilot
+  name: WY Commercial Pilot
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
@@ -56,21 +56,22 @@
     name: cmu-wy-withdrawal-name-pilot
     description: cmu-wy-withdrawal-description-pilot
     reregister: false
-    job: CMUJobWYCorporatePilot
+    job: CMUJobWYCommercialPilot
     raffle:
       settings: short
     rules: cmu-wy-withdrawal-rules
 
+# The colony's commercial pilot kit, on the company's own shuttle.
 - type: startingGear
-  id: CMUGearWYCorporatePilot
+  id: CMUGearWYCommercialPilot
   equipment:
-    id: CMUIDCardWYCorporatePilot
-    jumpsuit: AU14WYSecurityUniformRig
-    outerClothing: CMUArmorM4PMCCorporate
-    shoes: RMCBootsPMCFilled
-    mask: AU14MaskUSASFPilotOxygen
-    belt: RMCBeltSecurityWeYaFilled
-    back: RMCSatchelLightpackBlack
+    id: CMUIDCardWYCommercialPilot
+    jumpsuit: RMCJumpsuitLiaisonPilot
+    outerClothing: RMCCoatWeYaPilot
+    head: RMCHeadWeYaPilotCap
+    eyes: RMCGlassesAviatorsSilver
+    shoes: RMCShoesLaceup
+    back: AU14SlingSatchelBlack
     ears: RMCHeadsetDistressWeYa
   storage:
     back:
@@ -79,4 +80,4 @@
     - RMCBinocularsPVE
 
 - type: playTimeTracker
-  id: CMUJobWYCorporatePilot
+  id: CMUJobWYCommercialPilot

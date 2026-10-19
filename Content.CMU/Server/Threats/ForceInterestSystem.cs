@@ -119,6 +119,18 @@ public sealed partial class ForceInterestSystem : EntitySystem
 
     public bool IsPending(uint id) => _forces.ContainsKey(id);
 
+    /// <summary>
+    ///     Withdraws a force that hasn't spawned yet. Returns false if it already has.
+    /// </summary>
+    public bool CancelForce(uint id)
+    {
+        if (!_forces.Remove(id))
+            return false;
+
+        _ghostRole.UpdateAllEui();
+        return true;
+    }
+
     public ForceInterestInfo[] GetForces(ICommonSession player)
     {
         return _forces.Where(pair => pair.Value.Ready).Select(pair => new ForceInterestInfo(pair.Key, pair.Value.Name,

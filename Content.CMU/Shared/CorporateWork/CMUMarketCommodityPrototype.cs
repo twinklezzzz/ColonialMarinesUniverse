@@ -48,4 +48,18 @@ public sealed partial class CMUMarketCommodityPrototype : IPrototype
     /// </summary>
     [DataField]
     public float Liquidity = 40000f;
+
+    /// <summary>
+    ///     For a company: the round forces (job <c>roundForce</c>) that work for it. When any of
+    ///     them are in the round, what happens to them moves the stock.
+    /// </summary>
+    [DataField]
+    public List<string> RoundForces = new();
+
+    /// <summary>
+    ///     For a company: the lines of business it competes in. When a company in the round has a
+    ///     setback in a sector, a rival in that sector that isn't in the round moves to fill the gap.
+    /// </summary>
+    [DataField]
+    public List<string> Sectors = new();
 }
