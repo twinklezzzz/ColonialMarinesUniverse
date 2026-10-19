@@ -10,8 +10,13 @@ namespace Content.IntegrationTests.CMU14.Specimens;
 [TestOf(typeof(CMUSpecimenCaptureSystem))]
 public sealed class CMUSpecimenCaptureTest
 {
-    [Test]
-    public async Task SedateRestrainContainAndBreakFree()
+    [TestCase("CMXenoDrone")]
+    [TestCase("CMU14XenoNeomorph")]
+    [TestCase("AU14Wendigo")]
+    [TestCase("CMUXenoAbomination")]
+    [TestCase("AU14BiomorphGrunt")]
+    [TestCase("AU14BiomorphSpider")]
+    public async Task SedateRestrainContainAndBreakFree(string creature)
     {
         await using var pair = await PoolManager.GetServerClient();
         var server = pair.Server;
@@ -19,13 +24,13 @@ public sealed class CMUSpecimenCaptureTest
         var entities = server.EntMan;
         var capture = server.System<CMUSpecimenCaptureSystem>();
         var container = server.System<SharedContainerSystem>();
-        var standing = server.System<StandingStateSystem>();
 
         EntityUid xeno = default;
         EntityUid bag = default;
         await server.WaitAssertion(() =>
         {
-            xeno = entities.SpawnEntity("CMXenoDrone", map.GridCoords);
+            xeno = entities.SpawnEntity(creature, map.GridCoords);
+            Assert.That(capture.IsSpecimen(xeno), Is.True);
 
             // One hit short of the threshold leaves it standing; the next one puts it under.
             var threshold = (int) capture.GetSedationThreshold(xeno);
@@ -33,7 +38,7 @@ public sealed class CMUSpecimenCaptureTest
                 Assert.That(capture.Sedate(xeno, 1, TimeSpan.FromSeconds(30)), Is.False);
 
             Assert.That(capture.Sedate(xeno, 1, TimeSpan.FromSeconds(30)), Is.True);
-            Assert.That(entities.HasComponent<StunnedComponent>(xeno), Is.True);
+            Assert.That(capture.IsSubdued(xeno), Is.True);
 
             capture.Restrain(xeno, TimeSpan.FromSeconds(60));
         });
@@ -43,7 +48,7 @@ public sealed class CMUSpecimenCaptureTest
         await server.WaitAssertion(() =>
         {
             Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True);
-            Assert.That(standing.IsDown(xeno), Is.True);
+            Assert.That(capture.IsSubdued(xeno), Is.True);
 
             bag = entities.SpawnEntity("CMUSpecimenBag", map.GridCoords);
             var bagEnt = new Entity<CMUSpecimenBagComponent>(bag, entities.GetComponent<CMUSpecimenBagComponent>(bag));

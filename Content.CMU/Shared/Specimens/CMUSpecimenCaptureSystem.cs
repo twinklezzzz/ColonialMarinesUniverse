@@ -1,5 +1,6 @@
 using Content.Shared._RMC14.Stun;
 using Content.Shared._RMC14.Xenonids;
+using Content.Shared.CMU14.Threats.Mobs.Biomorph;
 using Content.Shared.ActionBlocker;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
@@ -24,9 +25,13 @@ namespace Content.Shared.CMU14.Specimens;
 ///     Live xenonid capture: capture slugs sedate, a restraint harness binds a downed xenonid,
 ///     and a containment bag holds a bound one so it can be hauled away.
 ///
+///     Works on every hostile creature: xenonids and their variants (neomorphs, wendigos, the
+///     abomination) and the flesh biomorphs. Biomorphs can't be knocked over, so they're held with
+///     a plain stun instead of paralysis.
+///
 ///     RMC cuts every stun on a xenonid to two thirds and won't re-stun one that's already down,
 ///     so a single long stun never holds. Sedation and restraint instead keep refreshing a short
-///     paralysis for as long as they last.
+///     hold for as long as they last.
 /// </summary>
 public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
 {
@@ -95,7 +100,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     /// </summary>
     public bool Sedate(EntityUid target, float amount, TimeSpan sedationTime)
     {
-        if (!HasComp<XenoComponent>(target))
+        if (!IsSpecimen(target))
             return false;
 
         var sedation = EnsureComp<CMUSedationComponent>(target);
@@ -113,11 +118,37 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             return false;
         }
 
-        _stun.TryParalyze(target, sedationTime, true);
+        Hold(target, sedationTime);
         if (!wasSedated)
             _popup.PopupEntity(Loc.GetString("cmu-specimen-sedated", ("target", target)), target, PopupType.MediumCaution);
 
         return true;
+    }
+
+    /// <summary>
+    ///     Whether <paramref name="uid"/> is a creature the capture kit works on.
+    /// </summary>
+    public bool IsSpecimen(EntityUid uid)
+    {
+        return HasComp<XenoComponent>(uid) || HasComp<BiomorphComponent>(uid);
+    }
+
+    /// <summary>
+    ///     Down, or for creatures that can't fall over, stunned.
+    /// </summary>
+    public bool IsSubdued(EntityUid uid)
+    {
+        return _standing.IsDown(uid) || HasComp<StunnedComponent>(uid);
+    }
+
+    /// <summary>
+    ///     Holds a specimen in place for <paramref name="time"/>. Paralysis where it can fall over,
+    ///     a stun where it can't.
+    /// </summary>
+    private void Hold(EntityUid uid, TimeSpan time)
+    {
+        if (!_stun.TryParalyze(uid, time, true))
+            _stun.TryUpdateStunDuration(uid, time);
     }
 
     /// <summary>
@@ -145,7 +176,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         if (args.Handled || !args.CanReach || args.Target is not { } target)
             return;
 
-        if (!HasComp<XenoComponent>(target))
+        if (!IsSpecimen(target))
             return;
 
         args.Handled = true;
@@ -155,7 +186,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             return;
         }
 
-        if (!_standing.IsDown(target))
+        if (!IsSubdued(target))
         {
             _popup.PopupEntity(Loc.GetString("cmu-specimen-must-be-down", ("target", target)), args.User, args.User);
             return;
@@ -196,7 +227,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             restrained.Harness = harness;
 
         Dirty(target, restrained);
-        _stun.TryParalyze(target, RestraintParalysis, true);
+        Hold(target, RestraintParalysis);
     }
 
     private void OnRestrainedChanged<T>(Entity<CMUSpecimenRestrainedComponent> ent, ref T args)
@@ -226,7 +257,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
 
     private void OnRestrainedVerbs(Entity<CMUSpecimenRestrainedComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
-        if (!args.CanAccess || !args.CanInteract || args.User == args.Target || HasComp<XenoComponent>(args.User))
+        if (!args.CanAccess || !args.CanInteract || args.User == args.Target || IsSpecimen(args.User))
             return;
 
         var user = args.User;
@@ -285,7 +316,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
                 continue;
             }
 
-            _stun.TryParalyze(uid, RestraintParalysis, true);
+            Hold(uid, RestraintParalysis);
         }
     }
 
@@ -298,7 +329,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         if (args.Handled || !args.CanReach || args.Target is not { } target)
             return;
 
-        if (!HasComp<XenoComponent>(target))
+        if (!IsSpecimen(target))
             return;
 
         args.Handled = true;
@@ -375,7 +406,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
 
     private void OnBagVerbs(Entity<CMUSpecimenBagComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
-        if (!args.CanAccess || !args.CanInteract || HasComp<XenoComponent>(args.User))
+        if (!args.CanAccess || !args.CanInteract || IsSpecimen(args.User))
             return;
 
         var user = args.User;
