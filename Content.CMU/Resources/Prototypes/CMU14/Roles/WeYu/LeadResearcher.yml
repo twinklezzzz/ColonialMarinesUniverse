@@ -45,7 +45,7 @@
   supervisors: cmu-job-supervisors-corporate-management
   accessGroups:
   - Colonist
-  - auwy
+  - CMUWYResearch
   - aumed
   roleWeight: 0.25
 

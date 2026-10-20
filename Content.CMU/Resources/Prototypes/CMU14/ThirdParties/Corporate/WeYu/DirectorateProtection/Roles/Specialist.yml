@@ -38,7 +38,7 @@
   joinNotifyCrew: false
   supervisors: cmu-directorate-protection-supervisors-coordinator
   accessGroups:
-  - auwy
+  - CMUWYCommand
   hidden: false
 
 - type: entity
@@ -61,12 +61,37 @@
       settings: short
     rules: cmu-directorate-protection-rules
 
+# The Directorate's own detail kit: black suit, PMC corporate armour, a long gun.
 - type: startingGear
-  parent: CMUGearWYProtectionSpecialistBase
   id: CMUGearWYDirectorateProtectionSpecialist
   equipment:
     id: CMUIDCardWYDirectorateProtectionSpecialist
     ears: RMCHeadsetDistressWeYa
+    jumpsuit: CMJumpsuitLiaisonBlack
+    outerClothing: CMArmorM4PMCCorporate
+    gloves: RMCHandsVeteranPMC
+    eyes: RMCSunglasses
+    shoes: RMCBootsPMCFilled
+    back: RMCSatchelLightpackBlack
+    belt: RMCBeltHolsterPistolWeYaMK80Fill
+    suitstorage: RMCWeaponSMGM63B2
+    pocket1: RMCPouchMagazineLarge
+    pocket2: RMCPouchFirstAidPMCFill
+  storage:
+    back:
+    - CMStunbaton
+    - RMCZipties
+    - RMCZipties
+    - RMCGrenadeFlashBang
+    - RMCMREWeYa
+    - CMMagazineSMGM63AP
+    - CMMagazineSMGM63AP
+    - CMMagazineSMGM63AP
+    pocket1:
+    - CMMagazineSMGM63AP
+    - CMMagazineSMGM63AP
+    - CMMagazineSMGM63AP
+    - CMMagazineSMGM63AP
 
 - type: playTimeTracker
   id: CMUJobWYDirectorateProtectionSpecialist

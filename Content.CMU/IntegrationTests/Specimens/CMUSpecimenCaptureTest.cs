@@ -27,7 +27,7 @@ public sealed class CMUSpecimenCaptureTest
         var container = server.System<SharedContainerSystem>();
 
         EntityUid xeno = default;
-        EntityUid bag = default;
+        EntityUid crate = default;
         await server.WaitAssertion(() =>
         {
             xeno = entities.SpawnEntity(creature, map.GridCoords);
@@ -51,26 +51,35 @@ public sealed class CMUSpecimenCaptureTest
             Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True);
             Assert.That(capture.IsSubdued(xeno), Is.True);
 
-            bag = entities.SpawnEntity("CMUSpecimenBag", map.GridCoords);
-            var bagEnt = new Entity<CMUSpecimenBagComponent>(bag, entities.GetComponent<CMUSpecimenBagComponent>(bag));
-            Assert.That(capture.TryContain(bagEnt, xeno), Is.True);
+            crate = entities.SpawnEntity("CMUSpecimenCrate", map.GridCoords);
+            var crateEnt = new Entity<CMUSpecimenCrateComponent>(crate, entities.GetComponent<CMUSpecimenCrateComponent>(crate));
+
+            // A crate is set up open; loading it doesn't need the lid moving.
+            Assert.That(crateEnt.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Open));
+            Assert.That(capture.TryContain(crateEnt, xeno), Is.True);
             Assert.That(container.IsEntityInContainer(xeno), Is.True);
-            Assert.That(capture.GetSpecimen(bagEnt), Is.EqualTo(xeno));
+            Assert.That(capture.GetSpecimen(crateEnt), Is.EqualTo(xeno));
+
+            // Closing runs the lid animation, then seals it.
+            Assert.That(capture.TryToggle(crateEnt), Is.True);
+            Assert.That(crateEnt.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Closing));
+            Assert.That(capture.TryToggle(crateEnt), Is.False, "The lid reversed mid-swing.");
         });
 
-        // Bagged, the breakout timer is paused.
+        // Crated, the breakout timer is paused.
         await server.WaitRunTicks((int) (40 / server.Timing.TickPeriod.TotalSeconds));
         await server.WaitAssertion(() =>
         {
-            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True, "A bagged specimen broke free.");
+            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True, "A crated specimen broke free.");
+            Assert.That(entities.GetComponent<CMUSpecimenCrateComponent>(crate).State, Is.EqualTo(CMUSpecimenCrateState.Closed), "The lid never finished closing.");
 
-            // Destroying the bag drops the specimen instead of deleting it.
-            entities.DeleteEntity(bag);
+            // Destroying the crate drops the specimen instead of deleting it.
+            entities.DeleteEntity(crate);
             Assert.That(entities.EntityExists(xeno), Is.True);
             Assert.That(container.IsEntityInContainer(xeno), Is.False);
         });
 
-        // Out of the bag, the harness gives way.
+        // Out of the crate, the harness gives way.
         await server.WaitRunTicks((int) (40 / server.Timing.TickPeriod.TotalSeconds));
         await server.WaitAssertion(() =>
         {

@@ -57,8 +57,10 @@
   joinNotifyCrew: false
   supervisors: cmu-job-supervisors-corporate-management
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
+  access:
+  - CMUAccessWYArmory
   roleWeight: 0.25
 
 - type: startingGear
@@ -165,7 +167,7 @@
   joinNotifyCrew: false
   supervisors: cmu-job-supervisors-corporate-ppc
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   roleWeight: 0.25
 
@@ -253,8 +255,10 @@
   joinNotifyCrew: false
   supervisors: cmu-job-supervisors-corporate-chief-executive
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
+  access:
+  - CMUAccessWYArmory
   roleWeight: 0.25
 
 - type: startingGear

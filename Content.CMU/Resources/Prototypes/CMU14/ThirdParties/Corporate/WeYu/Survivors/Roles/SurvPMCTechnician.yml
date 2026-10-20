@@ -1,5 +1,5 @@
 - type: job
-  parent: AU14JobLEOBase
+  parent: AU14JobWYPMCPartyContractorBase
   id: AU14JobWYSurvEngineer
   roundSide: ThirdParty
   roundForce: WY
@@ -15,7 +15,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: pmc_gun
 
   name: au14-job-name-wypmc-engineer
   description: au14-wysurv-description
@@ -28,7 +28,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 

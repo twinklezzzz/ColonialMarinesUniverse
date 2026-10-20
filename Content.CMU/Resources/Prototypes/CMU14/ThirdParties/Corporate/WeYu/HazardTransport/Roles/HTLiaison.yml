@@ -24,23 +24,15 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: exec_spec
   name: au14-job-name-civiliancorporateliaison
   description: au14-wyht-description
   ranks:
-    RMCRankWeYaAssistantManager:
-    - !type:RoleTimeRequirement
-      role: AU14JobCivilianCorporateLiaison
-      time: 360000 # 100 hours
     RMCRankWeYaExecutiveSupervisor:
     - !type:RoleTimeRequirement
       role: AU14JobCivilianCorporateLiaison
-      time: 270000 # 75 hours
-    RMCRankWeYaExecutiveSpecialist:
-    - !type:RoleTimeRequirement
-      role: AU14JobCivilianCorporateLiaison
-      time: 180000 # 50 hours
-    RMCRankWeYaSeniorExecutive: []
+      time: 90000 # 25 hours
+    RMCRankWeYaExecutiveSpecialist: []
   spawnMenuRoleName: WY HT Liaison (3rd party)
   startingGear: AU14GearWYHTLiaison
   greeting: au14-wyht-greeting
@@ -51,7 +43,7 @@
   - Colonist
   - auadmin
   - AUPrisonStaff
-  - auwy
+  - CMUWYExecutive
   hidden: false
 
 - type: entity

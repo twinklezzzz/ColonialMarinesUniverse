@@ -24,15 +24,15 @@
   description: cmu-weyuexec-description-lawyer
   playTimeTracker: CMUJobWeYuLawyer
   ranks:
-    RMCRankCivilian: []
+    CMURankWeYuLegalSpecialist: []
   startingGear: CMUGearWeYuLawyer
   spawnMenuRoleName: WY Corporate Lawyer (event)
   greeting: cmu-weyuexec-greeting
-  icon: CMJobIconLiaison
+  icon: CMJobIconExecSpec
   joinNotifyCrew: false
   supervisors: cmu-weyuexec-supervisors-sitedirector
   accessGroups:
-  - auwy
+  - CMUWYExecutive
   hidden: false
 
 - type: entity

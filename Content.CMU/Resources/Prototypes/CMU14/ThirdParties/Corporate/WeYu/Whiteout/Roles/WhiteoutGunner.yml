@@ -8,7 +8,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: spp_pvt
+      state: whiteout
   - type: Skills
     skills:
       RMCSkillCqc: 5
@@ -75,7 +75,7 @@
   joinNotifyCrew: false
   supervisors: cmu-whiteout-leader
   accessGroups:
-  - auwy
+  - CMUWYCommand
   hidden: false
 
 - type: entity
@@ -132,7 +132,7 @@
     - CMCrowbar
     - RMCMagazineSmartGunirradiated
     - RMCMagazineSmartGunirradiated
-    outerClothing:
+    # The smartgun harness only takes small items, so the drums go in the satchel.
     - RMCMagazineSmartGunirradiated
     - RMCMagazineSmartGunirradiated
     pocket1:

@@ -50,7 +50,7 @@
   - Colonist
   - auadmin
   - AUPrisonStaff
-  - auwy
+  - CMUWYExecutive
   access:
   - AU14AccessCorporateWEYULiaison
   roleWeight: 0.25
@@ -146,7 +146,7 @@
   - Colonist
   - auadmin
   - AUPrisonStaff
-  - auwy
+  - CMUWYExecutive
   access:
   - AU14AccessCorporateWEYULiaison
   roleWeight: 0.25

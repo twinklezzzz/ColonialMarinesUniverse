@@ -24,19 +24,19 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: goon_standard
   name: au14-job-name-wyguard
   description: au14-wysurv-description
   ranks:
     CMURankWYSecOfficer: []
-  spawnMenuRoleName: WY Corporate Goon (Survivor)
+  spawnMenuRoleName: WY Corporate Goon Shotgun (Survivor)
   startingGear: AU14GearWYSurvGoonShotgun
   greeting: au14-wysurv-greeting
   icon: "RMCJobIconPMCGoonStandard"
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 

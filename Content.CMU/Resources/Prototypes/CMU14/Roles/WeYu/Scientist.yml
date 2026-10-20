@@ -49,11 +49,11 @@
   icon: "RMCJobIconPMCScientist"
   requireAdminNotify: false
   joinNotifyCrew: false
-  supervisors: au14-job-supervisors-colonycivilian
+  supervisors: cmu-job-supervisors-lead-researcher
   spawnMenuRoleName: au14-spawn-role-name-wy-scientist
   accessGroups:
   - Colonist
-  - auwy
+  - CMUWYResearch
   - aumed
   roleWeight: 0.25
 

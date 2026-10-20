@@ -18,11 +18,11 @@
       RMCSkillVehicles: 1
       RMCSkillMedical: 2
   - type: JobPrefix
-    prefix: au14-job-prefix-corporateliaison
+    prefix: cmu-job-prefix-personal-protection
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: goon_standard
   - type: NpcFactionMember
     factions:
     - GOVFOR
@@ -37,14 +37,14 @@
   spawnMenuRoleName: WY IPIE Personal Protection Officer (3rd party)
   startingGear: AU14GearIPIEPPO
   greeting: au14-ipie-greeting
-  icon: "CMJobIconLiaison"
+  icon: RMCJobIconPMCGoonStandard
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
   - Colonist
   - auadmin
   - AUPrisonStaff
-  - auwy
+  - CMUWYSecurity
   hidden: false
 
 - type: entity
@@ -59,7 +59,7 @@
     makeSentient: true
     allowSpeech: true
     allowMovement: true
-    name: IPE Personal Protection Officer
+    name: IPIE Personal Protection Officer
     description: au14-ipie-ppo-description
     reregister: false
     job: AU14JobIPIEPPO

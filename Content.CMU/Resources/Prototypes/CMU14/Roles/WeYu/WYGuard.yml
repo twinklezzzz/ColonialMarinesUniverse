@@ -67,7 +67,7 @@
   supervisors: cmu-job-supervisors-corporate-security-sergeant
   spawnMenuRoleName: au14-spawn-role-name-wy-corporate-goon
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   roleWeight: 0.25
 

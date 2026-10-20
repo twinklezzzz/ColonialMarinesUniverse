@@ -36,11 +36,13 @@
   startingGear: CMUGearWeYuGoonLeader
   spawnMenuRoleName: WY Personal Protection Coordinator (event)
   greeting: cmu-weyuexec-greeting-security
-  icon: CMJobIconLiaison
+  icon: RMCJobIconPMCGoonLead
   joinNotifyCrew: false
   supervisors: cmu-weyuexec-supervisors-sitedirector
   accessGroups:
-  - auwy
+  - CMUWYSecurity
+  access:
+  - CMUAccessWYArmory
   hidden: false
 
 - type: entity

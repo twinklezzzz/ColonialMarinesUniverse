@@ -16,6 +16,7 @@ using Content.Shared.Projectiles;
 using Content.Shared.Standing;
 using Content.Shared.Stunnable;
 using Content.Shared.Verbs;
+using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.Network;
 using Robust.Shared.Timing;
@@ -24,7 +25,7 @@ namespace Content.Shared.CMU14.Specimens;
 
 /// <summary>
 ///     Live xenonid capture: capture slugs sedate, a restraint harness binds a downed xenonid,
-///     and a containment bag holds a bound one so it can be hauled away.
+///     and a secure crate holds a bound one so it can be hauled away.
 ///
 ///     Works on every hostile creature: xenonids and their variants (neomorphs, the abomination),
 ///     wendigos (natural and lab-made) and the flesh biomorphs. Biomorphs can't be knocked over, so they're held with
@@ -37,7 +38,7 @@ namespace Content.Shared.CMU14.Specimens;
 public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
 {
     [Dependency] private ActionBlockerSystem _actionBlocker = default!;
-    [Dependency] private SharedAppearanceSystem _appearance = default!;
+    [Dependency] private SharedAudioSystem _audio = default!;
     [Dependency] private SharedContainerSystem _container = default!;
     [Dependency] private SharedDoAfterSystem _doAfter = default!;
     [Dependency] private SharedHandsSystem _hands = default!;
@@ -72,18 +73,16 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, GetVerbsEvent<AlternativeVerb>>(OnRestrainedVerbs);
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, CMUSpecimenUnharnessDoAfterEvent>(OnUnharnessDoAfter);
 
-        SubscribeLocalEvent<CMUSpecimenBagFoldedComponent, AfterInteractEvent>(OnFoldedAfterInteract);
-        SubscribeLocalEvent<CMUSpecimenBagFoldedComponent, UseInHandEvent>(OnFoldedUseInHand);
-        SubscribeLocalEvent<CMUSpecimenBagFoldedComponent, CMUSpecimenBagDoAfterEvent>(OnFoldedDoAfter);
+        SubscribeLocalEvent<CMUSpecimenCratePackedComponent, AfterInteractEvent>(OnPackedAfterInteract);
+        SubscribeLocalEvent<CMUSpecimenCratePackedComponent, UseInHandEvent>(OnPackedUseInHand);
+        SubscribeLocalEvent<CMUSpecimenCratePackedComponent, CMUSpecimenCrateDoAfterEvent>(OnPackedDoAfter);
 
-        SubscribeLocalEvent<CMUSpecimenBagComponent, ComponentInit>(OnBagInit);
-        SubscribeLocalEvent<CMUSpecimenBagComponent, EntInsertedIntoContainerMessage>(OnBagContentsChanged);
-        SubscribeLocalEvent<CMUSpecimenBagComponent, EntRemovedFromContainerMessage>(OnBagContentsChanged);
-        SubscribeLocalEvent<CMUSpecimenBagComponent, EntityTerminatingEvent>(OnBagTerminating);
-        SubscribeLocalEvent<CMUSpecimenBagComponent, ExaminedEvent>(OnBagExamined);
-        SubscribeLocalEvent<CMUSpecimenBagComponent, GetVerbsEvent<AlternativeVerb>>(OnBagVerbs);
-        SubscribeLocalEvent<CMUSpecimenBagComponent, CMUSpecimenLoadDoAfterEvent>(OnLoadDoAfter);
-        SubscribeLocalEvent<CMUSpecimenBagComponent, CMUSpecimenReleaseDoAfterEvent>(OnReleaseDoAfter);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, ComponentInit>(OnCrateInit);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, EntityTerminatingEvent>(OnCrateTerminating);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, ExaminedEvent>(OnCrateExamined);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, ActivateInWorldEvent>(OnCrateActivate);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, GetVerbsEvent<AlternativeVerb>>(OnCrateVerbs);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, CMUSpecimenLoadDoAfterEvent>(OnLoadDoAfter);
     }
 
     #region Sedation
@@ -295,6 +294,8 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         if (_net.IsClient)
             return;
 
+        UpdateCrates();
+
         var now = _timing.CurTime;
         var query = EntityQueryEnumerator<CMUSpecimenRestrainedComponent>();
         while (query.MoveNext(out var uid, out var restrained))
@@ -325,7 +326,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
 
     #region Containment
 
-    private void OnFoldedAfterInteract(Entity<CMUSpecimenBagFoldedComponent> ent, ref AfterInteractEvent args)
+    private void OnPackedAfterInteract(Entity<CMUSpecimenCratePackedComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target is not { } target)
             return;
@@ -340,7 +341,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             return;
         }
 
-        var doAfter = new DoAfterArgs(EntityManager, args.User, ent.Comp.Delay, new CMUSpecimenBagDoAfterEvent(), ent, target, ent)
+        var doAfter = new DoAfterArgs(EntityManager, args.User, ent.Comp.Delay, new CMUSpecimenCrateDoAfterEvent(), ent, target, ent)
         {
             BreakOnMove = true,
             NeedHand = true,
@@ -348,7 +349,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         _doAfter.TryStartDoAfter(doAfter);
     }
 
-    private void OnFoldedDoAfter(Entity<CMUSpecimenBagFoldedComponent> ent, ref CMUSpecimenBagDoAfterEvent args)
+    private void OnPackedDoAfter(Entity<CMUSpecimenCratePackedComponent> ent, ref CMUSpecimenCrateDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Target is not { } target)
             return;
@@ -357,17 +358,19 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         if (_net.IsClient || !HasComp<CMUSpecimenRestrainedComponent>(target))
             return;
 
-        var bag = Spawn(ent.Comp.Deployed, _transform.GetMapCoordinates(target));
-        if (!TryComp<CMUSpecimenBagComponent>(bag, out var bagComp) || !TryContain((bag, bagComp), target))
+        // Set the crate up around the specimen, then seal it.
+        var crate = Spawn(ent.Comp.Deployed, _transform.GetMapCoordinates(target));
+        if (!TryComp<CMUSpecimenCrateComponent>(crate, out var crateComp) || !TryContain((crate, crateComp), target))
         {
-            Del(bag);
+            Del(crate);
             return;
         }
 
+        StartMoving((crate, crateComp), false);
         QueueDel(ent);
     }
 
-    private void OnFoldedUseInHand(Entity<CMUSpecimenBagFoldedComponent> ent, ref UseInHandEvent args)
+    private void OnPackedUseInHand(Entity<CMUSpecimenCratePackedComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled)
             return;
@@ -380,34 +383,76 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         QueueDel(ent);
     }
 
-    private void OnBagInit(Entity<CMUSpecimenBagComponent> ent, ref ComponentInit args)
+    private void OnCrateInit(Entity<CMUSpecimenCrateComponent> ent, ref ComponentInit args)
     {
         _container.EnsureContainer<ContainerSlot>(ent, ent.Comp.ContainerId);
     }
 
-    private void OnBagContentsChanged<T>(Entity<CMUSpecimenBagComponent> ent, ref T args)
+    private void OnCrateTerminating(Entity<CMUSpecimenCrateComponent> ent, ref EntityTerminatingEvent args)
     {
-        _appearance.SetData(ent, CMUSpecimenBagVisuals.Occupied, GetSpecimen(ent) != null);
-    }
-
-    private void OnBagTerminating(Entity<CMUSpecimenBagComponent> ent, ref EntityTerminatingEvent args)
-    {
-        // Never take the specimen with the bag.
+        // Never take the specimen with the crate.
         if (_container.TryGetContainer(ent, ent.Comp.ContainerId, out var container))
             _container.EmptyContainer(container, true);
     }
 
-    private void OnBagExamined(Entity<CMUSpecimenBagComponent> ent, ref ExaminedEvent args)
+    private void OnCrateExamined(Entity<CMUSpecimenCrateComponent> ent, ref ExaminedEvent args)
     {
+        args.PushMarkup(Loc.GetString(ent.Comp.State == CMUSpecimenCrateState.Closed ? "cmu-specimen-crate-examine-closed" : "cmu-specimen-crate-examine-open"));
         if (GetSpecimen(ent) is { } specimen)
-            args.PushMarkup(Loc.GetString("cmu-specimen-bag-examine-full", ("target", specimen)));
+            args.PushMarkup(Loc.GetString("cmu-specimen-crate-examine-full", ("target", specimen)));
         else
-            args.PushMarkup(Loc.GetString("cmu-specimen-bag-examine-empty"));
+            args.PushMarkup(Loc.GetString("cmu-specimen-crate-examine-empty"));
     }
 
-    private void OnBagVerbs(Entity<CMUSpecimenBagComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
+    private void OnCrateActivate(Entity<CMUSpecimenCrateComponent> ent, ref ActivateInWorldEvent args)
     {
-        if (!args.CanAccess || !args.CanInteract || IsSpecimen(args.User))
+        if (args.Handled || !args.Complex || IsSpecimen(args.User))
+            return;
+
+        args.Handled = true;
+        TryToggle(ent, args.User);
+    }
+
+    /// <summary>
+    ///     Opens a closed crate or closes an open one. Does nothing while the lid is moving.
+    /// </summary>
+    public bool TryToggle(Entity<CMUSpecimenCrateComponent> ent, EntityUid? user = null)
+    {
+        return ent.Comp.State switch
+        {
+            CMUSpecimenCrateState.Open => StartMoving(ent, false, user),
+            CMUSpecimenCrateState.Closed => StartMoving(ent, true, user),
+            _ => false,
+        };
+    }
+
+    private bool StartMoving(Entity<CMUSpecimenCrateComponent> ent, bool open, EntityUid? user = null)
+    {
+        ent.Comp.State = open ? CMUSpecimenCrateState.Opening : CMUSpecimenCrateState.Closing;
+        ent.Comp.MovingUntil = _timing.CurTime + ent.Comp.MoveTime;
+        Dirty(ent);
+        _audio.PlayPredicted(ent.Comp.MoveSound, ent, user);
+        return true;
+    }
+
+    private void UpdateCrates()
+    {
+        var now = _timing.CurTime;
+        var query = EntityQueryEnumerator<CMUSpecimenCrateComponent>();
+        while (query.MoveNext(out var uid, out var crate))
+        {
+            if (crate.MovingUntil is not { } until || now < until)
+                continue;
+
+            crate.MovingUntil = null;
+            crate.State = crate.State == CMUSpecimenCrateState.Opening ? CMUSpecimenCrateState.Open : CMUSpecimenCrateState.Closed;
+            Dirty(uid, crate);
+        }
+    }
+
+    private void OnCrateVerbs(Entity<CMUSpecimenCrateComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
+    {
+        if (!args.CanAccess || !args.CanInteract || IsSpecimen(args.User) || ent.Comp.State != CMUSpecimenCrateState.Open)
             return;
 
         var user = args.User;
@@ -416,10 +461,16 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             args.Verbs.Add(new AlternativeVerb
             {
                 Text = Loc.GetString("cmu-specimen-verb-release"),
-                Act = () => _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, user, ent.Comp.ReleaseDelay, new CMUSpecimenReleaseDoAfterEvent(), ent, ent)
+                Act = () =>
                 {
-                    BreakOnMove = true,
-                }),
+                    if (_net.IsClient || ent.Comp.State != CMUSpecimenCrateState.Open ||
+                        !_container.TryGetContainer(ent, ent.Comp.ContainerId, out var container))
+                    {
+                        return;
+                    }
+
+                    _container.EmptyContainer(container, true);
+                },
             });
             return;
         }
@@ -440,46 +491,34 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
 
         args.Verbs.Add(new AlternativeVerb
         {
-            Text = Loc.GetString("cmu-specimen-verb-fold"),
+            Text = Loc.GetString("cmu-specimen-verb-pack"),
             Act = () =>
             {
-                if (_net.IsClient || GetSpecimen(ent) != null)
+                if (_net.IsClient || GetSpecimen(ent) != null || ent.Comp.State != CMUSpecimenCrateState.Open)
                     return;
 
-                var folded = Spawn(ent.Comp.Folded, _transform.GetMapCoordinates(ent));
-                _hands.PickupOrDrop(user, folded);
+                var packed = Spawn(ent.Comp.Packed, _transform.GetMapCoordinates(ent));
+                _hands.PickupOrDrop(user, packed);
                 QueueDel(ent);
             },
         });
     }
 
-    private void OnLoadDoAfter(Entity<CMUSpecimenBagComponent> ent, ref CMUSpecimenLoadDoAfterEvent args)
+    private void OnLoadDoAfter(Entity<CMUSpecimenCrateComponent> ent, ref CMUSpecimenLoadDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Used is not { } specimen)
             return;
 
         args.Handled = true;
-        if (_net.IsClient || !HasComp<CMUSpecimenRestrainedComponent>(specimen))
+        if (_net.IsClient || ent.Comp.State != CMUSpecimenCrateState.Open || !HasComp<CMUSpecimenRestrainedComponent>(specimen))
             return;
 
         TryContain(ent, specimen);
     }
 
-    private void OnReleaseDoAfter(Entity<CMUSpecimenBagComponent> ent, ref CMUSpecimenReleaseDoAfterEvent args)
+    public bool TryContain(Entity<CMUSpecimenCrateComponent> crate, EntityUid specimen)
     {
-        if (args.Cancelled || args.Handled)
-            return;
-
-        args.Handled = true;
-        if (_net.IsClient || !_container.TryGetContainer(ent, ent.Comp.ContainerId, out var container))
-            return;
-
-        _container.EmptyContainer(container, true);
-    }
-
-    public bool TryContain(Entity<CMUSpecimenBagComponent> bag, EntityUid specimen)
-    {
-        if (GetSpecimen(bag) != null || !_container.TryGetContainer(bag, bag.Comp.ContainerId, out var container))
+        if (GetSpecimen(crate) != null || !_container.TryGetContainer(crate, crate.Comp.ContainerId, out var container))
             return false;
 
         if (TryComp<PullableComponent>(specimen, out var pullable) && pullable.BeingPulled)
@@ -488,13 +527,13 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         if (!_container.Insert(specimen, container))
             return false;
 
-        _popup.PopupEntity(Loc.GetString("cmu-specimen-contained", ("target", specimen)), bag);
+        _popup.PopupEntity(Loc.GetString("cmu-specimen-contained", ("target", specimen)), crate);
         return true;
     }
 
-    public EntityUid? GetSpecimen(Entity<CMUSpecimenBagComponent> bag)
+    public EntityUid? GetSpecimen(Entity<CMUSpecimenCrateComponent> crate)
     {
-        if (!_container.TryGetContainer(bag, bag.Comp.ContainerId, out var container) || container.ContainedEntities.Count == 0)
+        if (!_container.TryGetContainer(crate, crate.Comp.ContainerId, out var container) || container.ContainedEntities.Count == 0)
             return null;
 
         return container.ContainedEntities[0];

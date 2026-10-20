@@ -36,7 +36,7 @@
   joinNotifyCrew: false
   supervisors: cmu-weyuexec-supervisors-sitedirector
   accessGroups:
-  - auwy
+  - CMUWYCommand
   hidden: false
 
 - type: entity

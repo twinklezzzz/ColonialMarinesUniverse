@@ -24,19 +24,19 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: pmc_gun
   name: au14-job-name-wypmc
-  description: au14-wysurv-greeting
+  description: au14-wysurv-description
   ranks:
     CMURankWYPMCOperator: []
-  spawnMenuRoleName: WY PMC Contractor (Survivor, NSG-23)
+  spawnMenuRoleName: WY PMC Contractor (Survivor)
   startingGear: AU14GearWYSurvPMC
   greeting: au14-wysurv-greeting
   icon: "RMCJobIconPMCStandard"
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 
@@ -52,7 +52,7 @@
     makeSentient: true
     allowSpeech: true
     allowMovement: true
-    name: au14-job-name-wypmc-contractor
+    name: au14-job-name-wypmc
     description: au14-wysurv-description
     reregister: false
     job: AU14JobWYSurvPMC

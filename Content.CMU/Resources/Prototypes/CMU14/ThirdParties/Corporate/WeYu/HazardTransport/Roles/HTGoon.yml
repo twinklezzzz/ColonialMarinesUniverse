@@ -23,7 +23,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: goon_standard
   name: au14-job-name-wyguard
   description: au14-wyht-description
   ranks:
@@ -35,7 +35,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 

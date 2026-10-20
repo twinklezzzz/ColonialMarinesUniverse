@@ -26,9 +26,9 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: goon_standard
   name: au14-job-name-wyguard
-  description: au14-wysurv-greeting
+  description: au14-wysurv-description
   ranks:
     CMURankWYSecOfficer: []
   spawnMenuRoleName: WY Corporate Goon (Survivor)
@@ -38,7 +38,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 
@@ -76,7 +76,8 @@
     back: RMCSatchelLightpackWeYa
     eyes: CMGlassesSecurity
     ears: RMCHeadsetDistressWeYa
-    inhand: RMCFlashlight
+  inhand:
+  - RMCFlashlight
   storage:
     back:
     - AU14CBRNKitWeYu

@@ -38,7 +38,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 
@@ -60,7 +60,7 @@
     job: AU14JobWYPMCPartySmartgunner
     raffle:
       settings: short
-    rules: au14-wypmc-description
+    rules: au14-pmcparty-description
 
 - type: startingGear
   id: AU14GearWYPMCPartySmartgunner

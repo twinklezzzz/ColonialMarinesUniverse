@@ -21,7 +21,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: exec_spec
   - type: NpcFactionMember
     factions:
     - GOVFOR
@@ -43,7 +43,7 @@
   - Colonist
   - auadmin
   - AUPrisonStaff
-  - auwy
+  - CMUWYExecutive
   hidden: false
 
 - type: entity
@@ -64,7 +64,7 @@
     job: AU14JobIPIELawyer
     raffle:
       settings: short
-    rules: au14-lpie-lawyer-description
+    rules: au14-ipie-lawyer-description
 
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
@@ -93,7 +93,7 @@
     requirements:
     - !type:OverallPlaytimeRequirement
       time: 18000 # 5 hours
-    rules: au14-lpie-lawyer-description
+    rules: au14-ipie-lawyer-description
 
 - type: startingGear
   id: AU14GearIPIELawyer

@@ -1,7 +1,7 @@
 # Round-start corporate leadership. Mappers pick which of these a map gets:
 # small maps lead with a Division Manager (WYC8), large maps with a Chief Executive (WYC9)
 # backed by Division Managers who each claim a division.
-# Both require 25 hours as Liaison, the same bar as the Corporate Assistant (WYC7).
+# Both require 25 hours as Liaison.
 
 # ── Division Manager (WYC8) ─────────────────────────────────────────────────
 - type: job
@@ -54,7 +54,7 @@
   - Colonist
   - auadmin
   - AUPrisonStaff
-  - auwy
+  - CMUWYCommand
   access:
   - AU14AccessCorporateWEYULiaison
   roleWeight: 0.25
@@ -152,7 +152,7 @@
   - Colonist
   - auadmin
   - AUPrisonStaff
-  - auwy
+  - CMUWYCommand
   access:
   - AU14AccessCorporateWEYULiaison
   roleWeight: 0.25

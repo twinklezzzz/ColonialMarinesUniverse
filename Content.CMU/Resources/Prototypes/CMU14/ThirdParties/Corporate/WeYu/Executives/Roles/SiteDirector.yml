@@ -50,7 +50,7 @@
   joinNotifyCrew: false
   supervisors: cmu-weyuexec-supervisors-hq
   accessGroups:
-  - auwy
+  - CMUWYCommand
   hidden: false
 
 - type: entity

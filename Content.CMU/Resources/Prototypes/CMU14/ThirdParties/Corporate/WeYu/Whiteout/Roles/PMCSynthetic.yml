@@ -8,7 +8,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: pmc_syn
   - type: Skills
     skills:
       RMCSkillCqc: 5
@@ -64,7 +64,7 @@
   joinNotifyCrew: false
   supervisors: cmu-whiteout-leader
   accessGroups:
-  - auwy
+  - CMUWYCommand
   hidden: false
 
 - type: entity

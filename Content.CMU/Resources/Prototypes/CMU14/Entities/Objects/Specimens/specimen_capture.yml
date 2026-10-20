@@ -17,48 +17,47 @@
 
 - type: entity
   parent: BaseItem
-  id: CMUSpecimenBagFolded
-  name: specimen containment bag
-  description: A folded Weyland-Yutani containment bag, rated for one bound xenonid. Use it on a restrained specimen to bag it.
+  id: CMUSpecimenCratePacked
+  name: packed specimen crate
+  description: A Weyland-Yutani secure specimen crate, packed flat for carrying. Use it on a restrained specimen to crate and seal it, or in hand to set it up empty.
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Medical/stasisbag.rsi
-    state: bodybag_folded
-    color: "#9fd8b0"
+    sprite: Objects/Devices/flatpack.rsi
+    layers:
+    - state: base
+    - state: overlay
+      color: "#9fd8b0"
   - type: Item
-    size: Normal
-  - type: CMUSpecimenBagFolded
-    deployed: CMUSpecimenBag
+    size: Large
+  - type: CMUSpecimenCratePacked
+    deployed: CMUSpecimenCrate
 
+# Built on the AEGIS secure crate. Click it to open or close the lid; a specimen can only be
+# loaded or let out while it's open.
 - type: entity
   parent: BaseStructureDynamic
-  id: CMUSpecimenBag
-  name: specimen containment bag
-  description: A Weyland-Yutani containment bag, rated for one bound xenonid. Keeps the specimen sedated and secure while it's hauled.
+  id: CMUSpecimenCrate
+  name: secure specimen crate
+  description: A Weyland-Yutani secure crate, rated for one bound xenonid. Keeps the specimen sedated and secure while it's hauled.
   components:
   - type: Sprite
-    sprite: _RMC14/Objects/Medical/stasisbag.rsi
-    drawdepth: Items
+    sprite: CMU14/Objects/Specimens/specimen_crate.rsi
     layers:
-    - state: bodybag_open
-      map: [ "enum.CMUSpecimenBagVisuals.Occupied" ]
-      color: "#9fd8b0"
-  - type: Appearance
-  - type: GenericVisualizer
-    visuals:
-      enum.CMUSpecimenBagVisuals.Occupied:
-        enum.CMUSpecimenBagVisuals.Occupied:
-          True: { state: bodybag_closed }
-          False: { state: bodybag_open }
+    - state: open
+      map: [ "enum.CMUSpecimenCrateLayers.Base" ]
+  - type: AnimationPlayer
   - type: Fixtures
     fixtures:
       fix1:
         shape:
           !type:PhysShapeAabb
-          bounds: "-0.4,-0.4,0.4,0.4"
-        density: 60
+          bounds: "-0.45,-0.45,0.45,0.45"
+        density: 100
         mask:
-        - ItemMask
+        - MachineMask
+        layer:
+        - MidImpassable
+        - LowImpassable
   - type: InteractionOutline
-  - type: CMUSpecimenBag
-    folded: CMUSpecimenBagFolded
+  - type: CMUSpecimenCrate
+    packed: CMUSpecimenCratePacked

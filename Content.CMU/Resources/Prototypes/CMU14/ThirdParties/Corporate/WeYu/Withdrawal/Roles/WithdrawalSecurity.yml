@@ -37,7 +37,7 @@
   joinNotifyCrew: false
   supervisors: cmu-wy-withdrawal-supervisors-security
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   hidden: false
 
 - type: entity

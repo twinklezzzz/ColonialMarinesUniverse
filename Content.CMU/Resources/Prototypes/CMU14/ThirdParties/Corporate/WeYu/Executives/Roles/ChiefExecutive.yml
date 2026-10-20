@@ -36,7 +36,7 @@
   joinNotifyCrew: false
   supervisors: cmu-weyuexec-supervisors-sitedirector
   accessGroups:
-  - auwy
+  - CMUWYCommand
   hidden: false
 
 - type: entity
@@ -68,7 +68,7 @@
     head: RMCHeadCapManager
     belt: RMCBeltHolsterPistolWeYaMK80Fill
     shoes: RMCShoesLaceup
-    ears: RMCHeadsetDistressPMCDirector
+    ears: RMCHeadsetDistressWeYa
     back: CMSatchel
     pocket1: RMCUniversalRecorder
     pocket2: CMClipboard

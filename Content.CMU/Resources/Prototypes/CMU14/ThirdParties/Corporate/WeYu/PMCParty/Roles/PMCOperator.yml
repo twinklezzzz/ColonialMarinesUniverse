@@ -30,7 +30,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: pmc_gun
   name: au14-job-name-wypmc-contractor
   description: au14-pmcparty-description
   ranks:
@@ -41,7 +41,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 
@@ -69,7 +69,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: pmc_gun
   name: au14-job-name-wypmc-contractor
   description: au14-pmcparty-description
   ranks:
@@ -81,7 +81,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 
@@ -109,7 +109,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: pmc_gun
   name: au14-job-name-wypmc-contractor
   description: au14-pmcparty-description
   ranks:
@@ -121,7 +121,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 
@@ -150,7 +150,7 @@
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
-      state: synth
+      state: pmc_gun
   name: au14-job-name-wypmc-sniper
   description: au14-pmcparty-description
   ranks:
@@ -162,7 +162,7 @@
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-wy
   accessGroups:
-  - auwy
+  - CMUWYSecurity
   - AUPrisonStaff
   hidden: false
 
@@ -184,7 +184,7 @@
     job: AU14JobWYPMCPartyContractor
     raffle:
       settings: short
-    rules: au14-wypmc-description
+    rules: au14-pmcparty-description
 
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
@@ -204,7 +204,7 @@
     job: AU14JobWYPMCPartyContractorM39B2
     raffle:
       settings: short
-    rules: au14-wypmc-description
+    rules: au14-pmcparty-description
 
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
@@ -224,7 +224,7 @@
     job: AU14JobWYPMCPartyContractorNSG23
     raffle:
       settings: short
-    rules: au14-wypmc-description
+    rules: au14-pmcparty-description
 
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
@@ -244,7 +244,7 @@
     job: AU14JobWYPMCPartyContractorM42A
     raffle:
       settings: short
-    rules: au14-wypmc-description
+    rules: au14-pmcparty-description
 
 - type: startingGear
   id: AU14GearWYPMCPartyContractor

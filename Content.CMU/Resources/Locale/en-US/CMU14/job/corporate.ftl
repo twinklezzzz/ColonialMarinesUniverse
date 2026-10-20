@@ -5,6 +5,7 @@ cmu-job-supervisors-corporate-division-manager = The Division Manager
 cmu-job-supervisors-corporate-chief-executive = The Chief Executive
 cmu-job-supervisors-corporate-directorate = The Weyland-Yutani Directorate
 cmu-job-supervisors-corporate-legal = The Legal Supervisor
+cmu-job-supervisors-lead-researcher = The Lead Researcher
 
 cmu-job-name-corporate-executive = Corporate Executive
 cmu-job-description-corporate-executive = Do the company's paperwork. File reports, process requests and work your way up the corporate ladder.
@@ -46,3 +47,8 @@ cmu-job-prefix-personal-protection = PPO.
 cmu-job-name-personal-protection-coordinator = Personal Protection Coordinator
 cmu-job-description-personal-protection-coordinator = Lead the Chief Executive's protection detail. Plan routes, assign officers and decide when to pull your principal out.
 cmu-job-prefix-personal-protection-coordinator = PPC.
+
+## WY access tiers
+cmu-access-wy-security = WY Security
+cmu-access-wy-research = WY Research
+cmu-access-wy-armory = WY Armory

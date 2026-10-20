@@ -1,4 +1,5 @@
 using Content.Shared.DoAfter;
+using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
@@ -67,11 +68,11 @@ public sealed partial class CMUSpecimenHarnessComponent : Component
 }
 
 /// <summary>
-///     A folded containment bag. Used on a restrained specimen it unfolds around it; used in hand
-///     it unfolds empty.
+///     A packed specimen crate. Used on a restrained specimen it's set up around it and sealed; used
+///     in hand it's set up empty and open.
 /// </summary>
 [RegisterComponent, NetworkedComponent, Access(typeof(CMUSpecimenCaptureSystem))]
-public sealed partial class CMUSpecimenBagFoldedComponent : Component
+public sealed partial class CMUSpecimenCratePackedComponent : Component
 {
     [DataField(required: true)]
     public EntProtoId Deployed;
@@ -80,29 +81,54 @@ public sealed partial class CMUSpecimenBagFoldedComponent : Component
     public TimeSpan Delay = TimeSpan.FromSeconds(4);
 }
 
+[Serializable, NetSerializable]
+public enum CMUSpecimenCrateState : byte
+{
+    Closed,
+    Opening,
+    Open,
+    Closing,
+}
+
+[Serializable, NetSerializable]
+public enum CMUSpecimenCrateLayers : byte
+{
+    Base,
+}
+
 /// <summary>
-///     An unfolded containment bag that holds one restrained specimen and can be pulled.
+///     A secure crate that holds one restrained specimen and can be pulled. It opens and closes
+///     with an animation; a specimen can only be loaded or let out while it's open.
 /// </summary>
-[RegisterComponent, NetworkedComponent, Access(typeof(CMUSpecimenCaptureSystem))]
-public sealed partial class CMUSpecimenBagComponent : Component
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true), Access(typeof(CMUSpecimenCaptureSystem))]
+public sealed partial class CMUSpecimenCrateComponent : Component
 {
     [DataField]
     public string ContainerId = "cmu_specimen";
 
     [DataField(required: true)]
-    public EntProtoId Folded;
+    public EntProtoId Packed;
 
     [DataField]
     public TimeSpan LoadDelay = TimeSpan.FromSeconds(4);
 
-    [DataField]
-    public TimeSpan ReleaseDelay = TimeSpan.FromSeconds(3);
-}
+    [DataField, AutoNetworkedField]
+    public CMUSpecimenCrateState State = CMUSpecimenCrateState.Open;
 
-[Serializable, NetSerializable]
-public enum CMUSpecimenBagVisuals : byte
-{
-    Occupied,
+    /// <summary>
+    ///     When the lid finishes moving, while opening or closing.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public TimeSpan? MovingUntil;
+
+    /// <summary>
+    ///     How long the lid takes, matching the sprite's four 0.365s frames.
+    /// </summary>
+    [DataField]
+    public TimeSpan MoveTime = TimeSpan.FromSeconds(1.46);
+
+    [DataField]
+    public SoundSpecifier? MoveSound = new SoundPathSpecifier("/Audio/_RMC14/Structures/secure_box_opening/secure_box_opening.ogg");
 }
 
 [Serializable, NetSerializable]
@@ -112,10 +138,7 @@ public sealed partial class CMUSpecimenHarnessDoAfterEvent : SimpleDoAfterEvent;
 public sealed partial class CMUSpecimenUnharnessDoAfterEvent : SimpleDoAfterEvent;
 
 [Serializable, NetSerializable]
-public sealed partial class CMUSpecimenBagDoAfterEvent : SimpleDoAfterEvent;
+public sealed partial class CMUSpecimenCrateDoAfterEvent : SimpleDoAfterEvent;
 
 [Serializable, NetSerializable]
 public sealed partial class CMUSpecimenLoadDoAfterEvent : SimpleDoAfterEvent;
-
-[Serializable, NetSerializable]
-public sealed partial class CMUSpecimenReleaseDoAfterEvent : SimpleDoAfterEvent;
