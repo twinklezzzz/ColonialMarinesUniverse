@@ -116,16 +116,16 @@ public sealed class CMUCorporateRelationsTest
             entities.DeleteEntity(corporateTerminal);
             entities.DeleteEntity(colonyTerminal);
 
-            // Only WYC6 and above can order the withdrawal.
-            server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSpecialist");
+            // Only WYC5 (the Liaison) and above can order the withdrawal.
+            server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaSeniorExecutive");
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
             Assert.That(relations.Withdrawn, Is.False);
             var thirdParties = server.System<ThirdPartySystem>();
             Assert.That(thirdParties.GetQueuedThirdParties().Any(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.False,
-                "A WYC5 called the withdrawal shuttle.");
+                "A WYC4 called the withdrawal shuttle.");
 
-            // A WYC6 starts the countdown, which calls the company shuttle to collect corporate staff.
-            server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSupervisor");
+            // A WYC5 starts the countdown, which calls the company shuttle to collect corporate staff.
+            server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSpecialist");
             Raise(corporateConsole, new CMUContractsWithdrawalBuiMsg(true));
             Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
 

@@ -57,7 +57,7 @@ cmu-contracts-call-in = Call in loan
 cmu-contracts-request-loan = Request loan
 
 cmu-contracts-section-withdrawal = Withdrawal
-cmu-contracts-withdrawal-description = The nuclear option, and there is no calling it off. After a five-minute warning WY pulls out: every loan is collected in full on the spot, even into debt, work orders and rent end, WY stops taking the tariff, and the colony pays 25% more and earns 25% less for the rest of the round. Needs WYC6 or above.
+cmu-contracts-withdrawal-description = The nuclear option, and there is no calling it off. After a five-minute warning WY pulls out: every loan is collected in full on the spot, even into debt, work orders and rent end, WY stops taking the tariff, and the colony pays 25% more and earns 25% less for the rest of the round. Needs WYC5 or above.
 cmu-contracts-withdrawal-start = Begin corporate withdrawal
 cmu-contracts-withdrawal-locked = Withdrawal ordered. It cannot be called off.
 
@@ -67,7 +67,7 @@ cmu-contracts-refuse-loan-exists = There is already a loan with Weyland-Yutani.
 cmu-contracts-refuse-corporate-funds = The corporate budget can't cover that.
 cmu-contracts-refuse-orders-frozen = Work orders are frozen until the next cycle.
 cmu-contracts-refuse-orders-full = Only {$max} work orders can be open at once.
-cmu-contracts-refuse-withdrawal-rank = Only Executive Supervisors and above can order a withdrawal.
+cmu-contracts-refuse-withdrawal-rank = Only Executive Specialists and above can order a withdrawal.
 
 cmu-contracts-announce-rent-set = The colony has set Weyland-Yutani's site rent to ${$rent} per cycle.
 cmu-contracts-announce-rent-paid = Weyland-Yutani paid ${$paid} in site rent.

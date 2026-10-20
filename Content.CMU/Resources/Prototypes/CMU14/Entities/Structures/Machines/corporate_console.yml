@@ -35,7 +35,8 @@
       CashSlot: !type:ContainerSlot {}
   - type: CMUContractsConsole
     side: Corporate
-    withdrawalRanks: # Executive Supervisor (WYC6) and above
+    withdrawalRanks: # Executive Specialist (WYC5, the Liaison) and above
+    - RMCRankWeYaExecutiveSpecialist
     - RMCRankWeYaExecutiveSupervisor
     - RMCRankWeYaAssistantManager
     - RMCRankWeYaDivisionManager
