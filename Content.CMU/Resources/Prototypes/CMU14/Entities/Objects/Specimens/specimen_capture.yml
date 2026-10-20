@@ -28,7 +28,7 @@
     - state: overlay
       color: "#9fd8b0"
   - type: Item
-    size: Large
+    size: Normal # flat-packed, so it fits a satchel
   - type: CMUSpecimenCratePacked
     deployed: CMUSpecimenCrate
 
