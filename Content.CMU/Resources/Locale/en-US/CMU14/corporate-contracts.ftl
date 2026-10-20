@@ -36,7 +36,7 @@ cmu-contracts-freeze-orders = Freeze work orders until the next cycle
 
 cmu-contracts-section-loans = Loans
 cmu-contracts-loans-description-corporate = The colony and ambassadors can ask Weyland-Yutani for a loan. Set the interest, counter, accept or decline. Calling a loan in demands the full balance now.
-cmu-contracts-loans-description-borrower = Ask Weyland-Yutani for a loan, then negotiate the amount and interest. It is repaid over three cycles of 15 minutes. Instalments are taken automatically, even if that puts you in debt.
+cmu-contracts-loans-description-borrower = Ask Weyland-Yutani for a loan, then negotiate the amount and interest. It is repaid over three cycles of 15 minutes, taken automatically. A missed instalment adds 10%, and after three misses in a row the instalment is taken anyway, even if that puts you in debt.
 cmu-contracts-no-loans = No loans.
 cmu-contracts-loan-active = {$borrower} owes ${$owed} over {$left} more {$left ->
     [one] cycle
@@ -85,9 +85,13 @@ cmu-contracts-announce-loan-requested = {$borrower} has asked Weyland-Yutani for
 cmu-contracts-announce-loan-agreed = Weyland-Yutani has lent {$borrower} ${$amount} at {$interest}% interest.
 cmu-contracts-announce-loan-declined = Loan talks between Weyland-Yutani and {$borrower} have broken down.
 cmu-contracts-announce-loan-repaid = {$borrower} has repaid its debt to Weyland-Yutani.
-cmu-contracts-announce-loan-forced = {$borrower} couldn't cover its loan instalment. Weyland-Yutani has taken the ${$amount} anyway.
+cmu-contracts-announce-loan-missed = {$borrower} missed a loan payment to Weyland-Yutani. It now owes ${$owed}. {$left ->
+    [one] One more missed payment and it will be collected by force.
+   *[other] {$left} more missed payments and it will be collected by force.
+}
+cmu-contracts-announce-loan-forced = {$borrower} has missed three loan payments in a row. Weyland-Yutani has collected the ${$amount} instalment by force.
 cmu-contracts-announce-loan-called-paid = Weyland-Yutani has called in its loan. {$borrower} paid the ${$owed} balance.
-cmu-contracts-announce-loan-called-short = Weyland-Yutani has called in its loan. {$borrower} couldn't cover the ${$owed} balance, and it has been taken anyway.
+cmu-contracts-announce-loan-called-short = Weyland-Yutani has called in its loan. {$borrower} can't pay and now owes ${$owed}, all due next cycle.
 cmu-contracts-announce-withdrawal-started = Weyland-Yutani has begun withdrawing from the colony. Withdrawal in {$minutes} minutes. All outstanding loans will be called in.
 cmu-contracts-announce-withdrawal-done = Weyland-Yutani has withdrawn from the colony. All outstanding loans have been collected. Colony prices rise and payouts fall by {$percent}%.
 

@@ -10,6 +10,16 @@ public sealed partial class CMUCorporateRelationsSystem
     public const int Installments = 3;
 
     /// <summary>
+    ///     Added to the debt when an instalment is missed.
+    /// </summary>
+    public const float MissedPaymentPenalty = 0.1f;
+
+    /// <summary>
+    ///     Missed instalments in a row before WY takes the next one anyway, into the red.
+    /// </summary>
+    public const int MissesBeforeForcedCollection = 3;
+
+    /// <summary>
     ///     What the colony already owes WY when the round starts, so it can't play dirty straight away.
     /// </summary>
     public const int StartingDebt = 1500;
@@ -25,6 +35,7 @@ public sealed partial class CMUCorporateRelationsSystem
         public float Owed;
         public int InstallmentsLeft;
         public bool StartingDebt;
+        public int MissedInARow;
     }
 
     private void InitializeLoans()
@@ -76,11 +87,33 @@ public sealed partial class CMUCorporateRelationsSystem
             if (loan.Stage != CMULoanStage.Active)
                 continue;
 
-            // Instalments are forced: if the borrower can't cover one, it's taken anyway, into the red.
-            // Otherwise a borrower could dodge every payment by keeping its budget just short.
             var installment = MathF.Min(loan.Owed, MathF.Ceiling(loan.Owed / Math.Max(1, loan.InstallmentsLeft)));
             if (GetBorrowerBudget(loan.Borrower) < installment)
-                Announce("cmu-contracts-announce-loan-forced", ("borrower", BorrowerName(loan.Borrower)), ("amount", (int) installment));
+            {
+                loan.MissedInARow++;
+
+                // A borrower that keeps its budget just short would never pay, so after enough
+                // misses in a row the instalment is taken anyway, into the red.
+                if (loan.MissedInARow >= MissesBeforeForcedCollection)
+                {
+                    loan.MissedInARow = 0;
+                    Announce("cmu-contracts-announce-loan-forced", ("borrower", BorrowerName(loan.Borrower)), ("amount", (int) installment));
+                }
+                else
+                {
+                    // A missed instalment grows the debt; the next ones get bigger.
+                    loan.Owed = MathF.Ceiling(loan.Owed * (1 + MissedPaymentPenalty));
+                    Announce("cmu-contracts-announce-loan-missed",
+                        ("borrower", BorrowerName(loan.Borrower)),
+                        ("owed", (int) loan.Owed),
+                        ("left", MissesBeforeForcedCollection - loan.MissedInARow));
+                    continue;
+                }
+            }
+            else
+            {
+                loan.MissedInARow = 0;
+            }
 
             Repay(loan, installment);
             loan.InstallmentsLeft = Math.Max(1, loan.InstallmentsLeft - 1);
@@ -202,11 +235,19 @@ public sealed partial class CMUCorporateRelationsSystem
             return;
         }
 
-        // Called in means collected now, in full, whether or not the borrower can cover it.
-        var owed = (int) MathF.Ceiling(loan.Owed);
-        var key = GetBorrowerBudget(loan.Borrower) >= loan.Owed ? "cmu-contracts-announce-loan-called-paid" : "cmu-contracts-announce-loan-called-short";
-        Announce(key, ("borrower", BorrowerName(loan.Borrower)), ("owed", owed));
-        Repay(loan, loan.Owed);
+        if (GetBorrowerBudget(loan.Borrower) >= loan.Owed)
+        {
+            Announce("cmu-contracts-announce-loan-called-paid", ("borrower", BorrowerName(loan.Borrower)), ("owed", (int) MathF.Ceiling(loan.Owed)));
+            Repay(loan, loan.Owed);
+        }
+        else
+        {
+            // Can't pay it all now: everything falls due at the next cycle, with the penalty, and
+            // the usual run of misses before it's forced.
+            loan.Owed = MathF.Ceiling(loan.Owed * (1 + MissedPaymentPenalty));
+            loan.InstallmentsLeft = 1;
+            Announce("cmu-contracts-announce-loan-called-short", ("borrower", BorrowerName(loan.Borrower)), ("owed", (int) loan.Owed));
+        }
 
         UpdateAllUi();
     }
