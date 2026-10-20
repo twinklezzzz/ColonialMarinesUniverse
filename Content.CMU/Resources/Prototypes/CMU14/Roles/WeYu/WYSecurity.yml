@@ -253,7 +253,7 @@
   icon: "RMCJobIconPMCGoonLead"
   requireAdminNotify: false
   joinNotifyCrew: false
-  supervisors: cmu-job-supervisors-corporate-chief-executive
+  supervisors: cmu-job-supervisors-corporate-division-manager
   accessGroups:
   - CMUWYSecurity
   - AUPrisonStaff

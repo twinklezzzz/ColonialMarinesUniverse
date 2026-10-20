@@ -27,7 +27,7 @@
   greeting: cmu-weyuexec-greeting
   icon: CMJobIconExecSuper
   joinNotifyCrew: false
-  supervisors: cmu-weyuexec-supervisors-sitedirector
+  supervisors: cmu-weyuexec-supervisors-director
   accessGroups:
   - CMUWYExecutive
   hidden: false

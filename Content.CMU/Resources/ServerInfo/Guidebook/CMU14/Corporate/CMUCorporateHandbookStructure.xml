@@ -10,9 +10,10 @@
   - [bold]WYC4 Senior Executive[/bold]: senior office staff. Runs office tasks in the Liaison's absence.
   - [bold]WYC5 Executive Specialist[/bold]: Corporate Liaison. The Company's official representative at the site.
   - [bold]WYC6 Executive Supervisor[/bold]: senior Corporate Liaison. Trusted with decisions of consequence.
-  - [bold]WYC7 Assistant Manager[/bold]: Corporate Assistant to site management.
-  - [bold]WYC8 Division Manager[/bold]: heads a division, or the site itself where no Chief Executive is posted.
-  - [bold]WYC9 Chief Executive[/bold]: heads a major site. Answers only to the Directorate.
+  - [bold]WYC7 Assistant Manager[/bold]: deputy to the Division Manager.
+  - [bold]WYC8 Division Manager[/bold]: runs a site. Answers to the sector's Chief Executive.
+  - [bold]WYC9 Chief Executive[/bold]: the sector chief. Oversees every site in the sector and answers only to the Directorate.
+  - [bold]WYC10 Deputy Director[/bold] and [bold]WYC11 Director[/bold]: the Directorate, the Company's ruling board. Never posted to a site.
 
   ## Legal grades
   - [bold]WYC5L Legal Specialist[/bold] and [bold]WYC6L Legal Supervisor[/bold]: Company counsel. They advise on contracts, colonial law and exposure. Counsel don't command the executive grades, but an executive who ignores counsel answers for the consequences personally.
@@ -22,8 +23,8 @@
 
   ## Senior employee on site
   The highest-grade executive present is the senior employee on site. They decide disputes between departments and speak for the Company.
-  - At a minor site, this is normally a Division Manager or the Corporate Liaison.
-  - At a major site, it's the Chief Executive, supported by Division Managers.
+  - Normally this is the Division Manager, or the Corporate Liaison where no manager is posted.
+  - A visiting Chief Executive or member of the Directorate takes over for as long as they're present.
 
   ## Restricted systems
   - The corporate console and the corporate Overwatch console are restricted to [bold]WYC5 and above[/bold].

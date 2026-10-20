@@ -44,7 +44,7 @@
   ranks:
     RMCRankWeYaDirector: []
   startingGear: CMUGearWeYuSiteDirector
-  spawnMenuRoleName: WY Site Director (event)
+  spawnMenuRoleName: WY Director (event)
   greeting: cmu-weyuexec-greeting
   icon: RMCJobIconPMCDirector
   joinNotifyCrew: false
@@ -56,7 +56,7 @@
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
   id: CMUJobWeYuSiteDirector
-  name: WY Site Director
+  name: WY Director
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial

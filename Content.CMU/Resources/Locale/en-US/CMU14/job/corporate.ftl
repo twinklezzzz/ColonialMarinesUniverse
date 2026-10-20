@@ -12,11 +12,11 @@ cmu-job-description-corporate-executive = Do the company's paperwork. File repor
 cmu-job-prefix-corporate-executive = Corp. Exec.
 
 cmu-job-name-corporate-division-manager = Division Manager
-cmu-job-description-corporate-division-manager = Run the corporate presence on smaller sites, or take charge of a division under the Chief Executive on larger ones.
+cmu-job-description-corporate-division-manager = Run the company's site on the colony. You claim the division the site works for, and you answer to the sector's Chief Executive.
 cmu-job-prefix-corporate-division-manager = Div. Mng.
 
 cmu-job-name-corporate-chief-executive = Chief Executive
-cmu-job-description-corporate-chief-executive = Head the corporate presence on the colony. Your Division Managers run the divisions, you answer to the Directorate.
+cmu-job-description-corporate-chief-executive = Oversee every company site in the sector. The Division Manager runs this one day to day; you answer to the Directorate.
 cmu-job-prefix-corporate-chief-executive = Chief Exec.
 
 cmu-job-name-corporate-legal-specialist = Legal Specialist

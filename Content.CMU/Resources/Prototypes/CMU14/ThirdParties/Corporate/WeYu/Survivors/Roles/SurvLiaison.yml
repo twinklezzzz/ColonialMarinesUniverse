@@ -40,7 +40,7 @@
   icon: "CMJobIconLiaison"
   requireAdminNotify: false
   joinNotifyCrew: false
-  supervisors: au14-job-supervisors-colonycivilian
+  supervisors: au14-job-supervisors-wy
   spawnMenuRoleName: WY Liaison (Surv)
   accessGroups:
   - Colonist

@@ -2,7 +2,7 @@
   parent: CMIDCardBase
   categories: [ HideSpawnMenu ]
   id: CMUIDCardWeYuSiteDirector
-  name: WY site director ID card
+  name: WY director ID card
   components:
   - type: PresetIdCard
     job: CMUJobWeYuSiteDirector

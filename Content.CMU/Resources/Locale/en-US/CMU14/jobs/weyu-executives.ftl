@@ -1,9 +1,9 @@
-cmu-weyuexec-name-sitedirector = WY Site Director
-cmu-weyuexec-description-sitedirector = Weyland-Yutani's senior on-site executive. Whatever happened here, the company line is that it is now under control. It is your job to make that true.
+cmu-weyuexec-name-sitedirector = WY Director
+cmu-weyuexec-description-sitedirector = A member of the Weyland-Yutani Directorate, on the ground in person. Whatever happened here, the company line is that it is now under control. It is your job to make that true.
 cmu-weyuexec-name-chiefexecutive = WY Chief Executive
-cmu-weyuexec-description-chiefexecutive = A senior corporate officer from the executive branch, on the ground to protect the company's interests and, failing that, its reputation.
+cmu-weyuexec-description-chiefexecutive = The sector chief. Every company site in the sector answers to you, and you answer to the Directorate. You're here to protect the company's interests and, failing that, its reputation.
 cmu-weyuexec-name-divisionmanager = WY Division Manager
-cmu-weyuexec-description-divisionmanager = A mid-level division manager sent down from corporate to audit the site, trim the dead weight, and file everything deniably.
+cmu-weyuexec-description-divisionmanager = The manager who runs this site. Get it back under control, trim the dead weight, and file everything deniably.
 cmu-weyuexec-name-legalsupervisor = WY Legal Supervisor
 cmu-weyuexec-description-legalsupervisor = The company's legal presence on-site. Every liability gets documented, every witness gets a form, and nothing said near you is off the record.
 cmu-weyuexec-name-legalspecialist = WY Legal Specialist
@@ -26,8 +26,9 @@ cmu-weyuexec-description-protection-specialist = The heavy hitter of the executi
 cmu-weyuexec-prefix-protection-specialist = PPS
 cmu-weyuexec-prefix-lawyer = LAW
 cmu-weyuexec-greeting-security = You are Weyland-Yutani corporate security escorting an executive detail through a very bad day. Protect company personnel and assets. Use the minimum force that keeps the denial plausible.
-cmu-weyuexec-supervisors-hq = Weyland-Yutani corporate headquarters
-cmu-weyuexec-supervisors-sitedirector = the site director
+cmu-weyuexec-supervisors-hq = The Weyland-Yutani Directorate
+cmu-weyuexec-supervisors-director = The Director
+cmu-weyuexec-supervisors-chiefexecutive = The Chief Executive
 cmu-weyuexec-greeting = You are part of a Weyland-Yutani executive detail sent to inspect the site. Protect the company's interests, its assets, and above all its secrets. What happened here stays off the record.
 cmu-weyuexec-rules = You are a Weyland-Yutani executive. You are a normal human who can be killed by any threat. Protect company assets and personnel, deny everything, and avoid open combat where paperwork will do.
 
