@@ -8,7 +8,6 @@ public sealed partial class CMUCorporateRelationsSystem
     public const int MaxLoan = 10000;
     public const int MaxInterestPercent = 100;
     public const int Installments = 3;
-    public const float MissedPaymentPenalty = 0.1f;
 
     /// <summary>
     ///     What the colony already owes WY when the round starts, so it can't play dirty straight away.
@@ -77,14 +76,11 @@ public sealed partial class CMUCorporateRelationsSystem
             if (loan.Stage != CMULoanStage.Active)
                 continue;
 
-            var installment = MathF.Ceiling(loan.Owed / Math.Max(1, loan.InstallmentsLeft));
+            // Instalments are forced: if the borrower can't cover one, it's taken anyway, into the red.
+            // Otherwise a borrower could dodge every payment by keeping its budget just short.
+            var installment = MathF.Min(loan.Owed, MathF.Ceiling(loan.Owed / Math.Max(1, loan.InstallmentsLeft)));
             if (GetBorrowerBudget(loan.Borrower) < installment)
-            {
-                // A missed instalment grows the debt; the next ones get bigger.
-                loan.Owed = MathF.Ceiling(loan.Owed * (1 + MissedPaymentPenalty));
-                Announce("cmu-contracts-announce-loan-missed", ("borrower", BorrowerName(loan.Borrower)), ("owed", (int) loan.Owed));
-                continue;
-            }
+                Announce("cmu-contracts-announce-loan-forced", ("borrower", BorrowerName(loan.Borrower)), ("amount", (int) installment));
 
             Repay(loan, installment);
             loan.InstallmentsLeft = Math.Max(1, loan.InstallmentsLeft - 1);
@@ -206,18 +202,11 @@ public sealed partial class CMUCorporateRelationsSystem
             return;
         }
 
-        if (GetBorrowerBudget(loan.Borrower) >= loan.Owed)
-        {
-            Announce("cmu-contracts-announce-loan-called-paid", ("borrower", BorrowerName(loan.Borrower)), ("owed", (int) MathF.Ceiling(loan.Owed)));
-            Repay(loan, loan.Owed);
-        }
-        else
-        {
-            // Can't pay it all now: everything falls due at the next cycle, with the penalty.
-            loan.Owed = MathF.Ceiling(loan.Owed * (1 + MissedPaymentPenalty));
-            loan.InstallmentsLeft = 1;
-            Announce("cmu-contracts-announce-loan-called-short", ("borrower", BorrowerName(loan.Borrower)), ("owed", (int) loan.Owed));
-        }
+        // Called in means collected now, in full, whether or not the borrower can cover it.
+        var owed = (int) MathF.Ceiling(loan.Owed);
+        var key = GetBorrowerBudget(loan.Borrower) >= loan.Owed ? "cmu-contracts-announce-loan-called-paid" : "cmu-contracts-announce-loan-called-short";
+        Announce(key, ("borrower", BorrowerName(loan.Borrower)), ("owed", owed));
+        Repay(loan, loan.Owed);
 
         UpdateAllUi();
     }

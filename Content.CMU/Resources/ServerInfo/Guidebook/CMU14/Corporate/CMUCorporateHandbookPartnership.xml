@@ -3,7 +3,7 @@
 
   The Company operates on the colony's land under a site lease. The colony and the Company need each other, and both sides know it. Handle the partnership as an asset. It's often the most valuable one on site.
 
-  All partnership business runs through the Contracts screen on the corporate console, the colonial administration console and the ambassador's console. Accounts settle every [bold]billing cycle of twenty minutes[/bold].
+  All partnership business runs through the Contracts screen on the corporate console, the colonial administration console and the ambassador's console. Accounts settle every [bold]billing cycle of fifteen minutes[/bold].
 
   ## The colony's instruments
   - [bold]Site lease[/bold]: the colony sets the Company's rent, up to $1500 per cycle. Unpaid rent becomes arrears.
@@ -15,7 +15,7 @@
 
   ## The Company's instruments
   - [bold]Development debt[/bold]: every colony begins in debt to the Company, $1500 at the start of each site's operation.
-  - [bold]Loans[/bold]: the colonial ambassador may request financing of up to $10000. The interest rate is negotiated. Repayment is in three instalments, and each missed instalment adds a 10% penalty. Generous terms buy goodwill. Strict terms buy leverage.
+  - [bold]Loans[/bold]: the colonial ambassador may request financing of up to $10000. The interest rate is negotiated. Repayment is in three instalments, collected automatically each cycle whether or not the borrower can cover them. A borrower who can't pay simply goes into debt to the Company. Generous terms buy goodwill. Strict terms buy leverage.
   - [bold]Work orders[/bold]: the Company may post up to three orders for colonial goods, paying 5–40% above market rate. Goods bought this way resell at a loss. A work order isn't a purchase: it's a gesture, offered to the colony when the Company wants the colony to feel generous.
 
   ## Contingency: Divestment

@@ -36,7 +36,7 @@ public sealed partial class CMUCorporateRelationsSystem : EntitySystem
     [Dependency] private TagSystem _tag = default!;
     [Dependency] private UserInterfaceSystem _ui = default!;
 
-    public static readonly TimeSpan Cycle = TimeSpan.FromMinutes(20);
+    public static readonly TimeSpan Cycle = TimeSpan.FromMinutes(15);
     public const int RentCap = 1500;
     public const string ColonyBorrower = "colony";
 

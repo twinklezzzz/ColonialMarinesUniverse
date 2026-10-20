@@ -86,6 +86,16 @@ public sealed class CMUCorporateRelationsTest
                 Assert.That(relations.GetOwed(Faction), Is.EqualTo(1600));
             });
 
+            // Instalments are forced: with nothing in the bank, UPP pays the next one anyway, into the red.
+            ambassador.AdjustFactionBudget(Faction, -ambassador.GetFactionBudget(Faction));
+            relations.RunCycle();
+            Assert.Multiple(() =>
+            {
+                Assert.That(relations.GetOwed(Faction), Is.EqualTo(800), "A borrower dodged an instalment.");
+                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-800));
+            });
+            ambassador.AdjustFactionBudget(Faction, 800);
+
             // Revoking WY's research licence stops its research terminals opening; the colony's still do.
             var corporateTerminal = entities.SpawnEntity("CMUResearchDataTerminalCorporate", map.GridCoords);
             var colonyTerminal = entities.SpawnEntity("CMUResearchDataTerminalColony", map.GridCoords);
@@ -120,7 +130,7 @@ public sealed class CMUCorporateRelationsTest
             Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
 
             // Withdrawal collects every loan in full on the spot, even into debt, and turns the
-            // colony's prices up. UPP has spent everything, so it goes $1600 into the red.
+            // colony's prices up. UPP has spent everything, so it goes $800 into the red.
             ambassador.AdjustFactionBudget(Faction, -ambassador.GetFactionBudget(Faction));
             relations.Withdraw();
             Assert.Multiple(() =>
@@ -128,7 +138,7 @@ public sealed class CMUCorporateRelationsTest
                 Assert.That(relations.Withdrawn, Is.True);
                 Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.Zero);
                 Assert.That(relations.GetOwed(Faction), Is.Zero);
-                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-1600));
+                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-800));
                 Assert.That(relations.ColonyPriceMultiplier, Is.EqualTo(1.25f));
                 Assert.That(relations.ColonyPayoutMultiplier, Is.EqualTo(0.75f));
             });
