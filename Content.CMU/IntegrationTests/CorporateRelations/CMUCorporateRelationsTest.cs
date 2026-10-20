@@ -86,20 +86,20 @@ public sealed class CMUCorporateRelationsTest
                 Assert.That(relations.GetOwed(Faction), Is.EqualTo(1600));
             });
 
-            // With nothing in the bank UPP misses two instalments, each adding 10%. The third miss in a
-            // row is collected by force, into the red: $1600 -> 1760 -> 1936, then $968 taken.
+            // With nothing in the bank UPP misses two instalments, each charging its 20% interest again.
+            // The third miss in a row is collected by force, into the red: $1600 -> 1920 -> 2304, then $1152 taken.
             ambassador.AdjustFactionBudget(Faction, -ambassador.GetFactionBudget(Faction));
             relations.RunCycle();
-            Assert.That(relations.GetOwed(Faction), Is.EqualTo(1760));
+            Assert.That(relations.GetOwed(Faction), Is.EqualTo(1920));
             relations.RunCycle();
-            Assert.That(relations.GetOwed(Faction), Is.EqualTo(1936));
+            Assert.That(relations.GetOwed(Faction), Is.EqualTo(2304));
             relations.RunCycle();
             Assert.Multiple(() =>
             {
-                Assert.That(relations.GetOwed(Faction), Is.EqualTo(968), "The third miss wasn't collected by force.");
-                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-968));
+                Assert.That(relations.GetOwed(Faction), Is.EqualTo(1152), "The third miss wasn't collected by force.");
+                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-1152));
             });
-            ambassador.AdjustFactionBudget(Faction, 968);
+            ambassador.AdjustFactionBudget(Faction, 1152);
 
             // Revoking WY's research licence stops its research terminals opening; the colony's still do.
             var corporateTerminal = entities.SpawnEntity("CMUResearchDataTerminalCorporate", map.GridCoords);
@@ -135,7 +135,7 @@ public sealed class CMUCorporateRelationsTest
             Assert.That(thirdParties.GetQueuedThirdParties().Count(p => p.ID == CMUCorporateRelationsSystem.WithdrawalTeam), Is.EqualTo(1));
 
             // Withdrawal collects every loan in full on the spot, even into debt, and turns the
-            // colony's prices up. UPP has spent everything, so it goes $968 into the red.
+            // colony's prices up. UPP has spent everything, so it goes $1152 into the red.
             ambassador.AdjustFactionBudget(Faction, -ambassador.GetFactionBudget(Faction));
             relations.Withdraw();
             Assert.Multiple(() =>
@@ -143,7 +143,7 @@ public sealed class CMUCorporateRelationsTest
                 Assert.That(relations.Withdrawn, Is.True);
                 Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.Zero);
                 Assert.That(relations.GetOwed(Faction), Is.Zero);
-                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-968));
+                Assert.That(ambassador.GetFactionBudget(Faction), Is.EqualTo(-1152));
                 Assert.That(relations.ColonyPriceMultiplier, Is.EqualTo(1.25f));
                 Assert.That(relations.ColonyPayoutMultiplier, Is.EqualTo(0.75f));
             });

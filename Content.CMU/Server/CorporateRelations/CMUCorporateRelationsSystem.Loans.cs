@@ -10,11 +10,6 @@ public sealed partial class CMUCorporateRelationsSystem
     public const int Installments = 3;
 
     /// <summary>
-    ///     Added to the debt when an instalment is missed.
-    /// </summary>
-    public const float MissedPaymentPenalty = 0.1f;
-
-    /// <summary>
     ///     Missed instalments in a row before WY takes the next one anyway, into the red.
     /// </summary>
     public const int MissesBeforeForcedCollection = 3;
@@ -101,8 +96,8 @@ public sealed partial class CMUCorporateRelationsSystem
                 }
                 else
                 {
-                    // A missed instalment grows the debt; the next ones get bigger.
-                    loan.Owed = MathF.Ceiling(loan.Owed * (1 + MissedPaymentPenalty));
+                    // A missed instalment grows the debt by the loan's own rate; the next ones get bigger.
+                    ApplyLateFee(loan);
                     Announce("cmu-contracts-announce-loan-missed",
                         ("borrower", BorrowerName(loan.Borrower)),
                         ("owed", (int) loan.Owed),
@@ -242,9 +237,9 @@ public sealed partial class CMUCorporateRelationsSystem
         }
         else
         {
-            // Can't pay it all now: everything falls due at the next cycle, with the penalty, and
+            // Can't pay it all now: everything falls due at the next cycle, with the late fee, and
             // the usual run of misses before it's forced.
-            loan.Owed = MathF.Ceiling(loan.Owed * (1 + MissedPaymentPenalty));
+            ApplyLateFee(loan);
             loan.InstallmentsLeft = 1;
             Announce("cmu-contracts-announce-loan-called-short", ("borrower", BorrowerName(loan.Borrower)), ("owed", (int) loan.Owed));
         }
@@ -256,6 +251,16 @@ public sealed partial class CMUCorporateRelationsSystem
     ///     Collects every outstanding loan in full on the spot, even from borrowers who can't cover
     ///     it: their budget goes negative. Loans still being negotiated are dropped.
     /// </summary>
+    /// <summary>
+    ///     Charges the loan's agreed interest again on what's still owed. A loan agreed at 0% has
+    ///     no late fee, only the forced collection.
+    /// </summary>
+    private static void ApplyLateFee(Loan loan)
+    {
+        // Whole percentages, so $1600 at 20% is $1920 and not a float's $1921.
+        loan.Owed = MathF.Ceiling(loan.Owed * (100 + loan.InterestPercent) / 100);
+    }
+
     private void CollectAllLoans()
     {
         foreach (var loan in _loans.Values.ToList())
