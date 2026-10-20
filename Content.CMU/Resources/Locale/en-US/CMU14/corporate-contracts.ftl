@@ -38,11 +38,11 @@ cmu-contracts-section-loans = Loans
 cmu-contracts-loans-description-corporate = The colony and ambassadors can ask Weyland-Yutani for a loan. Set the interest, counter, accept or decline. Calling a loan in demands the full balance now.
 cmu-contracts-loans-description-borrower = Ask Weyland-Yutani for a loan, then negotiate the amount and interest. It is repaid over three cycles of 15 minutes, taken automatically. A missed instalment charges the loan's interest again on what's left, and after three misses in a row the instalment is taken anyway, even if that puts you in debt.
 cmu-contracts-no-loans = No loans.
-cmu-contracts-loan-active = {$borrower} owes ${$owed} over {$left} more {$left ->
+cmu-contracts-loan-active = {$borrower} owes ${$owed} at {$interest}% over {$left} more {$left ->
     [one] cycle
    *[other] cycles
 }.
-cmu-contracts-loan-starting-debt = {$borrower} owes ${$owed} in existing debt, over {$left} more {$left ->
+cmu-contracts-loan-starting-debt = {$borrower} owes ${$owed} in existing debt at {$interest}%, over {$left} more {$left ->
     [one] cycle
    *[other] cycles
 }.

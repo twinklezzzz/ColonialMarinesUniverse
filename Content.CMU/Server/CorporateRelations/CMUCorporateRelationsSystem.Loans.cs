@@ -19,6 +19,16 @@ public sealed partial class CMUCorporateRelationsSystem
     /// </summary>
     public const int StartingDebt = 1500;
 
+    /// <summary>
+    ///     Interest on the starting debt, charged up front like any loan's and again as a late fee.
+    /// </summary>
+    public const int StartingDebtInterest = 15;
+
+    /// <summary>
+    ///     What the colony owes at the start of the round: the debt plus its interest.
+    /// </summary>
+    public const int StartingDebtOwed = StartingDebt * (100 + StartingDebtInterest) / 100;
+
     private readonly Dictionary<string, Loan> _loans = new();
 
     private sealed class Loan
@@ -48,7 +58,8 @@ public sealed partial class CMUCorporateRelationsSystem
             Borrower = ColonyBorrower,
             Stage = CMULoanStage.Active,
             Amount = StartingDebt,
-            Owed = StartingDebt,
+            InterestPercent = StartingDebtInterest,
+            Owed = StartingDebtOwed,
             InstallmentsLeft = Installments,
             StartingDebt = true,
         };

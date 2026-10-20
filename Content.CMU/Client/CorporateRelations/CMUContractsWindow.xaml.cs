@@ -247,6 +247,7 @@ public sealed partial class CMUContractsWindow : DefaultWindow
                     Text = Loc.GetString(loan.StartingDebt ? "cmu-contracts-loan-starting-debt" : "cmu-contracts-loan-active",
                         ("borrower", loan.BorrowerName),
                         ("owed", loan.Owed),
+                        ("interest", loan.InterestPercent),
                         ("left", loan.InstallmentsLeft)),
                 });
 

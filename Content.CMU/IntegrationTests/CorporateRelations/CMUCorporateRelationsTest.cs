@@ -47,7 +47,7 @@ public sealed class CMUCorporateRelationsTest
 
         await server.WaitAssertion(() =>
         {
-            Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.EqualTo(CMUCorporateRelationsSystem.StartingDebt));
+            Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.EqualTo(CMUCorporateRelationsSystem.StartingDebtOwed));
             var ambassadorStart = ambassador.GetFactionBudget(Faction);
 
             // UPP asks for $2000, WY counters at 20%, UPP accepts.
@@ -75,14 +75,15 @@ public sealed class CMUCorporateRelationsTest
             });
             entities.DeleteEntity(ore);
 
-            // Rent and instalments: $500 rent to the colony, a third of each loan back to WY.
+            // Rent and instalments: $500 rent to the colony, a third of each loan back to WY ($575 of the
+            // colony's $1725 starting debt, $800 of UPP's $2400).
             Raise(adminConsole, new CMUContractsSetRentBuiMsg(500));
             relations.RunCycle();
             Assert.Multiple(() =>
             {
-                Assert.That(colony.GetBudget(), Is.EqualTo(5020 + 500 - 500));
-                Assert.That(corporate.GetCorporateBudget(), Is.EqualTo(8030 - 500 + 500 + 800));
-                Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.EqualTo(1000));
+                Assert.That(colony.GetBudget(), Is.EqualTo(5020 + 500 - 575));
+                Assert.That(corporate.GetCorporateBudget(), Is.EqualTo(8030 - 500 + 575 + 800));
+                Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.EqualTo(1150));
                 Assert.That(relations.GetOwed(Faction), Is.EqualTo(1600));
             });
 
@@ -195,7 +196,7 @@ public sealed class CMUCorporateRelationsTest
 
         await server.WaitAssertion(() =>
         {
-            Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.EqualTo(CMUCorporateRelationsSystem.StartingDebt));
+            Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.EqualTo(CMUCorporateRelationsSystem.StartingDebtOwed));
             server.System<SharedRankSystem>().SetRank(user, "RMCRankWeYaExecutiveSupervisor");
             entities.EventBus.RaiseLocalEvent(corporateConsole, (object) new CMUContractsWithdrawalBuiMsg(true) { Actor = user });
             Assert.That(relations.WithdrawalPending, Is.True);
@@ -211,7 +212,7 @@ public sealed class CMUCorporateRelationsTest
             {
                 Assert.That(relations.Withdrawn, Is.True, "The countdown ran out without a withdrawal.");
                 Assert.That(relations.GetOwed(CMUCorporateRelationsSystem.ColonyBorrower), Is.Zero, "The colony's debt wasn't collected.");
-                Assert.That(colony.GetBudget(), Is.EqualTo(500 - CMUCorporateRelationsSystem.StartingDebt).Within(1), "The debt wasn't forced into the red.");
+                Assert.That(colony.GetBudget(), Is.EqualTo(500 - CMUCorporateRelationsSystem.StartingDebtOwed).Within(1), "The debt wasn't forced into the red.");
             });
         });
         await pair.CleanReturnAsync();
