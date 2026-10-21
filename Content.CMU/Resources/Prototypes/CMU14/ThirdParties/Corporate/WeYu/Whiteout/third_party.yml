@@ -5,14 +5,15 @@
   leadersToSpawn:
     CMUJobPMCWhiteoutLeader: 1
   gruntsToSpawn:
-    CMUJobPMCWhiteout: 2
-    CMUJobPMCWhiteoutGunner: 1
+    CMUJobPMCWhiteoutGunner: 2
+    CMUJobPMCWhiteout: 1 # carries the FL3 flamer
     CMUJobPMCWhiteoutDogCatcher: 1
   scalewithpop: false
   spawnTogether: true
 
 - type: thirdParty
   id: WYPMCWhiteout
+  displayName: Weyland-Yutani Whiteout Team
   announceAsSurvivors: true
   partyspawn: WYPMCWhiteoutSpawn
   entrymethod: shuttle
@@ -22,3 +23,20 @@
   maxplayers: 600
   ghostsNeeded: 600
   roundstart: false
+
+# Whiteout kill squad: no specimen recovery, just the leader, two gunners and two flamers.
+- type: partySpawn
+  id: WYPMCWhiteoutKillSquadSpawn
+  leadersToSpawn:
+    CMUJobPMCWhiteoutLeader: 1
+  gruntsToSpawn:
+    CMUJobPMCWhiteoutGunner: 2
+    CMUJobPMCWhiteout: 2
+  scalewithpop: false
+  spawnTogether: true
+
+- type: thirdParty
+  parent: WYPMCWhiteout
+  id: WYPMCWhiteoutKillSquad
+  displayName: Weyland-Yutani Whiteout Kill Squad
+  partyspawn: WYPMCWhiteoutKillSquadSpawn

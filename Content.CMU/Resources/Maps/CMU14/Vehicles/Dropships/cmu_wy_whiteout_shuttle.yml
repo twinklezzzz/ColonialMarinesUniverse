@@ -1,16 +1,16 @@
 meta:
   format: 7
-  category: Map
+  category: Grid
   engineVersion: v290.0.0
   forkId: ""
   forkVersion: ""
   time: 10/21/2026 19:23:48
-  entityCount: 85
-maps:
-- 7
+  entityCount: 84
+maps: []
 grids:
 - 1
-orphans: []
+orphans:
+- 1
 nullspace: []
 tilemap:
   0: Space
@@ -34,7 +34,7 @@ entities:
     - type: MetaData
       name: WY-Transport Shuttle
     - type: Transform
-      parent: 7
+      parent: invalid
     - type: MapGrid
       chunks:
         0,0:
@@ -188,18 +188,6 @@ entities:
       chunkEntities: []
     - type: TileHistory
       chunkHistory: {}
-  - uid: 7
-    components:
-    - type: MetaData
-      name: Map Entity
-    - type: Transform
-    - type: Map
-      mapPaused: True
-    - type: GridTree
-    - type: Broadphase
-    - type: ChunkContainer
-      chunkEntities: []
-    - type: OccluderTree
 - proto: AU14DeployerSentryWeYu
   entities:
   - uid: 51
@@ -697,7 +685,14 @@ entities:
     - type: Transform
       parent: 1
       pos: -0.5,6.5
-- proto: thirdpartyentityspawnmarker
+- proto: thirdpartyleaderspawnmarker
+  entities:
+  - uid: 9005
+    components:
+    - type: Transform
+      parent: 1
+      pos: -0.5,4.5
+- proto: thirdpartymemberspawnmarker
   entities:
   - uid: 71
     components:
@@ -719,15 +714,6 @@ entities:
     - type: Transform
       parent: 1
       pos: 0.5,2.5
-- proto: thirdpartyleaderspawnmarker
-  entities:
-  - uid: 9005
-    components:
-    - type: Transform
-      parent: 1
-      pos: -0.5,4.5
-- proto: thirdpartymemberspawnmarker
-  entities:
   - uid: 9013
     components:
     - type: Transform

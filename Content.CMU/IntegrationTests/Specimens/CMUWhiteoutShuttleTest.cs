@@ -23,7 +23,7 @@ public sealed class CMUWhiteoutShuttleTest
         await server.WaitAssertion(() =>
         {
             // Loaded the way ThirdPartySystem loads a party's dropship.
-            var options = new MapLoadOptions { DeserializationOptions = DeserializationOptions.Default with { InitializeMaps = true } };
+            var options = new MapLoadOptions { DeserializationOptions = DeserializationOptions.Default with { InitializeMaps = true, LogOrphanedGrids = false } };
             var loader = entities.System<MapLoaderSystem>();
             Assert.That(loader.TryLoadGeneric(path, out var result, options), $"Failed to load {path}");
             var grid = result!.Grids.First().Owner;
@@ -35,7 +35,16 @@ public sealed class CMUWhiteoutShuttleTest
 
             var markers = entities.EntityQuery<ThreatSpawnMarkerComponent>().Where(m => m.ThirdParty && OnShuttle(m.Owner)).ToList();
             Assert.That(markers.Any(m => m.ThreatMarkerType == ThreatMarkerType.Leader), "No leader spawn on the Whiteout shuttle.");
-            Assert.That(markers.Any(m => m.ThreatMarkerType == ThreatMarkerType.Member), "No member spawns on the Whiteout shuttle.");
+
+            // Every Whiteout party fits on the shuttle without stacking two synths on one marker.
+            foreach (var partyId in new[] { "WYPMCWhiteout", "WYPMCWhiteoutKillSquad" })
+            {
+                var party = server.ProtoMan.Index<ThirdPartyPrototype>(partyId);
+                Assert.That(party.dropshippath, Is.EqualTo(path), $"{partyId} doesn't use the Whiteout shuttle.");
+                var spawn = server.ProtoMan.Index<PartySpawnPrototype>(party.PartySpawn);
+                Assert.That(markers.Count(m => m.ThreatMarkerType == ThreatMarkerType.Member), Is.GreaterThanOrEqualTo(spawn.GruntsToSpawn.Values.Sum()),
+                    $"Not enough member spawns for {partyId}.");
+            }
 
             loader.Delete(result);
         });
