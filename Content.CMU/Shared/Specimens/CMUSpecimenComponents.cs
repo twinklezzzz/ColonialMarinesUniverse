@@ -67,20 +67,6 @@ public sealed partial class CMUSpecimenHarnessComponent : Component
     public TimeSpan BreakoutTime = TimeSpan.FromMinutes(3);
 }
 
-/// <summary>
-///     A packed specimen crate. Used on a restrained specimen it's set up around it and sealed; used
-///     in hand it's set up empty and open.
-/// </summary>
-[RegisterComponent, NetworkedComponent, Access(typeof(CMUSpecimenCaptureSystem))]
-public sealed partial class CMUSpecimenCratePackedComponent : Component
-{
-    [DataField(required: true)]
-    public EntProtoId Deployed;
-
-    [DataField]
-    public TimeSpan Delay = TimeSpan.FromSeconds(4);
-}
-
 [Serializable, NetSerializable]
 public enum CMUSpecimenCrateState : byte
 {
@@ -105,9 +91,6 @@ public sealed partial class CMUSpecimenCrateComponent : Component
 {
     [DataField]
     public string ContainerId = "cmu_specimen";
-
-    [DataField(required: true)]
-    public EntProtoId Packed;
 
     [DataField]
     public TimeSpan LoadDelay = TimeSpan.FromSeconds(4);
@@ -136,9 +119,6 @@ public sealed partial class CMUSpecimenHarnessDoAfterEvent : SimpleDoAfterEvent;
 
 [Serializable, NetSerializable]
 public sealed partial class CMUSpecimenUnharnessDoAfterEvent : SimpleDoAfterEvent;
-
-[Serializable, NetSerializable]
-public sealed partial class CMUSpecimenCrateDoAfterEvent : SimpleDoAfterEvent;
 
 [Serializable, NetSerializable]
 public sealed partial class CMUSpecimenLoadDoAfterEvent : SimpleDoAfterEvent;

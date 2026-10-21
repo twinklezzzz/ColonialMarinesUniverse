@@ -3,6 +3,8 @@ using Content.Shared._RMC14.Xenonids;
 using Content.Shared.CMU14.Threats.Mobs.Biomorph;
 using Content.Shared.CMU14.Threats.Mobs.Wendigo.Pack;
 using Content.Shared.ActionBlocker;
+using Content.Shared.Actions.Components;
+using Content.Shared.Actions.Events;
 using Content.Shared.DoAfter;
 using Content.Shared.Examine;
 using Content.Shared.Hands.EntitySystems;
@@ -73,9 +75,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, GetVerbsEvent<AlternativeVerb>>(OnRestrainedVerbs);
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, CMUSpecimenUnharnessDoAfterEvent>(OnUnharnessDoAfter);
 
-        SubscribeLocalEvent<CMUSpecimenCratePackedComponent, AfterInteractEvent>(OnPackedAfterInteract);
-        SubscribeLocalEvent<CMUSpecimenCratePackedComponent, UseInHandEvent>(OnPackedUseInHand);
-        SubscribeLocalEvent<CMUSpecimenCratePackedComponent, CMUSpecimenCrateDoAfterEvent>(OnPackedDoAfter);
+        SubscribeLocalEvent<ActionComponent, ActionAttemptEvent>(OnActionAttempt);
 
         SubscribeLocalEvent<CMUSpecimenCrateComponent, ComponentInit>(OnCrateInit);
         SubscribeLocalEvent<CMUSpecimenCrateComponent, EntityTerminatingEvent>(OnCrateTerminating);
@@ -246,6 +246,30 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         args.Cancel();
     }
 
+    /// <summary>
+    ///     A bound or crated specimen can't use any of its abilities, acid included.
+    /// </summary>
+    private void OnActionAttempt(Entity<ActionComponent> ent, ref ActionAttemptEvent args)
+    {
+        if (args.Cancelled || !IsHeld(args.User))
+            return;
+
+        args.Cancelled = true;
+        args.Reason = Loc.GetString("cmu-specimen-actions-blocked");
+    }
+
+    /// <summary>
+    ///     Bound in a harness, or shut in a specimen crate.
+    /// </summary>
+    public bool IsHeld(EntityUid uid)
+    {
+        if (HasComp<CMUSpecimenRestrainedComponent>(uid))
+            return true;
+
+        return _container.TryGetContainingContainer(uid, out var container) &&
+               HasComp<CMUSpecimenCrateComponent>(container.Owner);
+    }
+
     private void OnRestrainedExamined(Entity<CMUSpecimenRestrainedComponent> ent, ref ExaminedEvent args)
     {
         if (_container.IsEntityInContainer(ent))
@@ -325,63 +349,6 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     #endregion
 
     #region Containment
-
-    private void OnPackedAfterInteract(Entity<CMUSpecimenCratePackedComponent> ent, ref AfterInteractEvent args)
-    {
-        if (args.Handled || !args.CanReach || args.Target is not { } target)
-            return;
-
-        if (!IsSpecimen(target))
-            return;
-
-        args.Handled = true;
-        if (!HasComp<CMUSpecimenRestrainedComponent>(target))
-        {
-            _popup.PopupEntity(Loc.GetString("cmu-specimen-must-be-restrained", ("target", target)), args.User, args.User);
-            return;
-        }
-
-        var doAfter = new DoAfterArgs(EntityManager, args.User, ent.Comp.Delay, new CMUSpecimenCrateDoAfterEvent(), ent, target, ent)
-        {
-            BreakOnMove = true,
-            NeedHand = true,
-        };
-        _doAfter.TryStartDoAfter(doAfter);
-    }
-
-    private void OnPackedDoAfter(Entity<CMUSpecimenCratePackedComponent> ent, ref CMUSpecimenCrateDoAfterEvent args)
-    {
-        if (args.Cancelled || args.Handled || args.Target is not { } target)
-            return;
-
-        args.Handled = true;
-        if (_net.IsClient || !HasComp<CMUSpecimenRestrainedComponent>(target))
-            return;
-
-        // Set the crate up around the specimen, then seal it.
-        var crate = Spawn(ent.Comp.Deployed, _transform.GetMapCoordinates(target));
-        if (!TryComp<CMUSpecimenCrateComponent>(crate, out var crateComp) || !TryContain((crate, crateComp), target))
-        {
-            Del(crate);
-            return;
-        }
-
-        StartMoving((crate, crateComp), false);
-        QueueDel(ent);
-    }
-
-    private void OnPackedUseInHand(Entity<CMUSpecimenCratePackedComponent> ent, ref UseInHandEvent args)
-    {
-        if (args.Handled)
-            return;
-
-        args.Handled = true;
-        if (_net.IsClient)
-            return;
-
-        Spawn(ent.Comp.Deployed, _transform.GetMapCoordinates(args.User));
-        QueueDel(ent);
-    }
 
     private void OnCrateInit(Entity<CMUSpecimenCrateComponent> ent, ref ComponentInit args)
     {
@@ -488,20 +455,6 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
                 }),
             });
         }
-
-        args.Verbs.Add(new AlternativeVerb
-        {
-            Text = Loc.GetString("cmu-specimen-verb-pack"),
-            Act = () =>
-            {
-                if (_net.IsClient || GetSpecimen(ent) != null || ent.Comp.State != CMUSpecimenCrateState.Open)
-                    return;
-
-                var packed = Spawn(ent.Comp.Packed, _transform.GetMapCoordinates(ent));
-                _hands.PickupOrDrop(user, packed);
-                QueueDel(ent);
-            },
-        });
     }
 
     private void OnLoadDoAfter(Entity<CMUSpecimenCrateComponent> ent, ref CMUSpecimenLoadDoAfterEvent args)

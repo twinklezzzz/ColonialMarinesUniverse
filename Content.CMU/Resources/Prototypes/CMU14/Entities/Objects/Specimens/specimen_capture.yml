@@ -1,11 +1,11 @@
 # Live xenonid capture: capture slugs sedate, the harness binds a downed specimen, and the
-# containment bag holds a bound one so it can be hauled. See CMUSpecimenCaptureSystem.
+# secure crate holds a bound one so it can be hauled. See CMUSpecimenCaptureSystem.
 
 - type: entity
   parent: BaseItem
   id: CMUSpecimenHarness
   name: specimen restraint harness
-  description: Reinforced Weyland-Yutani restraint webbing for binding a downed xenonid. Holds for a few minutes before the specimen tears through it, longer if it's bagged.
+  description: Reinforced Weyland-Yutani restraint webbing for binding a downed xenonid. Holds for a few minutes before the specimen tears through it, and it can't work at it while crated.
   components:
   - type: Sprite
     sprite: Objects/Misc/cablecuffs.rsi
@@ -14,23 +14,6 @@
   - type: Item
     size: Small
   - type: CMUSpecimenHarness
-
-- type: entity
-  parent: BaseItem
-  id: CMUSpecimenCratePacked
-  name: packed specimen crate
-  description: A Weyland-Yutani secure specimen crate, packed flat for carrying. Use it on a restrained specimen to crate and seal it, or in hand to set it up empty.
-  components:
-  - type: Sprite
-    sprite: Objects/Devices/flatpack.rsi
-    layers:
-    - state: base
-    - state: overlay
-      color: "#9fd8b0"
-  - type: Item
-    size: Normal # flat-packed, so it fits a satchel
-  - type: CMUSpecimenCratePacked
-    deployed: CMUSpecimenCrate
 
 # Built on the AEGIS secure crate. Click it to open or close the lid; a specimen can only be
 # loaded or let out while it's open.
@@ -60,4 +43,3 @@
         - LowImpassable
   - type: InteractionOutline
   - type: CMUSpecimenCrate
-    packed: CMUSpecimenCratePacked

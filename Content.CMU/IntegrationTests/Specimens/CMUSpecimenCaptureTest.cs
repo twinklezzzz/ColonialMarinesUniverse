@@ -1,3 +1,6 @@
+using System.Linq;
+using Content.Shared.Actions;
+using Content.Shared.Actions.Events;
 using Content.Shared.CMU14.Specimens;
 using Content.Shared.Standing;
 using Content.Shared.Stunnable;
@@ -25,6 +28,21 @@ public sealed class CMUSpecimenCaptureTest
         var entities = server.EntMan;
         var capture = server.System<CMUSpecimenCaptureSystem>();
         var container = server.System<SharedContainerSystem>();
+        var actions = server.System<SharedActionsSystem>();
+
+        // Whether every one of the creature's abilities is refused, acid included.
+        bool ActionsBlocked(EntityUid uid)
+        {
+            foreach (var action in actions.GetActions(uid))
+            {
+                var ev = new ActionAttemptEvent(uid);
+                entities.EventBus.RaiseLocalEvent(action.Owner, ref ev);
+                if (!ev.Cancelled)
+                    return false;
+            }
+
+            return true;
+        }
 
         EntityUid xeno = default;
         EntityUid crate = default;
@@ -50,6 +68,7 @@ public sealed class CMUSpecimenCaptureTest
         {
             Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True);
             Assert.That(capture.IsSubdued(xeno), Is.True);
+            Assert.That(ActionsBlocked(xeno), Is.True, "A harnessed specimen can still use its abilities.");
 
             crate = entities.SpawnEntity("CMUSpecimenCrate", map.GridCoords);
             var crateEnt = new Entity<CMUSpecimenCrateComponent>(crate, entities.GetComponent<CMUSpecimenCrateComponent>(crate));
@@ -71,6 +90,7 @@ public sealed class CMUSpecimenCaptureTest
         await server.WaitAssertion(() =>
         {
             Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True, "A crated specimen broke free.");
+            Assert.That(ActionsBlocked(xeno), Is.True, "A crated specimen can still use its abilities.");
             Assert.That(entities.GetComponent<CMUSpecimenCrateComponent>(crate).State, Is.EqualTo(CMUSpecimenCrateState.Closed), "The lid never finished closing.");
 
             // Destroying the crate drops the specimen instead of deleting it.
@@ -84,7 +104,33 @@ public sealed class CMUSpecimenCaptureTest
         await server.WaitAssertion(() =>
         {
             Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.False);
+            Assert.That(capture.IsHeld(xeno), Is.False);
             entities.DeleteEntity(xeno);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task DogCatcherArrivesWithCrate()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+
+        await server.WaitAssertion(() =>
+        {
+            var catcher = entities.SpawnEntity("CMUJobPMCWhiteoutDogCatcher", map.GridCoords);
+            var crates = entities.EntityQuery<CMUSpecimenCrateComponent>().ToList();
+            Assert.That(crates, Has.Count.EqualTo(1), "The Dog Catcher arrived without a crate.");
+
+            var crate = crates[0].Owner;
+            Assert.That(entities.GetComponent<TransformComponent>(crate).Coordinates,
+                Is.EqualTo(entities.GetComponent<TransformComponent>(catcher).Coordinates));
+
+            entities.DeleteEntity(crate);
+            entities.DeleteEntity(catcher);
         });
 
         await pair.CleanReturnAsync();
