@@ -43,3 +43,18 @@
         - LowImpassable
   - type: InteractionOutline
   - type: CMUSpecimenCrate
+
+# Map this onto the Whiteout shuttle; it puts an empty, open crate there when the shuttle loads.
+- type: entity
+  parent: MarkerBase
+  id: CMUSpawnSpecimenCrate
+  name: secure specimen crate spawner
+  components:
+  - type: Sprite
+    layers:
+    - state: green
+    - sprite: CMU14/Objects/Specimens/specimen_crate.rsi
+      state: open
+  - type: ConditionalSpawner
+    prototypes:
+    - CMUSpecimenCrate

@@ -112,7 +112,7 @@ public sealed class CMUSpecimenCaptureTest
     }
 
     [Test]
-    public async Task DogCatcherArrivesWithCrate()
+    public async Task SpawnerPlacesCrate()
     {
         await using var pair = await PoolManager.GetServerClient();
         var server = pair.Server;
@@ -121,16 +121,13 @@ public sealed class CMUSpecimenCaptureTest
 
         await server.WaitAssertion(() =>
         {
-            var catcher = entities.SpawnEntity("CMUJobPMCWhiteoutDogCatcher", map.GridCoords);
+            var spawner = entities.SpawnEntity("CMUSpawnSpecimenCrate", map.GridCoords);
             var crates = entities.EntityQuery<CMUSpecimenCrateComponent>().ToList();
-            Assert.That(crates, Has.Count.EqualTo(1), "The Dog Catcher arrived without a crate.");
+            Assert.That(crates, Has.Count.EqualTo(1), "The spawner didn't place a crate.");
+            Assert.That(crates[0].State, Is.EqualTo(CMUSpecimenCrateState.Open));
 
-            var crate = crates[0].Owner;
-            Assert.That(entities.GetComponent<TransformComponent>(crate).Coordinates,
-                Is.EqualTo(entities.GetComponent<TransformComponent>(catcher).Coordinates));
-
-            entities.DeleteEntity(crate);
-            entities.DeleteEntity(catcher);
+            entities.DeleteEntity(crates[0].Owner);
+            entities.DeleteEntity(spawner);
         });
 
         await pair.CleanReturnAsync();

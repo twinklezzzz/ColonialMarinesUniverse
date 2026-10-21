@@ -88,10 +88,6 @@
   - type: EmoteOnDamage
     emoteChance: 0
   - type: GhostTakeoverAvailable
-  # The crate arrives beside the Dog Catcher, on their shuttle or wherever they enter.
-  - type: CMUSpawnBeside
-    spawns:
-    - CMUSpecimenCrate
   - type: RandomMetadata
     nameSegments:
     - RMCNamesGreek
