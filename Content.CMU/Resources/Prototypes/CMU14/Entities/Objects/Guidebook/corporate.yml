@@ -81,3 +81,56 @@
   - type: GuideHelp
     guides:
     - CMUCorporateHandbook
+
+# Employee Handbook: office staff. Nothing classified.
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookStaff
+  name: cmu-guide-entry-handbook-staff
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Staff/CMUHandbookStaff.xml"
+  children:
+  - CMUHandbookStaffRole
+  - CMUHandbookStaffWork
+  - CMUHandbookStaffConduct
+  - CMUHandbookStaffSafety
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookStaffRole
+  name: cmu-guide-entry-handbook-staff-role
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Staff/CMUHandbookStaffRole.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookStaffWork
+  name: cmu-guide-entry-handbook-staff-work
+  priority: 1
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Staff/CMUHandbookStaffWork.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookStaffConduct
+  name: cmu-guide-entry-handbook-staff-conduct
+  priority: 2
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Staff/CMUHandbookStaffConduct.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookStaffSafety
+  name: cmu-guide-entry-handbook-staff-safety
+  priority: 3
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Staff/CMUHandbookStaffSafety.xml"
+
+- type: entity
+  parent: RMCGuidebookBase
+  id: CMUGuidebookEmployeeHandbook
+  name: Weyland-Yutani employee handbook
+  description: "The handbook every new Company hire is given on their first day. It's full of helpful advice, and most of it is even true."
+  components:
+  - type: Sprite
+    sprite: _RMC14/Objects/Misc/Books/Other/SOP.rsi
+  - type: GuideHelp
+    guides:
+    - CMUHandbookStaff
