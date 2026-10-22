@@ -125,25 +125,25 @@
 - type: rank
   id: CMURankWYCommando
   name: Corporate Commando
-  prefix: WY-COM
+  prefix: WYCDO. OPR.
   paygrade: WY-COM
 
 - type: rank
   id: CMURankWYCommandoGunner
   name: Corporate Commando Gunner
-  prefix: WY-GUN
+  prefix: WYCDO. GNR.
   paygrade: WY-GUN
 
 - type: rank
   id: CMURankWYCommandoDogCatcher
   name: Corporate Commando Dog Catcher
-  prefix: WY-DOG
+  prefix: WYCDO. DC.
   paygrade: WY-DOG
 
 - type: rank
   id: CMURankWYCommandoLeader
   name: Corporate Commando Leader
-  prefix: WY-COMLD
+  prefix: WYCDO. TML.
   paygrade: WY-COMLD
 
 # PMC third parties. Only the positions a party currently uses are defined.
@@ -176,3 +176,45 @@
   name: Team Leader
   prefix: PMC. TML.
   paygrade: PMC-TL
+
+- type: rank
+  id: CMURankWYPMCEnforcer
+  name: Enforcer
+  prefix: PMC. ENF.
+  paygrade: PMC-EN
+
+- type: rank
+  id: CMURankWYPMCVehicleSpecialist
+  name: Vehicle Specialist
+  prefix: PMC. SPV.
+  paygrade: PMC-VS
+
+- type: rank
+  id: CMURankWYPMCSupportSpecialist
+  name: Support Specialist
+  prefix: PMC. SPS.
+  paygrade: PMC-SS
+
+- type: rank
+  id: CMURankWYPMCCrowdControlSpecialist
+  name: Crowd Control Specialist
+  prefix: PMC. SPCC.
+  paygrade: PMC-CCS
+
+- type: rank
+  id: CMURankWYPMCTraumaSurgeon
+  name: Trauma Surgeon
+  prefix: PMC. Dr.
+  paygrade: PMC-DOC
+
+- type: rank
+  id: CMURankWYPMCFieldOperationsLeader
+  name: Field Operations Leader
+  prefix: PMC. FOL.
+  paygrade: PMC-FOL
+
+- type: rank
+  id: CMURankWYPMCSiteDirector
+  name: Site Director
+  prefix: PMC. DIR.
+  paygrade: PMC-DIR
