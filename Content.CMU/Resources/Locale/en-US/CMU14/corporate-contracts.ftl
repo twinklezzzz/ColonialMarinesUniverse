@@ -1,6 +1,9 @@
 ## Corporate contracts: rent, licences, loans, work orders and the WY withdrawal
 
 cmu-contracts-open = Corporate contracts
+cmu-contracts-section = Contracts
+cmu-contracts-hint-ambassador = The Company's site lease, licences and tariff, and any loans or work orders between the colony and the Company.
+cmu-contracts-hint-corporate = Rent, licences, loans and work orders with the colony, and divestment.
 cmu-contracts-title = Corporate Contracts
 cmu-contracts-announcement-sender = Colonial Corporate Registry
 cmu-contracts-borrower-colony = the colony

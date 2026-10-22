@@ -1,6 +1,10 @@
 - type: job
   parent: CMJobBase
   id: CMUJobWeYuGoonLeader
+  chevrons:
+    CMURankWYSecPPC:
+      entity: CMUChevronWYSecPPC
+      requirements: []
   roundSide: ThirdParty
   roundForce: WY
   roundRole: WeYuGoonLeader
@@ -28,7 +32,7 @@
   - type: MarineOrders # Coordinator: issue move/hold/focus orders to the detail
   - type: JobPrefix
     prefix: cmu-weyuexec-prefix-goonleader
-  name: cmu-weyuexec-name-goonleader
+  name: cmu-job-title-weyu-security-lead
   description: cmu-weyuexec-description-goonleader
   playTimeTracker: CMUJobWeYuGoonLeader
   ranks:

@@ -17,7 +17,7 @@
   announceAsSurvivors: true
   partyspawn: WYPMCWhiteoutSpawn
   entrymethod: shuttle
-  dropshippath: /Maps/CMU14/Vehicles/Dropships/cmu_wy_whiteout_shuttle.yml
+  dropshippath: /Maps/CMU14/Dropships/cmu_wy_whiteout_shuttle.yml
   weight: 1
   minplayers: 500
   maxplayers: 600

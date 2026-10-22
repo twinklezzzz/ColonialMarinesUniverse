@@ -1,6 +1,10 @@
 - type: job
   parent: CMJobBase
   id: CMUJobPMCWhiteoutGunner
+  chevrons:
+    CMURankWYCommandoGunner:
+      entity: CMUChevronWYCommandoGunner
+      requirements: []
   roundSide: ThirdParty
   roundForce: WY
   roundRole: PMCWhiteoutGunner
@@ -59,7 +63,7 @@
   - type: CMArmor
     immuneToAP: true
   - type: PyroWhitelist
-  name: cmu-whiteout-name-gunner
+  name: cmu-job-title-whiteout-gunner
   description: cmu-whiteout-description
   playTimeTracker: CMUJobPMCWhiteoutGunner
   requirements:

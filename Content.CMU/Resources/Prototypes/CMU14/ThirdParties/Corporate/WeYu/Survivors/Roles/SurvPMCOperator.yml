@@ -1,6 +1,10 @@
 - type: job
   parent: AU14JobWYPMCPartyContractorBase
   id: AU14JobWYSurvPMC
+  chevrons:
+    CMURankWYPMCOperator:
+      entity: CMUChevronWYPMCOperator
+      requirements: []
   roundSide: ThirdParty
   roundForce: WY
   roundRole: WYSurvPMC
@@ -25,7 +29,7 @@
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi
       state: pmc_gun
-  name: au14-job-name-wypmc
+  name: cmu-job-title-wypmc
   description: au14-wysurv-description
   ranks:
     CMURankWYPMCOperator: []

@@ -64,8 +64,25 @@ public sealed partial class RandomHumanoidAppearanceSystem : EntitySystem
         else if (whitelist.AllowedHairStyles is { Count: > 0 })
             hairOptions = whitelist.AllowedHairStyles;
 
+        // cmu edit start: keep trying the allowed styles until one applies, so a style that can't be used
+        // doesn't leave the random civilian haircut in place
+        // if (hairOptions is { Count: > 0 })
+        //     profile = WithMarking(profile, HumanoidVisualLayers.Hair, _random.Pick(hairOptions));
         if (hairOptions is { Count: > 0 })
-            profile = WithMarking(profile, HumanoidVisualLayers.Hair, _random.Pick(hairOptions));
+        {
+            var shuffled = hairOptions.ToList();
+            _random.Shuffle(shuffled);
+            foreach (var style in shuffled)
+            {
+                var styled = WithMarking(profile, HumanoidVisualLayers.Hair, style);
+                if (!ReferenceEquals(styled, profile))
+                {
+                    profile = styled;
+                    break;
+                }
+            }
+        }
+        // cmu edit end
 
         if (whitelist.AllowedHairColorsHex is { Count: > 0 })
         {
@@ -81,22 +98,28 @@ public sealed partial class RandomHumanoidAppearanceSystem : EntitySystem
         }
 
         var hairColor = GetMarkingColor(profile, HumanoidVisualLayers.Hair, Color.Black);
-
-        // CMU14: drop the beard the random profile rolled. The old fallback applied
-        // FacialHairShaved, which is not a marking prototype, so that random beard (any length,
-        // any color) was kept on every clean-shaven whitelisted mob.
-        profile = WithoutMarkings(profile, HumanoidVisualLayers.FacialHair);
-        if (whitelist.BeardChance > 0f && _random.NextFloat() < whitelist.BeardChance &&
-            whitelist.AllowedBeardStyles is { Count: > 0 })
+        if (whitelist.BeardChance > 0f && _random.NextFloat() < whitelist.BeardChance)
         {
-            profile = WithMarking(
-                profile,
-                HumanoidVisualLayers.FacialHair,
-                _random.Pick(whitelist.AllowedBeardStyles),
-                hairColor);
+            if (whitelist.AllowedBeardStyles is { Count: > 0 })
+            {
+                profile = WithMarking(
+                    profile,
+                    HumanoidVisualLayers.FacialHair,
+                    _random.Pick(whitelist.AllowedBeardStyles));
+            }
+
+            return WithMarkingColor(profile, HumanoidVisualLayers.FacialHair, hairColor);
         }
 
-        return profile;
+        // cmu edit start: clean-shaven means no facial hair at all. The default facial hair style isn't a marking
+        // here, so setting it left the random beard in place in its own random colour.
+        // return WithMarking(
+        //     profile,
+        //     HumanoidVisualLayers.FacialHair,
+        //     HairStyles.DefaultFacialHairStyle,
+        //     Color.Black);
+        return WithoutMarkings(profile, HumanoidVisualLayers.FacialHair);
+        // cmu edit end
     }
 
     private HumanoidCharacterProfile WithMarking(

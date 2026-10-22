@@ -1,6 +1,10 @@
 - type: job
   parent: CMJobBase
   id: CMUJobWeYuGoon
+  chevrons:
+    CMURankWYSecPPO:
+      entity: CMUChevronWYSecPPO
+      requirements: []
   roundSide: ThirdParty
   roundForce: WY
   roundRole: WeYuGoon
@@ -23,7 +27,7 @@
       RMCSkillVehicles: 1
   - type: JobPrefix
     prefix: cmu-weyuexec-prefix-goon
-  name: cmu-weyuexec-name-goon
+  name: cmu-job-title-weyu-security
   description: cmu-weyuexec-description-goon
   playTimeTracker: CMUJobWeYuGoon
   requirements:

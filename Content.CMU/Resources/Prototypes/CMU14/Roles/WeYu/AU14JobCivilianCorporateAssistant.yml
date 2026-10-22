@@ -24,7 +24,7 @@
   - type: CMUAssignSquad
     squad: CMUSquadWYCorporate
 
-  name: au14-job-name-civiliancorporateassistant
+  name: cmu-job-title-corporate-assistant
   playTimeTracker: AU14JobCivilianCorporateAssistant
   requirements:
   - !type:OverallPlaytimeRequirement

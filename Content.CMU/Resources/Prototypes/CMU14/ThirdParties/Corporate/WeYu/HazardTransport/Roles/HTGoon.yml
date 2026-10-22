@@ -1,6 +1,10 @@
 - type: job
   parent: AU14JobWYGuardBase
   id: AU14JobWYHTGoon
+  chevrons:
+    CMURankWYSecOfficer:
+      entity: CMUChevronWYSecOfficer
+      requirements: []
   roundSide: ThirdParty
   roundForce: WY
   roundRole: WYHTGoon
