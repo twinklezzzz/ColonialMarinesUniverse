@@ -1,3 +1,4 @@
+using Content.Shared._RMC14.Pulling;
 using Content.Shared._RMC14.Stun;
 using Content.Shared._RMC14.Xenonids;
 using Content.Shared.CMU14.Threats.Mobs.Biomorph;
@@ -67,8 +68,8 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         SubscribeLocalEvent<CMUSpecimenHarnessComponent, AfterInteractEvent>(OnHarnessAfterInteract);
         SubscribeLocalEvent<CMUSpecimenHarnessComponent, CMUSpecimenHarnessDoAfterEvent>(OnHarnessDoAfter);
 
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ComponentStartup>(OnRestrainedChanged);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ComponentShutdown>(OnRestrainedChanged);
+        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ComponentStartup>(OnRestrainedStartup);
+        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ComponentShutdown>(OnRestrainedShutdown);
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, UpdateCanMoveEvent>(OnRestrainedCanMove);
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, AttackAttemptEvent>(OnRestrainedAttack);
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ExaminedEvent>(OnRestrainedExamined);
@@ -230,9 +231,30 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         Hold(target, RestraintParalysis);
     }
 
-    private void OnRestrainedChanged<T>(Entity<CMUSpecimenRestrainedComponent> ent, ref T args)
+    private void OnRestrainedStartup(Entity<CMUSpecimenRestrainedComponent> ent, ref ComponentStartup args)
     {
         _actionBlocker.UpdateCanMove(ent);
+
+        // A live xenonid knocks down whoever grabs it. Bound, it can't, so handlers can drag it to a crate.
+        if (_net.IsServer && TryComp<ParalyzeOnPullAttemptComponent>(ent, out var paralyze))
+        {
+            ent.Comp.SuspendedPullParalysis = paralyze.Duration;
+            RemComp<ParalyzeOnPullAttemptComponent>(ent);
+        }
+    }
+
+    private void OnRestrainedShutdown(Entity<CMUSpecimenRestrainedComponent> ent, ref ComponentShutdown args)
+    {
+        _actionBlocker.UpdateCanMove(ent);
+
+        if (_net.IsServer &&
+            ent.Comp.SuspendedPullParalysis is { } duration &&
+            !TerminatingOrDeleted(ent))
+        {
+            var paralyze = EnsureComp<ParalyzeOnPullAttemptComponent>(ent);
+            paralyze.Duration = duration;
+            Dirty(ent, paralyze);
+        }
     }
 
     private void OnRestrainedCanMove(Entity<CMUSpecimenRestrainedComponent> ent, ref UpdateCanMoveEvent args)

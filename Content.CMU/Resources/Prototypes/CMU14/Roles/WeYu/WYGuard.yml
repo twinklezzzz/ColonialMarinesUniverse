@@ -46,7 +46,11 @@
     - !type:RoleTimeRequirement
       role: AU14JobWYGuard
       time: 90000 # 25 hours
-    CMURankWYSecOfficer: []
+    CMURankWYSecOfficer:
+    - !type:RoleTimeRequirement
+      role: AU14JobWYGuard
+      time: 18000 # 5 hours
+    CMURankWYSecTrainee: []
   startingGear: AU14GearWYGuard
   icon: "RMCJobIconPMCGoonStandard"
   requireAdminNotify: false

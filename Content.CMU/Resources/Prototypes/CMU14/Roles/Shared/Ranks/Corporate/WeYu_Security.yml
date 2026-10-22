@@ -33,6 +33,12 @@
 # General security ranks up by time in role; the Sergeant is its own job.
 
 - type: rank
+  id: CMURankWYSecTrainee
+  name: Trainee Corporate Security Officer
+  prefix: TCSO.
+  paygrade: WY-SEC-TCSO
+
+- type: rank
   id: CMURankWYSecOfficer
   name: Corporate Security Officer
   prefix: Off.

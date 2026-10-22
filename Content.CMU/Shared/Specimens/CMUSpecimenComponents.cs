@@ -52,6 +52,13 @@ public sealed partial class CMUSpecimenRestrainedComponent : Component
 
     [DataField]
     public TimeSpan NextParalyze;
+
+    /// <summary>
+    ///     The specimen's own grab-paralysis, suspended while it's bound so handlers can drag it.
+    ///     Null if it had none.
+    /// </summary>
+    [DataField]
+    public TimeSpan? SuspendedPullParalysis;
 }
 
 [RegisterComponent, NetworkedComponent, Access(typeof(CMUSpecimenCaptureSystem))]

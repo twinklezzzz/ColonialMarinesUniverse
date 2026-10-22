@@ -2,6 +2,9 @@ using System.Linq;
 using Content.Shared.Actions;
 using Content.Shared.Actions.Events;
 using Content.Shared.CMU14.Specimens;
+using Content.Shared.Movement.Pulling.Systems;
+using Content.Shared.Verbs;
+using Robust.Shared.Map;
 using Content.Shared.Standing;
 using Content.Shared.Stunnable;
 using Robust.Shared.Containers;
@@ -106,6 +109,44 @@ public sealed class CMUSpecimenCaptureTest
             Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.False);
             Assert.That(capture.IsHeld(xeno), Is.False);
             entities.DeleteEntity(xeno);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task HandlerLoadsDraggedSpecimen()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        var capture = server.System<CMUSpecimenCaptureSystem>();
+        var container = server.System<SharedContainerSystem>();
+
+        EntityUid xeno = default;
+        EntityUid crate = default;
+        await server.WaitAssertion(() =>
+        {
+            var handler = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+            xeno = entities.SpawnEntity("CMXenoDrone", new EntityCoordinates(map.Grid, 0.5f, 1.5f));
+            crate = entities.SpawnEntity("CMUSpecimenCrate", new EntityCoordinates(map.Grid, 1.5f, 0.5f));
+
+            Assert.That(capture.Sedate(xeno, 10, TimeSpan.FromSeconds(30)), Is.True);
+            capture.Restrain(xeno, TimeSpan.FromSeconds(120));
+
+            Assert.That(server.System<PullingSystem>().TryStartPull(handler, xeno), Is.True, "A handler can't drag a harnessed specimen.");
+
+            var verbs = server.System<SharedVerbSystem>().GetLocalVerbs(crate, handler, typeof(AlternativeVerb));
+            var load = verbs.SingleOrDefault(v => v.Text == Loc.GetString("cmu-specimen-verb-load"));
+            Assert.That(load, Is.Not.Null, "No load verb on the crate. Verbs: " + string.Join(", ", verbs.Select(v => v.Text)));
+            server.System<SharedVerbSystem>().ExecuteVerb(load!, handler, crate);
+        });
+
+        await server.WaitRunTicks((int) (6 / server.Timing.TickPeriod.TotalSeconds));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(container.IsEntityInContainer(xeno), Is.True, "The specimen wasn't loaded.");
         });
 
         await pair.CleanReturnAsync();
