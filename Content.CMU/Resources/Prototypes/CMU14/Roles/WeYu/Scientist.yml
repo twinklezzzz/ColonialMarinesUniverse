@@ -67,6 +67,9 @@
     ears2: RMCM5CameraGear
     outerClothing: RMCLabcoatOpened
     pocket1: AU14StampWYSci
+  storage:
+    outerClothing:
+    - CMUGuidebookResearchHandbook
 
 - type: entity
   parent: CMSpawnPointJobBase

@@ -134,3 +134,64 @@
   - type: GuideHelp
     guides:
     - CMUHandbookStaff
+
+# Research Staff Handbook: scientists and the Lead Researcher. Knows the organisms exist, not what the Company does with them.
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookScience
+  name: cmu-guide-entry-handbook-science
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Science/CMUHandbookScience.xml"
+  children:
+  - CMUHandbookScienceRole
+  - CMUHandbookScienceWork
+  - CMUHandbookScienceConduct
+  - CMUHandbookScienceSpecimens
+  - CMUHandbookScienceSafety
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookScienceRole
+  name: cmu-guide-entry-handbook-science-role
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Science/CMUHandbookScienceRole.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookScienceWork
+  name: cmu-guide-entry-handbook-science-work
+  priority: 1
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Science/CMUHandbookScienceWork.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookScienceConduct
+  name: cmu-guide-entry-handbook-science-conduct
+  priority: 2
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Science/CMUHandbookScienceConduct.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookScienceSpecimens
+  name: cmu-guide-entry-handbook-science-specimens
+  priority: 3
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Science/CMUHandbookScienceSpecimens.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookScienceSafety
+  name: cmu-guide-entry-handbook-science-safety
+  priority: 4
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Science/CMUHandbookScienceSafety.xml"
+
+- type: entity
+  parent: RMCGuidebookBase
+  id: CMUGuidebookResearchHandbook
+  name: Weyland-Yutani research staff handbook
+  description: "The Research and Development Division's handbook for laboratory staff. Some of its pages are stamped RESTRICTED in red."
+  components:
+  - type: Sprite
+    sprite: _RMC14/Objects/Misc/Books/Other/SOP.rsi
+  - type: GuideHelp
+    guides:
+    - CMUHandbookScience
