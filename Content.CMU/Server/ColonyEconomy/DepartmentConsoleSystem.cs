@@ -313,7 +313,7 @@ public sealed partial class DepartmentConsoleSystem : EntitySystem
             {
                 var entry = cat.Entries[entIdx];
                 var name = entry.Name ?? _prototypeManager.Index<EntityPrototype>(entry.Crate).Name;
-                entries.Add(new DepartmentOrderCatalogEntry(catIdx, entIdx, name, GetEffectiveCost(entry.Cost, asrsFaction, out _)));
+                entries.Add(new DepartmentOrderCatalogEntry(catIdx, entIdx, name, GetEffectiveCost(entry.Cost, department.AsrsFaction, out _)));
             }
             result.Add(new DepartmentOrderCatalogCategory(cat.Name, entries));
         }
