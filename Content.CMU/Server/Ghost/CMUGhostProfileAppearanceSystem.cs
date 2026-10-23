@@ -64,10 +64,12 @@ public sealed partial class CMUGhostProfileAppearanceSystem : EntitySystem
     /// </summary>
     private void DressInPreferredJob(EntityUid standIn, HumanoidCharacterProfile profile, ICommonSession player)
     {
-        // No job on High leaves an empty id, which TryIndex throws on instead of returning false.
         var jobId = profile.JobPriorities.FirstOrDefault(p => p.Value == JobPriority.High).Key;
-        JobPrototype? job = null;
-        if ((jobId.Id == null || !_prototypes.TryIndex(jobId, out job)) &&
+        // Profiles can have no high-priority job; a default ProtoId cannot be looked up.
+        if (string.IsNullOrEmpty(jobId.Id))
+            jobId = SharedGameTicker.FallbackOverflowJob;
+
+        if (!_prototypes.TryIndex(jobId, out JobPrototype? job) &&
             !_prototypes.TryIndex(SharedGameTicker.FallbackOverflowJob, out job))
         {
             return;
