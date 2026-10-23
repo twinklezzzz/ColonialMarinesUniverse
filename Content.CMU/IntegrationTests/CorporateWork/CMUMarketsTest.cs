@@ -184,11 +184,13 @@ public sealed class CMUMarketsTest
                 markets.UpdateRoundEvents();
 
                 // $1000 earned in a minute lifts the stock and makes the news.
+                // Other tests on a reused server can leave stories behind, so count only the new one.
+                var newsBefore = markets.GetVisibleNews(false).Count;
                 var before = markets.GetPrice(wy)!.Value;
                 corporate.AddToCorporateBudget(1000);
                 markets.UpdateRoundEvents();
                 Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + 10 * CMUMarketsSystem.IncomeShockPer100)).Within(0.05f));
-                Assert.That(markets.GetVisibleNews(false), Has.Count.EqualTo(1));
+                Assert.That(markets.GetVisibleNews(false), Has.Count.EqualTo(newsBefore + 1), "The earnings didn't make the news.");
 
                 // Trading on the corporate account isn't earnings.
                 var trader = markets.GetTrader((terminal, entities.GetComponent<CMUMarketsTerminalComponent>(terminal)), terminal)!;
