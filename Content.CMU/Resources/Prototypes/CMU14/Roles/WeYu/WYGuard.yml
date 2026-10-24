@@ -86,6 +86,7 @@
     suitstorage: RMCM77BeltPMCFilled
   storage:
     back:
+    - CMUGuidebookSecurityHandbook
     - RMCMREWeYa
     - CMCanteen
     - CMU14TearGasGrenade

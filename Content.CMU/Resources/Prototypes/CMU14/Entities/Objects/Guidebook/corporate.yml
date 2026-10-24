@@ -195,3 +195,64 @@
   - type: GuideHelp
     guides:
     - CMUHandbookScience
+
+# Corporate Security Handbook: round-start site security only (guards, Sergeant, Personal Protection).
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookSecurity
+  name: cmu-guide-entry-handbook-security
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Security/CMUHandbookSecurity.xml"
+  children:
+  - CMUHandbookSecurityOrganisation
+  - CMUHandbookSecurityPractice
+  - CMUHandbookSecurityIncidents
+  - CMUHandbookSecurityRecovery
+  - CMUHandbookSecurityEmergencies
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookSecurityOrganisation
+  name: cmu-guide-entry-handbook-security-organisation
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Security/CMUHandbookSecurityOrganisation.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookSecurityPractice
+  name: cmu-guide-entry-handbook-security-practice
+  priority: 1
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Security/CMUHandbookSecurityPractice.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookSecurityIncidents
+  name: cmu-guide-entry-handbook-security-incidents
+  priority: 2
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Security/CMUHandbookSecurityIncidents.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookSecurityRecovery
+  name: cmu-guide-entry-handbook-security-recovery
+  priority: 3
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Security/CMUHandbookSecurityRecovery.xml"
+
+- type: guideEntry
+  parent: RMC
+  id: CMUHandbookSecurityEmergencies
+  name: cmu-guide-entry-handbook-security-emergencies
+  priority: 4
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/Security/CMUHandbookSecurityEmergencies.xml"
+
+- type: entity
+  parent: RMCGuidebookBase
+  id: CMUGuidebookSecurityHandbook
+  name: Weyland-Yutani corporate security handbook
+  description: "Regulations for Company security officers. The later chapters are written very carefully, and say very little directly."
+  components:
+  - type: Sprite
+    sprite: _RMC14/Objects/Misc/Books/Other/SOP.rsi
+  - type: GuideHelp
+    guides:
+    - CMUHandbookSecurity
