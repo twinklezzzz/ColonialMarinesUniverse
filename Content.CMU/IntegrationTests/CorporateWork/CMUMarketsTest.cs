@@ -237,6 +237,7 @@ public sealed class CMUMarketsTest
             var mobState = server.System<Content.Shared.Mobs.Systems.MobStateSystem>();
             var terminal = entities.SpawnEntity("RMCPersonalDesktop", map.GridCoords);
             var staff = new List<EntityUid>();
+            var mindIds = new List<EntityUid>();
             try
             {
                 const string wy = "CMUStockWeylandYutani";
@@ -245,6 +246,7 @@ public sealed class CMUMarketsTest
                     var body = entities.SpawnEntity("CMMobHuman", map.GridCoords);
                     var mind = minds.CreateMind(null);
                     minds.TransferTo(mind, body, mind: mind.Comp);
+                mindIds.Add(mind);
                     roles.MindAddJobRole(mind, mind.Comp, silent: true, jobPrototype: "AU14JobWYGuard");
                     staff.Add(body);
                 }
@@ -275,8 +277,73 @@ public sealed class CMUMarketsTest
                 entities.DeleteEntity(terminal);
                 foreach (var body in staff)
                     entities.DeleteEntity(body);
+
+                // Minds outlive their bodies and would count as casualties in the next test.
+                foreach (var mind in mindIds)
+                    entities.DeleteEntity(mind);
             }
         });
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task GhostedStaffCountAsLostAtCandleClose()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        var markets = server.System<CMUMarketsSystem>();
+        const string wy = "CMUStockWeylandYutani";
+        var staff = new List<EntityUid>();
+        var mindIds = new List<EntityUid>();
+        EntityUid terminal = default;
+        EntityUid ghost = default;
+        var before = 0f;
+
+        await server.WaitAssertion(() =>
+        {
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
+            var minds = server.System<Content.Server.Mind.MindSystem>();
+            var roles = server.System<Content.Shared.Roles.SharedRoleSystem>();
+            var mobState = server.System<Content.Shared.Mobs.Systems.MobStateSystem>();
+            terminal = entities.SpawnEntity("RMCPersonalDesktop", map.GridCoords);
+            markets.GetPrice(wy);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var body = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+                var mind = minds.CreateMind(null);
+                minds.TransferTo(mind, body, mind: mind.Comp);
+                mindIds.Add(mind);
+                roles.MindAddJobRole(mind, mind.Comp, silent: true, jobPrototype: "AU14JobWYGuard");
+                staff.Add(body);
+            }
+
+            // Two dead, and one who ghosted out of their body for good: three of four lost.
+            mobState.ChangeMobState(staff[0], Content.Shared.Mobs.MobState.Dead);
+            mobState.ChangeMobState(staff[1], Content.Shared.Mobs.MobState.Dead);
+            ghost = entities.SpawnEntity("MobObserver", map.GridCoords);
+            Assert.That(minds.TryGetMind(staff[2], out var ghostMind, out var ghostMindComp));
+            minds.TransferTo(ghostMind, ghost, mind: ghostMindComp);
+
+            Assert.That(markets.CountCasualties(wy), Is.EqualTo((4, 3, 1)));
+            before = markets.GetPrice(wy)!.Value;
+        });
+
+        // Let the market's own loop close a candle.
+        await server.WaitRunTicks((int) (65 / server.Timing.TickPeriod.TotalSeconds));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(markets.GetPrice(wy)!.Value, Is.LessThan(before * 0.85f), "The mass-casualty event didn't hit the stock at candle close.");
+            foreach (var uid in staff)
+                entities.DeleteEntity(uid);
+            foreach (var mind in mindIds)
+                entities.DeleteEntity(mind);
+            entities.DeleteEntity(ghost);
+            entities.DeleteEntity(terminal);
+        });
+
         await pair.CleanReturnAsync();
     }
 }

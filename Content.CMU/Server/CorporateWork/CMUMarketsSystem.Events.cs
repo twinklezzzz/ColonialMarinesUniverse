@@ -2,6 +2,7 @@ using System.Linq;
 using Content.Server.Mind;
 using Content.Shared._RMC14.Medical.Unrevivable;
 using Content.Shared.CMU14.CorporateWork;
+using Content.Shared.Ghost.Components;
 using Content.Shared.Mind;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Systems;
@@ -168,7 +169,8 @@ public sealed partial class CMUMarketsSystem
                 continue;
 
             staff++;
-            if (mind.OwnedEntity is not { } body || TerminatingOrDeleted(body))
+            // A mind that's moved to its ghost has left its body for good.
+            if (mind.OwnedEntity is not { } body || TerminatingOrDeleted(body) || HasComp<GhostComponent>(body))
             {
                 dead++;
                 permanent++;
@@ -268,7 +270,7 @@ public sealed partial class CMUMarketsSystem
         var minds = EntityQueryEnumerator<MindComponent>();
         while (minds.MoveNext(out var mindId, out var mind))
         {
-            if (mind.OwnedEntity is not { } body || _mobState.IsDead(body))
+            if (mind.OwnedEntity is not { } body || _mobState.IsDead(body) || HasComp<GhostComponent>(body))
                 continue;
 
             if (_jobs.MindTryGetJob(mindId, out var job) && job.RoundForce is { } force && company.Commodity.RoundForces.Contains(force))

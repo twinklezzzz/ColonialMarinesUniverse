@@ -153,6 +153,52 @@ public sealed class CMUSpecimenCaptureTest
     }
 
     [Test]
+    public async Task DropSpecimenOntoCrate()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        var capture = server.System<CMUSpecimenCaptureSystem>();
+        var container = server.System<SharedContainerSystem>();
+
+        EntityUid xeno = default;
+        await server.WaitAssertion(() =>
+        {
+            var handler = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+            xeno = entities.SpawnEntity("CMXenoDrone", new EntityCoordinates(map.Grid, 0.5f, 1.5f));
+            var crate = entities.SpawnEntity("CMUSpecimenCrate", new EntityCoordinates(map.Grid, 1.5f, 0.5f));
+
+            // A crate won't take a specimen that isn't bound.
+            var canDrop = new Content.Shared.DragDrop.CanDropTargetEvent(handler, xeno);
+            entities.EventBus.RaiseLocalEvent(crate, ref canDrop);
+            Assert.That(canDrop.CanDrop, Is.False);
+
+            capture.Sedate(xeno, 10, TimeSpan.FromSeconds(30));
+            capture.Restrain(xeno, TimeSpan.FromSeconds(120));
+
+            var canDrag = new Content.Shared.DragDrop.CanDragEvent();
+            entities.EventBus.RaiseLocalEvent(xeno, ref canDrag);
+            Assert.That(canDrag.Handled, Is.True, "A bound specimen can't be dragged.");
+            canDrop = new Content.Shared.DragDrop.CanDropTargetEvent(handler, xeno);
+            entities.EventBus.RaiseLocalEvent(crate, ref canDrop);
+            Assert.That(canDrop.CanDrop, Is.True, "The crate won't take a bound specimen.");
+
+            var drop = new Content.Shared.DragDrop.DragDropTargetEvent(handler, xeno);
+            entities.EventBus.RaiseLocalEvent(crate, ref drop);
+            Assert.That(drop.Handled, Is.True, "Dropping the specimen didn't start loading it.");
+        });
+
+        await server.WaitRunTicks((int) (6 / server.Timing.TickPeriod.TotalSeconds));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(container.IsEntityInContainer(xeno), Is.True, "The dropped specimen wasn't loaded.");
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
     public async Task SpawnerPlacesCrate()
     {
         await using var pair = await PoolManager.GetServerClient();

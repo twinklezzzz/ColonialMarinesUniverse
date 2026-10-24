@@ -1,25 +1,29 @@
 <Document>
-  # Your Working Day
+  # Research Duties
 
-  ## What the Company needs from you
-  Most of your time will be spent identifying unknown chemicals, working out what they do, and turning that knowledge into something the Company can use. Every finding you record earns the site money, and good findings earn a lot of it.
+  The laboratory exists to turn unknown materials into Company property. Every recorded finding earns the site money.
 
-  The Company's research equipment is supplied through the corporate ASRS:
-  - The [bold]XRF scanner[/bold] analyses unknown samples and identifies what's in them.
-  - The [bold]research data terminal[/bold] stores your reports, tracks the lab's research points and offers chemical contracts from Company clients.
-  - The [bold]synthesis simulator[/bold] lets you test new compounds before you make them for real.
+  ## Equipment
+  The Company's research equipment is ordered through the corporate ASRS:
+  - The [bold]XRF scanner[/bold] analyses unknown samples.
+  - The [bold]research data terminal[/bold] stores reports, tracks the laboratory's research points and offers chemical contracts.
+  - The [bold]synthesis simulator[/bold] tests new compounds before they are produced.
 
-  The research section of the guidebook explains each machine in detail.
+  Full operating instructions are in the research section of the guidebook.
 
-  ## The research licence
-  All Company research on a colony depends on the colony's research licence. If the colony revokes it, the lab can keep working, but nothing it produces earns the Company a credit. Losing the licence costs the Company a great deal, so please don't give the colony a reason to take it away. If you hear that the licence is at risk, tell the Lead Researcher straight away.
+  ## The Research Licence
+  - All Company research on a colony depends on the colony's research licence. While it is revoked, research earns the Company nothing.
+  - Staff may not give the colony any reason to revoke the licence.
+  - Any threat to the licence must be reported to the Lead Researcher immediately.
 
-  ## Recording your work
-  - Write everything down. A result that isn't recorded may as well not exist.
-  - Save your reports to the research data terminal, not to personal notes.
-  - Label every sample with what it is, where it came from and who handled it.
-  - Never take samples, reports or data out of the lab without the Lead Researcher's permission.
+  ## Records
+  - All work must be recorded. Unrecorded results are not accepted.
+  - Reports are to be saved to the research data terminal, never to personal notes.
+  - Every sample must be labelled with its contents, its source and who handled it.
+  - Samples, reports and data may not leave the laboratory without the Lead Researcher's approval.
 
   ## Contracts
-  Company clients sometimes ask the lab to supply particular chemicals. Contracts are accepted at the research data terminal and pay well when they're delivered on time. Check with the Lead Researcher before taking one on.
+  - Chemical contracts are accepted at the research data terminal.
+  - Staff must clear a contract with the Lead Researcher before accepting it.
+  - Accepted contracts are to be delivered on time.
 </Document>

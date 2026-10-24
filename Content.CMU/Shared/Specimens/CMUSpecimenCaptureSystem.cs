@@ -7,6 +7,7 @@ using Content.Shared.ActionBlocker;
 using Content.Shared.Actions.Components;
 using Content.Shared.Actions.Events;
 using Content.Shared.DoAfter;
+using Content.Shared.DragDrop;
 using Content.Shared.Examine;
 using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Interaction;
@@ -75,6 +76,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ExaminedEvent>(OnRestrainedExamined);
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, GetVerbsEvent<AlternativeVerb>>(OnRestrainedVerbs);
         SubscribeLocalEvent<CMUSpecimenRestrainedComponent, CMUSpecimenUnharnessDoAfterEvent>(OnUnharnessDoAfter);
+        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, CanDragEvent>(OnRestrainedCanDrag);
 
         SubscribeLocalEvent<ActionComponent, ActionAttemptEvent>(OnActionAttempt);
 
@@ -84,6 +86,8 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         SubscribeLocalEvent<CMUSpecimenCrateComponent, ActivateInWorldEvent>(OnCrateActivate);
         SubscribeLocalEvent<CMUSpecimenCrateComponent, GetVerbsEvent<AlternativeVerb>>(OnCrateVerbs);
         SubscribeLocalEvent<CMUSpecimenCrateComponent, CMUSpecimenLoadDoAfterEvent>(OnLoadDoAfter);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, CanDropTargetEvent>(OnCrateCanDropTarget);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, DragDropTargetEvent>(OnCrateDragDropTarget);
     }
 
     #region Sedation
@@ -292,6 +296,12 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
                HasComp<CMUSpecimenCrateComponent>(container.Owner);
     }
 
+    // Living xenonids can't be click-dragged. A bound one can, so it can be dropped onto a crate.
+    private void OnRestrainedCanDrag(Entity<CMUSpecimenRestrainedComponent> ent, ref CanDragEvent args)
+    {
+        args.Handled = true;
+    }
+
     private void OnRestrainedExamined(Entity<CMUSpecimenRestrainedComponent> ent, ref ExaminedEvent args)
     {
         if (_container.IsEntityInContainer(ent))
@@ -471,12 +481,45 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             args.Verbs.Add(new AlternativeVerb
             {
                 Text = Loc.GetString("cmu-specimen-verb-load"),
-                Act = () => _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, user, ent.Comp.LoadDelay, new CMUSpecimenLoadDoAfterEvent(), ent, ent, pulled)
-                {
-                    BreakOnMove = true,
-                }),
+                Act = () => TryStartLoad(ent, user, pulled),
             });
         }
+    }
+
+    private bool CanLoad(Entity<CMUSpecimenCrateComponent> crate, EntityUid user, EntityUid specimen)
+    {
+        return crate.Comp.State == CMUSpecimenCrateState.Open &&
+               GetSpecimen(crate) == null &&
+               !IsSpecimen(user) &&
+               HasComp<CMUSpecimenRestrainedComponent>(specimen);
+    }
+
+    private bool TryStartLoad(Entity<CMUSpecimenCrateComponent> crate, EntityUid user, EntityUid specimen)
+    {
+        if (!CanLoad(crate, user, specimen))
+            return false;
+
+        return _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, user, crate.Comp.LoadDelay, new CMUSpecimenLoadDoAfterEvent(), crate, crate, specimen)
+        {
+            BreakOnMove = true,
+        });
+    }
+
+    private void OnCrateCanDropTarget(Entity<CMUSpecimenCrateComponent> ent, ref CanDropTargetEvent args)
+    {
+        if (!CanLoad(ent, args.User, args.Dragged))
+            return;
+
+        args.CanDrop = true;
+        args.Handled = true;
+    }
+
+    private void OnCrateDragDropTarget(Entity<CMUSpecimenCrateComponent> ent, ref DragDropTargetEvent args)
+    {
+        if (args.Handled)
+            return;
+
+        args.Handled = TryStartLoad(ent, args.User, args.Dragged);
     }
 
     private void OnLoadDoAfter(Entity<CMUSpecimenCrateComponent> ent, ref CMUSpecimenLoadDoAfterEvent args)

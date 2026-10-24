@@ -1,26 +1,20 @@
 <Document>
-  # Employee Handbook
+  # Weyland-Yutani Employee Handbook
   ## Colonial Office Edition
 
-  [color=#a4885c]Weyland-Yutani Corporation. For employees only. Please don't share this handbook with anyone outside the Company.[/color]
+  [color=#a4885c]Weyland-Yutani Corporation. Company employees only. Do not share outside the Company.[/color]
+
+  These are the policies and procedures for Weyland-Yutani office staff at colonial sites. Every employee is expected to know them from their first shift.
+
+  Breaches of policy are recorded in the employee's personnel file and are reviewed at contract renewal. Serious breaches may result in immediate dismissal.
+
+  Where a situation isn't covered by this handbook, staff are to act in the Company's interest and report the matter to the Corporate Liaison.
 
   [italic]Building Better Worlds.[/italic]
 
-  ## Welcome to Weyland-Yutani
-
-  Congratulations on joining the Company, and welcome to your new office.
-
-  Weyland-Yutani has been building the frontier for over a century, and every colonial office plays its part. The work you do here, whether that's balancing the books or getting a shipment out on time, keeps the colony supplied and the Company growing.
-
-  This handbook explains what we expect from you and what you can expect from us. Please read it during your first shift and keep it somewhere you can find it. If something isn't covered here, ask your line manager. If they don't know, they'll find someone who does.
-
-  We're glad to have you with us.
-
-  [italic]Human Resources, Corporate Relations Division[/italic]
-
-  ## In this handbook
-  - [textlink="Your Role" link="CMUHandbookStaffRole"/]: your grade, who you report to, and how promotion works.
-  - [textlink="Your Working Day" link="CMUHandbookStaffWork"/]: the work terminals and what to do with your time.
-  - [textlink="Conduct and Confidentiality" link="CMUHandbookStaffConduct"/]: how we expect you to behave, and what stays inside the office.
-  - [textlink="Health, Safety and Emergencies" link="CMUHandbookStaffSafety"/]: what to do if the office comes under threat.
+  ## Sections
+  - [textlink="Employment and Reporting" link="CMUHandbookStaffRole"/]
+  - [textlink="Duties" link="CMUHandbookStaffWork"/]
+  - [textlink="Conduct and Confidentiality" link="CMUHandbookStaffConduct"/]
+  - [textlink="Emergency Procedures" link="CMUHandbookStaffSafety"/]
 </Document>

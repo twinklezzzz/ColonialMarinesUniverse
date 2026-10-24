@@ -39,4 +39,6 @@
   parent: WYPMCWhiteout
   id: WYPMCWhiteoutKillSquad
   displayName: Weyland-Yutani Whiteout Kill Squad
+  # No specimen to recover, so the regular PMC shuttle without the crate.
+  dropshippath: /Maps/CMU14/Dropships/rmc_ert_pmc_shuttle.yml
   partyspawn: WYPMCWhiteoutKillSquadSpawn

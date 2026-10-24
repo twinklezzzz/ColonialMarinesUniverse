@@ -1,27 +1,19 @@
 <Document>
-  # Research Staff Handbook
+  # Weyland-Yutani Research Staff Handbook
   ## Colonial Laboratory Edition
 
-  [color=#a4885c]Weyland-Yutani Corporation. Research and Development Division. For research staff only. Sections marked RESTRICTED are on a need-to-know basis and must not be shared, even with other Company employees.[/color]
+  [color=#a4885c]Weyland-Yutani Corporation, Research and Development Division. Research staff only. Sections marked RESTRICTED are need-to-know and may not be shared with anyone outside research staff, including other Company employees.[/color]
+
+  These are the policies and procedures for Company research staff at colonial sites. They apply in addition to the Employee Handbook. Where the two disagree, this handbook takes precedence.
+
+  Breaches of policy are recorded in the employee's personnel file. Breaches of confidentiality or containment may result in immediate dismissal.
 
   [italic]Building Better Worlds.[/italic]
 
-  ## Welcome to Research and Development
-
-  Welcome to the team.
-
-  Research is the most valuable work the Company does on any colony, and you were chosen for it because we believe you're good at it. The medicines, materials and technologies that come out of colonial laboratories help to keep humanity alive on the frontier, and they keep the Company ahead of its competitors.
-
-  With that value comes responsibility. You'll handle hazardous materials, confidential data and, from time to time, living specimens. This handbook explains how to do all of that safely and discreetly. Please read it in full before you start work, and keep it with you in the lab.
-
-  If something isn't covered here, ask the Lead Researcher.
-
-  [italic]Research and Development Division[/italic]
-
-  ## In this handbook
-  - [textlink="Your Role in Research" link="CMUHandbookScienceRole"/]: your title, who you report to and how the lab is run.
-  - [textlink="Your Working Day" link="CMUHandbookScienceWork"/]: the research process and what the Company expects from it.
-  - [textlink="Conduct and Confidentiality" link="CMUHandbookScienceConduct"/]: need to know, and how we protect our work.
-  - [textlink="Biological Specimens" link="CMUHandbookScienceSpecimens"/]: [color=#a4885c]RESTRICTED.[/color] The organisms you may be asked to study.
-  - [textlink="Health, Safety and Emergencies" link="CMUHandbookScienceSafety"/]: lab safety, containment breaches and what to do if the site comes under threat.
+  ## Sections
+  - [textlink="Organisation and Reporting" link="CMUHandbookScienceRole"/]
+  - [textlink="Research Duties" link="CMUHandbookScienceWork"/]
+  - [textlink="Confidentiality" link="CMUHandbookScienceConduct"/]
+  - [textlink="Biological Specimens" link="CMUHandbookScienceSpecimens"/] [color=#a4885c](RESTRICTED)[/color]
+  - [textlink="Laboratory Safety and Emergencies" link="CMUHandbookScienceSafety"/]
 </Document>

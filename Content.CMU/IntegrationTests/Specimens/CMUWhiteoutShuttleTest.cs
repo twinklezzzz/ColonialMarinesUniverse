@@ -37,10 +37,9 @@ public sealed class CMUWhiteoutShuttleTest
             Assert.That(markers.Any(m => m.ThreatMarkerType == ThreatMarkerType.Leader), "No leader spawn on the Whiteout shuttle.");
 
             // Every Whiteout party fits on the shuttle without stacking two synths on one marker.
-            foreach (var partyId in new[] { "WYPMCWhiteout", "WYPMCWhiteoutKillSquad" })
+            foreach (var partyId in new[] { "WYPMCWhiteout" })
             {
                 var party = server.ProtoMan.Index<ThirdPartyPrototype>(partyId);
-                Assert.That(party.dropshippath, Is.EqualTo(path), $"{partyId} doesn't use the Whiteout shuttle.");
                 var spawn = server.ProtoMan.Index<PartySpawnPrototype>(party.PartySpawn);
                 Assert.That(markers.Count(m => m.ThreatMarkerType == ThreatMarkerType.Member), Is.GreaterThanOrEqualTo(spawn.GruntsToSpawn.Values.Sum()),
                     $"Not enough member spawns for {partyId}.");

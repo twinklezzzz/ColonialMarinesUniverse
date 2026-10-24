@@ -10,7 +10,7 @@
   components:
   - type: Sprite
     sprite: _RMC14/Structures/Machines/computer.rsi
-    state: computer_generic
+    state: engineering_terminal
   - type: ApcPowerReceiver
     powerLoad: 0
     needsPower: false
@@ -49,7 +49,7 @@
   components:
   - type: Sprite
     sprite: _RMC14/Structures/Machines/computer.rsi
-    state: computer_generic
+    state: terminal
   - type: ApcPowerReceiver
     powerLoad: 0
     needsPower: false
@@ -84,7 +84,7 @@
   components:
   - type: Sprite
     sprite: _RMC14/Structures/Machines/computer.rsi
-    state: computer_generic
+    state: comm
   - type: ApcPowerReceiver
     powerLoad: 0
     needsPower: false
@@ -124,7 +124,7 @@
   components:
   - type: Sprite
     sprite: _RMC14/Structures/Machines/computer.rsi
-    state: computer_generic
+    state: terminal1
   - type: ApcPowerReceiver
     powerLoad: 0
     needsPower: false
