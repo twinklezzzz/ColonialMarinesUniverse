@@ -8,11 +8,18 @@
   - CMUCorporateHandbookGrades
   - CMUCorporateHandbookStructure
   - CMUCorporateHandbookDivisions
-  - CMUCorporateHandbookSecurity
   - CMUCorporateHandbookContractors
   - CMUCorporateHandbookProcedure
   - CMUCorporateHandbookPartnership
+  - CMUCorporateHandbookResearch
   - CMUCorporateHandbookConduct
+
+- type: guideEntry
+  parent: RMC
+  id: CMUCorporateHandbookResearch
+  name: cmu-guide-entry-corporate-research
+  priority: 0
+  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookResearch.xml"
 
 - type: guideEntry
   parent: RMC
@@ -44,13 +51,6 @@
 
 - type: guideEntry
   parent: RMC
-  id: CMUCorporateHandbookSecurity
-  name: cmu-guide-entry-corporate-security
-  priority: 2
-  text: "/ServerInfo/Guidebook/CMU14/Corporate/CMUCorporateHandbookSecurity.xml"
-
-- type: guideEntry
-  parent: RMC
   id: CMUCorporateHandbookProcedure
   name: cmu-guide-entry-corporate-procedure
   priority: 3
@@ -73,14 +73,18 @@
 - type: entity
   parent: RMCGuidebookBase
   id: CMUGuidebookCorporateHandbook
-  name: Weyland-Yutani corporate handbook
-  description: "Standard operating procedure for Weyland-Yutani field staff, bound in Company colours. Every new hire is issued one. Most never get past the welcome letter, and the Company prefers it that way."
+  name: Weyland-Yutani executive handbook
+  description: "The Company's handbook for its executives, with every other staff handbook bound in behind it. Some of its pages aren't in any of the others."
   components:
   - type: Sprite
     sprite: _RMC14/Objects/Misc/Books/Other/SOP.rsi
+  # The executive edition has every other handbook bound in.
   - type: GuideHelp
     guides:
     - CMUCorporateHandbook
+    - CMUHandbookStaff
+    - CMUHandbookScience
+    - CMUHandbookSecurity
 
 # Employee Handbook: office staff. Nothing classified.
 - type: guideEntry

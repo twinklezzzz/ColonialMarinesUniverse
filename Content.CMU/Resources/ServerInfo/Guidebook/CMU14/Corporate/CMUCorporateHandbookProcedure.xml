@@ -1,32 +1,37 @@
 <Document>
-  # Office Procedure
+  # Site Administration
 
-  Staff who aren't on an assignment are expected to be productive. Company work terminals are installed at most sites, and the earnings from each go straight to the site budget. Rotate between them: repeating the same task brings diminishing returns, and auditors notice.
+  The senior employee on site runs the Company's operation on the colony. These are their tools and their obligations.
 
-  ## Records and Audit
-  Reconcile the ledger against its receipts and flag any entry that doesn't match. Each irregularity you catch saves the Company money. Do not ask where the irregularities come from.
+  ## The Corporate Affairs Console
+  The console is restricted to grade WYC5 and above.
+  - [bold]Treasury[/bold]: the corporate budget. Withdrawals are taxed by the colony at its current income tax rate.
+  - [bold]Transit tariff[/bold]: the Company's cut of every submission the colony ships out, up to 50%. Changes are announced to the colony.
+  - [bold]Corporate support[/bold]: calls in Company security, synthetics or contractors, paid from the corporate budget.
+  - [bold]Contracts[/bold]: the site lease, licences, loans, work orders and divestment (see [textlink="Colonial Partnership" link="CMUCorporateHandbookPartnership"/]).
 
-  ## Logistics
-  Plan freight manifests for outbound shuttles to get the most value out of each load without breaching weight, volume or hazard limits. Overloaded manifests are rejected by the shuttle crew.
+  ## The Budget
+  - The budget is earned by office terminal work, research, trade and the Company's colonial contracts.
+  - Office staff are to be kept at the work terminals when they have no other task.
+  - Cash paid into the console counts as budget but not as earnings. The Company's share price follows what the site earns, not what is deposited.
 
-  ## Secure Transmissions
-  Recover cipher keys from intercepted transmissions. The terminal reports how close each attempt was. Commercial, military and black-site traffic are all of interest. Black-site traffic pays best and is discussed least.
-
-  ## Corporate Markets
-  Trade commodity futures on the Company's account.
-  - Prices move continuously and close a candle every minute.
-  - The Company newswire reports on market conditions as soon as they're known, well before the market reacts. Colonists trading from their personal desktops only hear about it moments before the move. Use that lead.
-  - The Company trades in size, and size moves prices. A large purchase lifts the price for everyone who buys after it.
-  - Brokerage charges 2% on every purchase and every sale.
-  - Holdings pay a dividend of 0.5% of their value every minute.
-  - The site may hold no more than $10000 in futures at any time.
-  - Positions are not carried over when the site's books close.
-
-  Colonists can also trade the stock of other companies, Weyland-Yutani included, from their personal desktops. The Company does not trade stock from site terminals. The Company's share price follows the site's performance: profit lifts it, and a mass-casualty event among Company staff, a lost research licence or a divestment sends it down hard. When the Company stumbles, rivals move in to fill the gap. Colonists are watching.
+  ## The Markets
+  - Office staff trade goods and commodities on the Company's account. The site may hold no more than $10,000 in goods at once, and positions aren't carried over when the site's books close.
+  - The Company's newswire reports market news before the market reacts. Colonists trading from personal desktops only hear it moments before the move.
+  - The Company does not trade stock from site terminals. Colonists can, and they trade Weyland-Yutani.
+  - The Company's share price follows the site. Profit lifts it. A mass-casualty event among Company personnel, a lost research licence or a divestment sends it down hard, and the Company's rivals move in when it falls. Head office reads the share price.
 
   ## Research
-  Research is the Company's main source of value at any colony. It depends on the colony's research licence. Protect the licence, and the researchers.
+  - Research is the Company's main source of value on any colony, and depends on the colony's research licence.
+  - The executive is responsible for keeping the licence. Losing it is reported to head office and recorded against the executive.
+  - The Lead Researcher reports to the senior employee. What the laboratory is really working on is covered in [textlink="Research Programmes" link="CMUCorporateHandbookResearch"/].
+
+  ## Staff
+  - The senior employee settles disputes between departments. Their decision is final until someone more senior arrives.
+  - Disciplinary matters are recorded and passed to head office. Staff are not dismissed on site.
+  - Corporate Security answers to the senior employee through the Security Sergeant.
 
   ## Reporting
-  Significant events go up the chain of command in writing. Report losses promptly and successes immediately.
+  - Significant events are reported up the chain in writing. Losses are reported promptly and successes immediately.
+  - Reports that could expose the Company go to Communications before anyone else, and go nowhere else.
 </Document>
