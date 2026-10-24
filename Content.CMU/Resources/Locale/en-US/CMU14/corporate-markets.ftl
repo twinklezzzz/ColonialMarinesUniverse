@@ -50,6 +50,7 @@ cmu-markets-stock-lasalle = Lasalle Bionational
 cmu-markets-stock-seegson = Seegson
 cmu-markets-stock-hyperdyne = Hyperdyne Corporation
 cmu-markets-stock-prodigy = Prodigy Corporation
+cmu-markets-stock-vanguards-arrow = Vanguard's Arrow Inc.
 cmu-markets-stock-kelland = Kelland Mining Company
 cmu-markets-stock-lock-mart = Lock-Mart Industries
 cmu-markets-stock-armat = Armat Battlefield Systems

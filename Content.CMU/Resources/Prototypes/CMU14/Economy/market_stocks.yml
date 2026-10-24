@@ -4,7 +4,8 @@
 # moves them further.
 #
 # roundForces ties a company to the jobs that work for it: research income lifts its stock, staff
-# deaths drag it down, and setbacks tank it. sectors are its lines of business: when a company in
+# deaths drag it down, and setbacks tank it. Any job whose roundForce is listed counts, round-start
+# or third party, claimed or not. A company getting its first third party only needs its force here. sectors are its lines of business: when a company in
 # the round has a setback in a sector, a rival there that isn't in the round fills the gap.
 
 - type: cmuMarketCommodity
@@ -58,6 +59,18 @@
   volatility: 0.07
   liquidity: 12000
   roundForces: [PSC]
+  sectors: [Security]
+
+# Vanguard's Arrow Incorporated: the UA private military company from the lore's PMC page.
+- type: cmuMarketCommodity
+  id: CMUStockVanguardsArrow
+  kind: Stock
+  name: cmu-markets-stock-vanguards-arrow
+  symbol: VAI
+  basePrice: 45
+  volatility: 0.05
+  liquidity: 18000
+  roundForces: [VAI]
   sectors: [Security]
 
 - type: cmuMarketCommodity

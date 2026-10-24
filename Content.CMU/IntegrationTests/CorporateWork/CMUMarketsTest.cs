@@ -346,4 +346,83 @@ public sealed class CMUMarketsTest
 
         await pair.CleanReturnAsync();
     }
+
+    [Test]
+    public async Task UnclaimedGhostRoleDeathsCount()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        await server.WaitAssertion(() =>
+        {
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
+            var markets = server.System<CMUMarketsSystem>();
+            var mobState = server.System<Content.Shared.Mobs.Systems.MobStateSystem>();
+            const string wy = "CMUStockWeylandYutani";
+            var bodies = new List<EntityUid>();
+            try
+            {
+                markets.GetPrice(wy);
+
+                // Third-party bodies nobody has taken yet still work for the Company.
+                for (var i = 0; i < 3; i++)
+                    bodies.Add(entities.SpawnEntity("CMUJobPMCWhiteoutDogCatcher", map.GridCoords));
+
+                Assert.That(markets.CountCasualties(wy).Staff, Is.EqualTo(3));
+                Assert.That(markets.IsInRound(wy), Is.True);
+
+                var news = markets.GetVisibleNews(false).Count;
+                mobState.ChangeMobState(bodies[0], Content.Shared.Mobs.MobState.Dead);
+                Assert.That(markets.GetVisibleNews(false), Has.Count.EqualTo(news + 1), "An unclaimed body's death didn't make the newswire.");
+
+                mobState.ChangeMobState(bodies[1], Content.Shared.Mobs.MobState.Dead);
+                Assert.That(markets.CountCasualties(wy).Dead, Is.EqualTo(2));
+
+                var before = markets.GetPrice(wy)!.Value;
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + CMUMarketsSystem.MassCasualtyShock)).Within(0.05f),
+                    "Two of three unclaimed bodies dead isn't a mass-casualty event.");
+            }
+            finally
+            {
+                foreach (var body in bodies)
+                    entities.DeleteEntity(body);
+            }
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    [TestCase("AU14JobTARSPartyRifleman", "CMUStockProdigy")]
+    [TestCase("AU14VAISOEngi", "CMUStockVanguardsArrow")]
+    public async Task OtherCompaniesThirdPartiesCount(string body, string stock)
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        await server.WaitAssertion(() =>
+        {
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
+            var markets = server.System<CMUMarketsSystem>();
+            var bodies = new List<EntityUid>();
+            try
+            {
+                markets.GetPrice(stock);
+                for (var i = 0; i < 3; i++)
+                    bodies.Add(entities.SpawnEntity(body, map.GridCoords));
+
+                Assert.That(markets.CountCasualties(stock).Staff, Is.EqualTo(3), $"{body} doesn't count as {stock} staff.");
+                Assert.That(markets.IsInRound(stock), Is.True);
+            }
+            finally
+            {
+                foreach (var uid in bodies)
+                    entities.DeleteEntity(uid);
+            }
+        });
+
+        await pair.CleanReturnAsync();
+    }
 }

@@ -1,11 +1,15 @@
 using System.Linq;
+using Content.Server.Ghost.Roles.Components;
 using Content.Server.Mind;
 using Content.Shared._RMC14.Medical.Unrevivable;
 using Content.Shared.CMU14.CorporateWork;
 using Content.Shared.Ghost.Components;
 using Content.Shared.Mind;
+using Content.Shared.Mind.Components;
 using Content.Shared.Mobs;
+using Content.Shared.Mobs.Components;
 using Content.Shared.Mobs.Systems;
+using Content.Shared.Roles;
 using Content.Shared.Roles.Jobs;
 using Robust.Shared.Random;
 
@@ -183,6 +187,22 @@ public sealed partial class CMUMarketsSystem
             }
         }
 
+        // Third-party bodies nobody has taken yet have no mind, only the job on their ghost role.
+        var unclaimed = EntityQueryEnumerator<GhostRoleComponent>();
+        while (unclaimed.MoveNext(out var body, out var role))
+        {
+            if (HasMind(body) || UnclaimedForce(role) is not { } force || !company.Commodity.RoundForces.Contains(force))
+                continue;
+
+            staff++;
+            if (!_mobState.IsDead(body))
+                continue;
+
+            dead++;
+            if (_unrevivable.IsUnrevivable(body))
+                permanent++;
+        }
+
         return (staff, dead, permanent);
     }
 
@@ -248,10 +268,29 @@ public sealed partial class CMUMarketsSystem
 
     private string? GetForce(EntityUid uid)
     {
-        if (!_mind.TryGetMind(uid, out var mindId, out _) || !_jobs.MindTryGetJob(mindId, out var job))
-            return null;
+        if (_mind.TryGetMind(uid, out var mindId, out _))
+            return _jobs.MindTryGetJob(mindId, out var job) ? job.RoundForce : null;
 
-        return job.RoundForce;
+        return TryComp<GhostRoleComponent>(uid, out var role) ? UnclaimedForce(role) : null;
+    }
+
+    /// <summary>
+    ///     Whether a body is spoken for: it has a mind, or it isn't a mob at all (a ghost-role spawner).
+    /// </summary>
+    private bool HasMind(EntityUid uid)
+    {
+        if (!HasComp<MobStateComponent>(uid))
+            return true;
+
+        return TryComp<MindContainerComponent>(uid, out var container) && container.HasMind;
+    }
+
+    /// <summary>
+    ///     The company an unclaimed ghost-role body works for, from the job it will be given.
+    /// </summary>
+    private string? UnclaimedForce(GhostRoleComponent role)
+    {
+        return role.JobProto is { } jobId && _prototypes.TryIndex<JobPrototype>(jobId, out var job) ? job.RoundForce : null;
     }
 
     /// <summary>
@@ -275,6 +314,16 @@ public sealed partial class CMUMarketsSystem
 
             if (_jobs.MindTryGetJob(mindId, out var job) && job.RoundForce is { } force && company.Commodity.RoundForces.Contains(force))
                 return true;
+        }
+
+        var unclaimed = EntityQueryEnumerator<GhostRoleComponent>();
+        while (unclaimed.MoveNext(out var body, out var role))
+        {
+            if (!HasMind(body) && !_mobState.IsDead(body) &&
+                UnclaimedForce(role) is { } force && company.Commodity.RoundForces.Contains(force))
+            {
+                return true;
+            }
         }
 
         return false;
