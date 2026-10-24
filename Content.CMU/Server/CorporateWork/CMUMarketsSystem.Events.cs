@@ -58,6 +58,17 @@ public sealed partial class CMUMarketsSystem
 
     private readonly HashSet<string> _firstDeathReported = new();
     private readonly HashSet<string> _massCasualtyReported = new();
+
+    /// <summary>
+    ///     Unclaimed third-party bodies that died, and the company they worked for. Without a mind
+    ///     nothing else remembers them once they're gibbed.
+    /// </summary>
+    private readonly Dictionary<EntityUid, string> _deadUnclaimed = new();
+
+    /// <summary>
+    ///     Per round force, unclaimed bodies that died and were then destroyed.
+    /// </summary>
+    private readonly Dictionary<string, int> _destroyedUnclaimed = new();
     private float _lastCorporateBudget;
 
     /// <summary>
@@ -74,6 +85,7 @@ public sealed partial class CMUMarketsSystem
     private void InitializeEvents()
     {
         SubscribeLocalEvent<MobStateChangedEvent>(OnMobStateChanged);
+        SubscribeLocalEvent<MobStateComponent, EntityTerminatingEvent>(OnMobTerminating);
     }
 
     /// <summary>
@@ -82,8 +94,18 @@ public sealed partial class CMUMarketsSystem
     /// </summary>
     private void OnMobStateChanged(MobStateChangedEvent args)
     {
-        if (!_started || args.NewMobState != MobState.Dead || args.OldMobState == MobState.Dead)
+        if (!_started)
             return;
+
+        // Revived: no longer a casualty if it's destroyed later.
+        if (args.OldMobState == MobState.Dead && args.NewMobState != MobState.Dead)
+            _deadUnclaimed.Remove(args.Target);
+
+        if (args.NewMobState != MobState.Dead || args.OldMobState == MobState.Dead)
+            return;
+
+        if (!HasMind(args.Target) && TryComp<GhostRoleComponent>(args.Target, out var role) && UnclaimedForce(role) is { } unclaimedForce)
+            _deadUnclaimed[args.Target] = unclaimedForce;
 
         if (GetForce(args.Target) is not { } force || StockFor(force) is not { } stock || !_firstDeathReported.Add(stock.Commodity.ID))
             return;
@@ -93,6 +115,18 @@ public sealed partial class CMUMarketsSystem
             ("symbol", stock.Commodity.Symbol),
             ("company", Loc.GetString(stock.Commodity.Name))), CMUMarketKind.Stock);
         UpdateAllUi();
+    }
+
+    /// <summary>
+    ///     A dead unclaimed body that's destroyed (gibbed, blown up) is still a casualty, and now a
+    ///     permanent one. Bodies deleted alive, like unclaimed deployments that expire, aren't.
+    /// </summary>
+    private void OnMobTerminating(Entity<MobStateComponent> ent, ref EntityTerminatingEvent args)
+    {
+        if (!_started || !_deadUnclaimed.Remove(ent, out var force))
+            return;
+
+        _destroyedUnclaimed[force] = _destroyedUnclaimed.GetValueOrDefault(force) + 1;
     }
 
     /// <summary>
@@ -185,6 +219,14 @@ public sealed partial class CMUMarketsSystem
                 if (_unrevivable.IsUnrevivable(body))
                     permanent++;
             }
+        }
+
+        foreach (var force in company.Commodity.RoundForces)
+        {
+            var destroyed = _destroyedUnclaimed.GetValueOrDefault(force);
+            staff += destroyed;
+            dead += destroyed;
+            permanent += destroyed;
         }
 
         // Third-party bodies nobody has taken yet have no mind, only the job on their ghost role.

@@ -425,4 +425,53 @@ public sealed class CMUMarketsTest
 
         await pair.CleanReturnAsync();
     }
+
+    [Test]
+    public async Task GibbedUnclaimedBodiesStayCasualties()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        await server.WaitAssertion(() =>
+        {
+            server.EntMan.EventBus.RaiseEvent(EventSource.Local, new RoundRestartCleanupEvent());
+            var markets = server.System<CMUMarketsSystem>();
+            var mobState = server.System<Content.Shared.Mobs.Systems.MobStateSystem>();
+            const string wy = "CMUStockWeylandYutani";
+            var bodies = new List<EntityUid>();
+            try
+            {
+                markets.GetPrice(wy);
+                for (var i = 0; i < 4; i++)
+                    bodies.Add(entities.SpawnEntity("CMUJobPMCWhiteoutDogCatcher", map.GridCoords));
+
+                // Three blown apart: killed, then the bodies are gone.
+                for (var i = 0; i < 3; i++)
+                {
+                    mobState.ChangeMobState(bodies[i], Content.Shared.Mobs.MobState.Dead);
+                    entities.DeleteEntity(bodies[i]);
+                }
+
+                // An unclaimed deployment that expires is deleted alive, and isn't a casualty.
+                entities.DeleteEntity(bodies[3]);
+
+                Assert.That(markets.CountCasualties(wy), Is.EqualTo((3, 3, 3)));
+                var before = markets.GetPrice(wy)!.Value;
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + CMUMarketsSystem.MassCasualtyShock)).Within(0.05f),
+                    "Gibbed bodies didn't make a mass-casualty event.");
+            }
+            finally
+            {
+                foreach (var body in bodies)
+                {
+                    if (entities.EntityExists(body))
+                        entities.DeleteEntity(body);
+                }
+            }
+        });
+
+        await pair.CleanReturnAsync();
+    }
 }

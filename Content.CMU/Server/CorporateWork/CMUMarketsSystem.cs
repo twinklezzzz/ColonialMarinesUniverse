@@ -142,6 +142,8 @@ public sealed partial class CMUMarketsSystem : EntitySystem
         _portfolios.Clear();
         _firstDeathReported.Clear();
         _massCasualtyReported.Clear();
+        _deadUnclaimed.Clear();
+        _destroyedUnclaimed.Clear();
         _corporateMarketFlow = 0;
         _started = false;
         _civilianNewsShown = 0;
