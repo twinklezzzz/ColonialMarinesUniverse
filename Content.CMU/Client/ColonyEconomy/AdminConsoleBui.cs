@@ -26,10 +26,22 @@ public sealed class AdminConsoleBui(EntityUid owner, Enum uiKey) : BoundUserInte
         };
 
         _window.OpenContractsBtn.OnPressed += _ => SendMessage(new CMUContractsOpenBuiMsg());
+        // RUMC: the button that sets the tax on the parcels sold through the trade platforms
+        _window.SetTradeTaxButton.OnPressed += _ =>
+        {
+            if (_window.TradeTaxInput.Text is { } text && float.TryParse(text, out var pct))
+                SendPredictedMessage(new AdminConsoleSetTradeTaxBuiMsg(pct));
+        };
 
         _window.OpenThirdPartyBtn.OnPressed += _ =>
         {
             SendPredictedMessage(new AdminConsoleOpenThirdPartyBuiMsg());
+        };
+
+        // RUMC: the window of the government of the colony (the reforms and the foreign policy)
+        _window.OpenGovernmentBtn.OnPressed += _ =>
+        {
+            SendPredictedMessage(new AdminConsoleOpenGovernmentBuiMsg());
         };
     }
 

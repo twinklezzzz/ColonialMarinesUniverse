@@ -1,3 +1,4 @@
+using Content.Shared.CMU14.Yautja;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Content.Shared.CMU14.Dropship.MultiDeck;
@@ -59,6 +60,7 @@ public abstract partial class CMUSharedZLevelsSystem
 
     private EntityQuery<FixturesComponent> _fixturesQuery;
     private EntityQuery<CMUZLevelHighGroundComponent> _highgroundQuery;
+    private EntityQuery<CMUZLevelFallThroughComponent> _fallThroughQuery; // RUMC: things that let a falling body through the tile they stand on (a hatch, a grate)
     private EntityQuery<CMUVehicleZTraversalComponent> _vehicleTraversalQuery;
     private EntityQuery<DropshipDeckComponent> _dropshipDeckQuery;
     private readonly List<Entity<MapGridComponent>> _movementDeckCandidates = new();
@@ -91,6 +93,7 @@ public abstract partial class CMUSharedZLevelsSystem
         InitializeZPhysicsPresentation();
         _fixturesQuery = GetEntityQuery<FixturesComponent>();
         _highgroundQuery = GetEntityQuery<CMUZLevelHighGroundComponent>();
+        _fallThroughQuery = GetEntityQuery<CMUZLevelFallThroughComponent>(); // RUMC
         _vehicleTraversalQuery = GetEntityQuery<CMUVehicleZTraversalComponent>();
         _dropshipDeckQuery = GetEntityQuery<DropshipDeckComponent>();
         Subs.CVar(_configuration, CMUZLevelsCVars.DebugFalling, value => _debugFalling = value, true);
@@ -190,6 +193,12 @@ public abstract partial class CMUSharedZLevelsSystem
 
     private void OnFallDamage(Entity<DamageableComponent> ent, ref CMUZLevelHitEvent args)
     {
+        // CMU14: a Yautja descent is a controlled landing - CM-SS13 gives the species no fall damage from dropping a
+        // level, so this returns before both the knockdown and the Blunt damage. YautjaComponent is the species marker
+        // (CMUMobYautja, and a youngblood gains it when the role is taken); plain humans keep normal fall damage.
+        if (HasComp<YautjaComponent>(ent.Owner))
+            return;
+
         var knockdownTime = MathF.Min(args.ImpactPower * 0.25f, 5f);
         _stun.TryKnockdown(ent.Owner, TimeSpan.FromSeconds(knockdownTime), true);
 
@@ -209,7 +218,7 @@ public abstract partial class CMUSharedZLevelsSystem
     /// </summary>
     private void OnFallAreaImpact(Entity<PhysicsComponent> ent, ref CMUZLevelHitEvent args)
     {
-        if (_vehicleTraversalQuery.HasComp(ent.Owner))
+        if (_vehicleTraversalQuery.HasComp(ent.Owner) || !HasSolidFallImpact(ent.Owner))
             return;
 
         _fallImpactVictims.Clear();
@@ -228,6 +237,21 @@ public abstract partial class CMUSharedZLevelsSystem
 
             _damage.TryChangeDamage(victim, new DamageSpecifier(damageType, damageAmount));
         }
+    }
+
+    private bool HasSolidFallImpact(EntityUid uid)
+    {
+        if (!TryComp<FixturesComponent>(uid, out var fixtures))
+            return false;
+
+        // Sensors can contribute mass without representing anything that can crush a body.
+        foreach (var fixture in fixtures.Fixtures.Values)
+        {
+            if (fixture.Hard)
+                return true;
+        }
+
+        return false;
     }
 
     private bool IsBuckledTo(EntityUid victim, EntityUid strap)
@@ -1136,8 +1160,10 @@ public abstract partial class CMUSharedZLevelsSystem
             var tileFound = _map.TryGetTileRef(checkingGridUid, checkingGrid, checkingTile, out var tileRef);
             var tileEmpty = !tileFound || CMUZLevelOpeningCache.IsFallThroughTile(tileRef.Tile, TilDefMan);
             var tileType = _debugFalling && tileFound ? tileRef.Tile.TypeId.ToString() : "none";
+            // RUMC: a tile with something on it that lets a body through is not the ground; the condition that was here (kept): if (tileFound && !tileEmpty)
             if (tileFound &&
-                !tileEmpty)
+                !tileEmpty &&
+                !HasFallThroughAt(checkingGridUid, checkingGrid, checkingTile))
             {
                 if (profiling)
                     _profileZDistanceTileHits++;
@@ -1207,6 +1233,19 @@ public abstract partial class CMUSharedZLevelsSystem
         while (anchoredEntities.MoveNext(out var anchored))
         {
             if (HasComp<ZLevelWallSupportComponent>(anchored))
+                return true;
+        }
+
+        return false;
+    }
+
+    // RUMC method: whether something that lets a falling body through is anchored on the tile
+    private bool HasFallThroughAt(EntityUid gridUid, MapGridComponent grid, Vector2i tile)
+    {
+        var query = _map.GetAnchoredEntitiesEnumerator(gridUid, grid, tile);
+        while (query.MoveNext(out var anchored))
+        {
+            if (_fallThroughQuery.HasComp(anchored.Value))
                 return true;
         }
 

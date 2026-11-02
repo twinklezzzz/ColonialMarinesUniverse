@@ -690,6 +690,11 @@ public sealed partial class DepartmentConsoleSystem : EntitySystem
 
         elevator.Value.Comp.Orders.Add(deptOrder);
         Dirty(elevator.Value);
+
+        // Department orders are the colony's too, so their guns go on the firearm registry under whoever ordered them.
+        var bought = new Content.Server.CMU14.Requisitions.CMURequisitionsOrderBoughtEvent(elevator.Value,
+            elevator.Value.Comp.Orders.Count - 1, msg.Actor, elevator.Value.Comp.Faction);
+        RaiseLocalEvent(ref bought);
         UpdateAllUiForDepartment(uid, comp);
     }
 
@@ -799,7 +804,9 @@ public sealed partial class DepartmentConsoleSystem : EntitySystem
         if (!dept.ColonyManaged)
             return false;
 
-        if (amount <= 0 || amount > _budget.GetBudget())
+        if (!float.IsFinite(amount)
+            || amount <= 0
+            || amount > _budget.GetBudget())
             return false;
 
         _budget.AddToBudget(-amount);
@@ -813,7 +820,9 @@ public sealed partial class DepartmentConsoleSystem : EntitySystem
     /// </summary>
     private void OnWithdraw(EntityUid uid, DepartmentConsoleComponent comp, DepartmentConsoleWithdrawBuiMsg msg)
     {
-        if (msg.Amount <= 0 || msg.Amount > comp.DepartmentBudget)
+        if (!float.IsFinite(msg.Amount)
+            || msg.Amount <= 0
+            || msg.Amount > comp.DepartmentBudget)
             return;
 
         var amount = (int) msg.Amount;

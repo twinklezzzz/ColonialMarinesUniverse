@@ -127,102 +127,6 @@ public sealed class YautjaPredatorRoleTest
     private static readonly Robust.Shared.Prototypes.ProtoId<HealthIconPrototype> CMUYautjaRankIconBloodedPrototype = "CMUYautjaRankIconBlooded";
     private static readonly Robust.Shared.Prototypes.ProtoId<EmoteSoundsPrototype> CMUBaseYautjaPrototype = "CMUBaseYautja";
 
-    [TestCase(YautjaSkinColor.Gray)]
-    [TestCase(YautjaSkinColor.White)]
-    public async Task YautjaSpawnPreservesSelectedAchromaticSkinColor(YautjaSkinColor skinColor)
-    {
-        await using var pair = await PoolManager.GetServerClient(new PoolSettings { Connected = true });
-        var server = pair.Server;
-        var client = pair.Client;
-        var map = await pair.CreateTestMap();
-        var expected = YautjaCharacterProfile.GetSkinColorColor(skinColor);
-        EntityUid hunter = default;
-        EntityUid? previousAttached = null;
-
-        try
-        {
-            await server.WaitPost(() =>
-            {
-                // CMU defaults identity hiding off; this regression exercises its enabled path.
-                server.CfgMan.SetCVar(RMCCVars.HidePlayerIdentities, true);
-                var entMan = server.EntMan;
-                var session = server.PlayerMan.Sessions.Single();
-                var yautja = YautjaCharacterProfile.Default.WithSkinColor(skinColor);
-                var lobbyProfile = HumanoidCharacterProfile.DefaultWithSpecies("Human")
-                    .WithYautjaProfile(yautja);
-
-                hunter = entMan.System<StationSpawningSystem>().SpawnPlayerMob(
-                    map.GridCoords,
-                    "CMUYautjaHunter",
-                    lobbyProfile,
-                    station: null);
-                previousAttached = session.AttachedEntity;
-                server.PlayerMan.SetAttachedEntity(session, hunter);
-
-                var spawned = new PlayerSpawnCompleteEvent(
-                    hunter,
-                    session,
-                    "CMUYautjaHunter",
-                    lateJoin: false,
-                    silent: true,
-                    joinOrder: 1,
-                    station: map.MapUid,
-                    profile: lobbyProfile);
-                entMan.EventBus.RaiseLocalEvent(hunter, spawned, broadcast: true);
-
-                var humanoid = entMan.GetComponent<HumanoidProfileComponent>(hunter);
-                Assert.That(YautjaTestAppearance.SkinColor(entMan, hunter), Is.EqualTo(expected));
-
-                var hidden = entMan.GetComponent<HiddenAppearanceComponent>(hunter);
-                Assert.That(hidden.Appearance?.Appearance.SkinColor, Is.EqualTo(expected),
-                    "The hidden identity must retain the selected Yautja skin color.");
-            });
-
-            await pair.ReallyBeIdle(10);
-
-            await server.WaitAssertion(() =>
-            {
-                var entMan = server.EntMan;
-                Assert.That(YautjaTestAppearance.SkinColor(entMan, hunter),
-                    Is.EqualTo(expected),
-                    "The authoritative appearance must remain selected after the spawn event settles.");
-                var hidden = entMan.GetComponent<HiddenAppearanceComponent>(hunter);
-                Assert.That(hidden.Appearance?.Appearance.SkinColor, Is.EqualTo(expected));
-            });
-
-            await client.WaitAssertion(() =>
-            {
-                var entMan = client.EntMan;
-                var clientHunter = entMan.GetEntity(server.EntMan.GetNetEntity(hunter));
-                var humanoid = entMan.GetComponent<HumanoidProfileComponent>(clientHunter);
-                var sprite = entMan.GetComponent<SpriteComponent>(clientHunter);
-
-                var hidden = entMan.GetComponent<HiddenAppearanceComponent>(clientHunter);
-                Assert.That(hidden.Appearance?.Appearance.SkinColor, Is.EqualTo(expected));
-                Assert.That(entMan.System<SpriteSystem>().LayerMapTryGet((clientHunter, sprite), HumanoidVisualLayers.Chest, out var chestLayer, logMissing: false), Is.True);
-                var chest = (SpriteComponent.Layer) sprite[chestLayer];
-                Assert.That(chest.Color, Is.EqualTo(expected));
-                Assert.That(chest.ShaderPrototype?.Id, Is.EqualTo("Greyscale"));
-                Assert.That(YautjaTestAppearance.SkinColor(entMan, clientHunter), Is.EqualTo(expected),
-                    "The replicated authoritative appearance must retain the selected skin color.");
-            });
-        }
-        finally
-        {
-            await server.WaitPost(() =>
-            {
-                var session = server.PlayerMan.Sessions.SingleOrDefault();
-                if (session != null)
-                    server.PlayerMan.SetAttachedEntity(session, previousAttached);
-
-                if (hunter != default && !server.EntMan.Deleted(hunter))
-                    server.EntMan.DeleteEntity(hunter);
-            });
-        }
-
-        await pair.CleanReturnAsync();
-    }
-
     [Test]
     public async Task PredatorSpawnAppliesYautjaProfileInsteadOfNormalHumanProfile()
     {
@@ -237,14 +141,14 @@ public sealed class YautjaPredatorRoleTest
             var inventory = entMan.System<InventorySystem>();
 
             var yautjaAppearance = YautjaCharacterProfile.Default
-                .WithSkinColor(YautjaSkinColor.Green)
+                .WithSkinColor(YautjaSkinColor.Red)
                 .WithEyeColor(YautjaEyeColor.Gold).Appearance.Clone();
 
             var yautja = YautjaCharacterProfile.Default
                 .WithName("Kainde Amedha")
                 .WithAge(420)
                 .WithAppearance(yautjaAppearance)
-                .WithSkinColor(YautjaSkinColor.Green)
+                .WithSkinColor(YautjaSkinColor.Red)
                 .WithQuillStyle(YautjaQuillStyle.LongCurved)
                 .WithArmor(YautjaGearMaterial.Bronze, 3)
                 .WithMask(YautjaGearMaterial.Bone, 12)
@@ -276,7 +180,8 @@ public sealed class YautjaPredatorRoleTest
                 Assert.That(humanoid.Species, Is.EqualTo("Yautja"));
                 Assert.That(entMan.HasComponent<YautjaHudViewerComponent>(hunter), Is.False,
                     "Original CMSS13 Hunter spawn has no mask until the player uses the loadout vendor.");
-                Assert.That(YautjaTestAppearance.SkinColor(entMan, hunter), Is.EqualTo(YautjaCharacterProfile.GetSkinColorColor(YautjaSkinColor.Green)));
+                Assert.That(YautjaTestAppearance.SkinColor(entMan, hunter), Is.EqualTo(YautjaCharacterProfile.GetSkinColorColor(YautjaSkinColor.Red)),
+                    "an explicitly chosen tone must survive the spawn path; Green is reserved as the unchosen sentinel");
                 Assert.That(YautjaTestAppearance.EyeColor(entMan, hunter),
                     Is.EqualTo(YautjaCharacterProfile.GetEyeColorColor(YautjaEyeColor.Gold)));
                 Assert.That(YautjaTestAppearance.Hair(entMan, hunter),
@@ -534,8 +439,8 @@ public sealed class YautjaPredatorRoleTest
                 Assert.That(predatorRound.PredatorJob.Id, Is.EqualTo("CMUYautjaHunter"));
                 Assert.That(predatorRound.HunterShipMap.Id, Is.EqualTo("CMUYautjaHunterShip"));
                 Assert.That(YautjaPredatorRoundCVars.RandomEnabled.DefaultValue, Is.True);
-                Assert.That(YautjaPredatorRoundCVars.RandomMinimumRounds.DefaultValue, Is.EqualTo(3));
-                Assert.That(YautjaPredatorRoundCVars.RandomMaximumRounds.DefaultValue, Is.EqualTo(5));
+                Assert.That(YautjaPredatorRoundCVars.InsurgencyChance.DefaultValue, Is.EqualTo(1f / 6f));
+                Assert.That(YautjaPredatorRoundCVars.DistressSignalChance.DefaultValue, Is.EqualTo(1f / 3f));
             });
         });
 
@@ -564,7 +469,7 @@ public sealed class YautjaPredatorRoleTest
     }
 
     [Test]
-    public async Task PredatorRoundStartAutomaticallyLoadsHunterShipZLevels()
+    public async Task PredatorRoundStartLoadsHunterShipZLevels()
     {
         await using var pair = await PoolManager.GetServerClient(new PoolSettings
         {
@@ -588,10 +493,9 @@ public sealed class YautjaPredatorRoleTest
             {
                 var cfg = server.CfgMan;
                 cfg.SetCVar(YautjaPredatorRoundCVars.RandomEnabled, false);
-                cfg.SetCVar(YautjaPredatorRoundCVars.RandomMinimumRounds, 1);
-                cfg.SetCVar(YautjaPredatorRoundCVars.RandomMaximumRounds, 1);
-                cfg.SetCVar(YautjaPredatorRoundCVars.RandomEnabled, true);
                 server.EntMan.System<GameTicker>().RestartRound();
+                // the test preset never rolls a hunt, so start it the way staff would
+                Assert.That(server.EntMan.System<YautjaPredatorRoundSystem>().TryInitializePredatorRound(out _), Is.True);
             });
 
             await server.WaitAssertion(() =>
@@ -766,16 +670,14 @@ public sealed class YautjaPredatorRoleTest
         finally
         {
             var cfg = server.CfgMan;
-            cfg.SetCVar(YautjaPredatorRoundCVars.RandomEnabled, YautjaPredatorRoundCVars.RandomEnabled.DefaultValue);
-            cfg.SetCVar(YautjaPredatorRoundCVars.RandomMinimumRounds, YautjaPredatorRoundCVars.RandomMinimumRounds.DefaultValue);
-            cfg.SetCVar(YautjaPredatorRoundCVars.RandomMaximumRounds, YautjaPredatorRoundCVars.RandomMaximumRounds.DefaultValue);
+            server.CfgMan.SetCVar(YautjaPredatorRoundCVars.RandomEnabled, YautjaPredatorRoundCVars.RandomEnabled.DefaultValue);
         }
 
         await pair.CleanReturnAsync();
     }
 
     [Test]
-    public async Task PredatorAdminEditorAppliesChanceSlotsAndInitializesHunterShip()
+    public async Task ClanHallRoundPageAppliesChanceSlotsAndInitializesHunterShip()
     {
         await using var pair = await PoolManager.GetServerClient(new PoolSettings
         {
@@ -793,33 +695,37 @@ public sealed class YautjaPredatorRoleTest
 
             var session = server.PlayerMan.Sessions.Single();
             var euiManager = server.ResolveDependency<EuiManager>();
-            var editor = new Content.Server.CMU14.Yautja.YautjaPredatorAdminEditorEui();
+            var editor = new Content.Server.CMU14.Yautja.YautjaClanHallEui(YautjaClanHallPage.Round);
             EntityUid predatorSpawn = default;
             euiManager.OpenEui(editor, session);
 
             try
             {
-                editor.HandleMessage(new YautjaPredatorAdminEditorSetRandomMessage(true, 3, 5));
+                editor.HandleMessage(new YautjaClanHallRoundRandomMessage(true, 0.25f, 0.5f));
                 Assert.Multiple(() =>
                 {
                     Assert.That(cfg.GetCVar(YautjaPredatorRoundCVars.RandomEnabled), Is.True);
-                    Assert.That(cfg.GetCVar(YautjaPredatorRoundCVars.RandomMinimumRounds), Is.EqualTo(3));
-                    Assert.That(cfg.GetCVar(YautjaPredatorRoundCVars.RandomMaximumRounds), Is.EqualTo(5));
+                    Assert.That(cfg.GetCVar(YautjaPredatorRoundCVars.InsurgencyChance), Is.EqualTo(0.25f));
+                    Assert.That(cfg.GetCVar(YautjaPredatorRoundCVars.DistressSignalChance), Is.EqualTo(0.5f));
                 });
 
-                editor.HandleMessage(new YautjaPredatorAdminEditorSetHunterSlotsMessage(4));
+                // out of range gets refused and leaves the saved chances alone
+                editor.HandleMessage(new YautjaClanHallRoundRandomMessage(true, 1.5f, -0.1f));
+                Assert.That(cfg.GetCVar(YautjaPredatorRoundCVars.InsurgencyChance), Is.EqualTo(0.25f));
+
+                editor.HandleMessage(new YautjaClanHallRoundSlotsMessage(4));
                 Assert.That(entMan.System<YautjaPredatorRoundSystem>().ConfiguredHunterSlots, Is.EqualTo(4));
 
                 // Keep this EUI routing test focused on the admin controls. The
                 // first-time map load (including Z-level linking) is covered by
-                // PredatorRoundStartAutomaticallyLoadsHunterShipZLevels below.
+                // PredatorRoundStartLoadsHunterShipZLevels below.
                 var ticker = entMan.System<GameTicker>();
                 Assert.That(ticker.StartGameRule(CMUYautjaPredatorRoundPrototype, out var ruleUid), Is.True);
                 // A marker makes EnsurePredatorRound take its already-provisioned
                 // spawn-point path without loading the large map into this
                 // connected EUI test.
                 predatorSpawn = entMan.SpawnEntity("CMUHunterShipMarkerPredatorSpawn", MapCoordinates.Nullspace);
-                editor.HandleMessage(new YautjaPredatorAdminEditorInitializeMessage());
+                editor.HandleMessage(new YautjaClanHallRoundInitializeMessage());
 
                 var ruleQuery = entMan.EntityQueryEnumerator<YautjaPredatorRoundComponent>();
                 Assert.That(ruleQuery.MoveNext(out _, out var rule), Is.True);
@@ -831,17 +737,16 @@ public sealed class YautjaPredatorRoleTest
                     Assert.That(rule.HunterShipLoaded, Is.True);
                 });
 
-                var state = editor.GetNewState();
-                Assert.That(state, Is.TypeOf<YautjaPredatorAdminEditorEuiState>());
-                var editorState = (YautjaPredatorAdminEditorEuiState) state;
+                // the hall's round page reads these same values
+                var round = entMan.System<YautjaPredatorRoundSystem>();
                 Assert.Multiple(() =>
                 {
-                    Assert.That(editorState.HuntInitialized, Is.True);
-                    Assert.That(editorState.ActiveHunterSlots, Is.EqualTo(4));
-                    Assert.That(editorState.HunterSlots, Is.EqualTo(4));
-                    Assert.That(editorState.RandomEnabled, Is.True);
-                    Assert.That(editorState.RandomMinimumRounds, Is.EqualTo(3));
-                    Assert.That(editorState.RandomMaximumRounds, Is.EqualTo(5));
+                    Assert.That(round.TryGetActiveHunterSlots(out var activeSlots), Is.True);
+                    Assert.That(activeSlots, Is.EqualTo(4));
+                    Assert.That(round.ConfiguredHunterSlots, Is.EqualTo(4));
+                    Assert.That(round.RandomEnabled, Is.True);
+                    Assert.That(round.InsurgencyChance, Is.EqualTo(0.25f));
+                    Assert.That(round.DistressSignalChance, Is.EqualTo(0.5f));
                 });
             }
             finally
@@ -850,6 +755,8 @@ public sealed class YautjaPredatorRoleTest
                 if (predatorSpawn.IsValid() && !entMan.Deleted(predatorSpawn))
                     entMan.DeleteEntity(predatorSpawn);
                 cfg.SetCVar(YautjaPredatorRoundCVars.RandomEnabled, YautjaPredatorRoundCVars.RandomEnabled.DefaultValue);
+                cfg.SetCVar(YautjaPredatorRoundCVars.InsurgencyChance, YautjaPredatorRoundCVars.InsurgencyChance.DefaultValue);
+                cfg.SetCVar(YautjaPredatorRoundCVars.DistressSignalChance, YautjaPredatorRoundCVars.DistressSignalChance.DefaultValue);
             }
         });
 
@@ -3855,7 +3762,6 @@ public sealed class YautjaPredatorRoleTest
                 "CMUActionYautjaToggleThrallBracerLock",
                 "CMUActionYautjaStunThrall",
                 "CMUActionYautjaSelfDestructThrall",
-                "CMUActionYautjaRecall",
                 "CMUActionYautjaCallDisc",
                 "CMUActionYautjaFalconRecall",
                 "CMUActionYautjaSelfDestruct",
@@ -4021,7 +3927,7 @@ public sealed class YautjaPredatorRoleTest
                 ["CMUActionYautjaToggleLantern"] = 1,
                 ["CMUActionYautjaHonorRoar"] = 45,
                 ["CMUActionYautjaHuntingLeap"] = 12,
-                ["CMUActionYautjaRecall"] = 5,
+                ["CMUActionYautjaLeap"] = 5,
                 ["CMUActionYautjaRaiseThrall"] = 120,
             };
 

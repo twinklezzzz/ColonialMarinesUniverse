@@ -1,10 +1,7 @@
 using Content.Server.CMU14.Ambassador;
 using Content.Server.CMU14.CorporateRelations;
-using Content.Server.Containers;
 using Content.Shared.CMU14.ColonyEconomy;
-using Content.Shared.Containers;
 using Content.Shared.Stacks;
-using Content.Shared.Tag;
 using Robust.Shared.Containers;
 
 namespace Content.Server.CMU14.ColonyEconomy;
@@ -15,60 +12,37 @@ public sealed partial class SubmissionStorageSystem : EntitySystem
     [Dependency] private AmbassadorConsoleSystem _ambassador = default!;
     [Dependency] private CorporateConsoleSystem _corporateConsole = default!;
     [Dependency] private CMUCorporateRelationsSystem _relations = default!;
- 
+    [Dependency] private SubmissionCommoditySystem _commodity = default!;
+    [Dependency] private SubmissionMarketSystem _market = default!;
+
     public override void Initialize()
     {
         base.Initialize();
         SubscribeLocalEvent<SubmissionStorageComponent, EntInsertedIntoContainerMessage>(OnEntityInserted);
     }
 
-
-
     private void OnEntityInserted(EntityUid uid,
         SubmissionStorageComponent storage,
         EntInsertedIntoContainerMessage args)
     {
-        if (!TryComp(uid, out SubmissionStorageComponent? submission))
+        // the insert veto already bounced anything that doesn't match
+        if (!_commodity.TryMatch(storage, args.Entity, out var commodity, out var basePrice))
             return;
 
-        if (!TryComp<TagComponent>(args.Entity, out var tags))
-            return;
-        if (submission.Rewards is null)
-            return;
+        var count = TryComp<StackComponent>(args.Entity, out var stack) ? stack.Count : 1;
+        var baseValue = basePrice * count;
 
-        float sum = 0f;
-        int num = 0;
-        foreach (var tag in tags.Tags)
-        {
-            if (submission.Rewards.TryGetValue(tag, out var val))
-            {
-                sum += val;
-                num++;
-            }
-        }
-        // can never be too careful
-        if (num == 0)
-            num = 1;
+        // priced before the sale counts, so it pays what the board showed
+        // CMU14: a withdrawn WY leaves the colony with worse prices.
+        var reward = baseValue * _market.GetMultiplier(commodity) * _ambassador.GetSubmissionMultiplier() * _relations.ColonyPayoutMultiplier;
+        _market.RecordSale(commodity, baseValue);
 
-        // e.g. $10 + $15 != $25 instead it equals $12.5
-        float amount = sum / num;
-
-        var mult = _ambassador.GetSubmissionMultiplier() * _relations.ColonyPayoutMultiplier;
-        // A withdrawn WY no longer takes its cut.
-        var tariff = _relations.Withdrawn ? 0f : _corporateConsole.GetTariff();
-        //var amount = submission.Rewards.TryGetValue()
-
-        float reward;
-        TryComp<StackComponent>(args.Entity, out var stack);
-        if (stack != null)
-            reward = amount * stack.Count * mult;
-        else
-            reward = amount * mult;
-
-        _relations.OnDelivery(args.Entity, stack?.Count ?? 1, reward);
+        _relations.OnDelivery(args.Entity, count, reward);
         PredictedQueueDel(args.Entity);
 
         // Split: tariff % goes to corporate budget, remainder to colony budget
+        // A withdrawn WY no longer takes its cut.
+        var tariff = _relations.Withdrawn ? 0f : _corporateConsole.GetTariff();
         var tariffAmount = reward * tariff;
         var colonyAmount = reward - tariffAmount;
 

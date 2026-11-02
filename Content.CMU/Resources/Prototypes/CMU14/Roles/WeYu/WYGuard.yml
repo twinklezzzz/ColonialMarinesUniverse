@@ -63,6 +63,11 @@
     inverted: true
     traits:
     - Epilepsy
+    - CMUHeartCondition
+    - CMUHemophilia
+    - CMUHardOfHearing
+    - CMUClaustrophobic
+    - CMUFearOfBlood
   joinNotifyCrew: false
   supervisors: cmu-job-supervisors-corporate-security-sergeant
   spawnMenuRoleName: au14-spawn-role-name-wy-corporate-goon
