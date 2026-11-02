@@ -5,6 +5,7 @@
   roundForce: WY
   roundRole: IPIEPPO
   roundComponents:
+  - type: RegulationAppearance # third-party security keeps a regulation look
   - type: Skills
     skills:
       RMCSkillCqc: 2

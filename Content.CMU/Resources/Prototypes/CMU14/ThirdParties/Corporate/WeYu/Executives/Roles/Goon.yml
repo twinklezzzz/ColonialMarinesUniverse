@@ -9,6 +9,7 @@
   roundForce: WY
   roundRole: WeYuGoon
   roundComponents:
+  - type: RegulationAppearance # third-party security keeps a regulation look
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/map_blips.rsi

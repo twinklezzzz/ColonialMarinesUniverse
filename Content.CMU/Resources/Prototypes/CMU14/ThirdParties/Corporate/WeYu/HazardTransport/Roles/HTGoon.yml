@@ -9,6 +9,7 @@
   roundForce: WY
   roundRole: WYHTGoon
   roundComponents:
+  - type: RegulationAppearance # third-party security keeps a regulation look
   - type: NpcFactionMember
     factions:
     - AUWeYu

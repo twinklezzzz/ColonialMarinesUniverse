@@ -9,6 +9,7 @@
   roundForce: WY
   roundRole: WYSurvGoonShotgun
   roundComponents:
+  - type: RegulationAppearance # third-party security keeps a regulation look
   - type: NpcFactionMember
     factions:
     - AUWeYu

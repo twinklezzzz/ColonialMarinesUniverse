@@ -13,7 +13,6 @@
   - AU14RoundJobProfileThirdParty
   roundRole: WYSecuritySergeant
   roundComponents:
-  - type: RegulationAppearance
   - type: Skills
     skills:
       RMCSkillOverwatch: 1
@@ -117,7 +116,6 @@
   - AU14RoundJobProfileThirdParty
   roundRole: WYPersonalProtection
   roundComponents:
-  - type: RegulationAppearance
   - type: Skills
     skills:
       RMCSkillOverwatch: 1
@@ -214,7 +212,6 @@
   - AU14RoundJobProfileThirdParty
   roundRole: WYPersonalProtectionCoordinator
   roundComponents:
-  - type: RegulationAppearance
   - type: Skills
     skills:
       RMCSkillOverwatch: 1
