@@ -1,0 +1,207 @@
+- type: job
+  parent: CMJobBase
+  id: CMUJobWYRiotLeader
+  chevrons:
+    CMURankWYPMCTeamLeader:
+      entity: CMUChevronWYPMCTeamLeader
+      requirements: []
+  roundSide: ThirdParty
+  roundForce: WY
+  roundRole: WYRiotLeader
+  roundComponents:
+  - type: RegulationAppearance # third-party security keeps a regulation look
+  - type: NpcFactionMember
+    factions:
+    - AUWeYu
+  - type: Skills
+    skills:
+      RMCSkillEndurance: 3
+      RMCSkillFirearms: 2
+      RMCSkillLeadership: 2
+      RMCSkillPolice: 3
+      RMCSkillCqc: 2
+      RMCSkillFireman: 2
+  - type: MarineOrders
+  - type: JobPrefix
+    prefix: cmu-wyriot-prefix-leader
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_RMC14/Interface/map_blips.rsi
+      state: pmc_ld
+  name: cmu-wyriot-name-leader
+  description: cmu-wyriot-description-leader
+  playTimeTracker: CMUJobWYRiotLeader
+  ranks:
+    CMURankWYPMCTeamLeader: []
+  startingGear: CMUGearWYRiotLeader
+  spawnMenuRoleName: WY Riot Control Team Leader (3rd party)
+  greeting: cmu-wyriot-greeting
+  icon: "RMCJobIconPMCLeader"
+  joinNotifyCrew: false
+  supervisors: au14-job-supervisors-wy
+  accessGroups:
+  - CMUWYSecurity
+  - AUPrisonStaff
+  access:
+  - CMUAccessWYArmory
+  hidden: false
+
+- type: job
+  parent: CMJobBase
+  id: CMUJobWYRiotSpecialist
+  chevrons:
+    CMURankWYPMCCrowdControlSpecialist:
+      entity: CMUChevronWYPMCCrowdControlSpecialist
+      requirements: []
+  roundSide: ThirdParty
+  roundForce: WY
+  roundRole: WYRiotSpecialist
+  roundComponents:
+  - type: RegulationAppearance # third-party security keeps a regulation look
+  - type: NpcFactionMember
+    factions:
+    - AUWeYu
+  - type: Skills
+    skills:
+      RMCSkillEndurance: 3
+      RMCSkillFirearms: 2
+      RMCSkillPolice: 3
+      RMCSkillCqc: 2
+      RMCSkillFireman: 2
+  - type: JobPrefix
+    prefix: cmu-wyriot-prefix-specialist
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_RMC14/Interface/map_blips.rsi
+      state: pmc_gun
+  name: cmu-wyriot-name-specialist
+  description: cmu-wyriot-description-specialist
+  playTimeTracker: CMUJobWYRiotSpecialist
+  ranks:
+    CMURankWYPMCCrowdControlSpecialist: []
+  startingGear: CMUGearWYRiotSpecialist
+  spawnMenuRoleName: WY Crowd Control Specialist (3rd party)
+  greeting: cmu-wyriot-greeting
+  icon: "RMCJobIconPMCStandard"
+  joinNotifyCrew: false
+  supervisors: cmu-wyriot-supervisors-leader
+  accessGroups:
+  - CMUWYSecurity
+  - AUPrisonStaff
+  hidden: false
+
+- type: playTimeTracker
+  id: CMUJobWYRiotLeader
+
+- type: playTimeTracker
+  id: CMUJobWYRiotSpecialist
+
+- type: entity
+  parent: AU14BaseMobSpeciesOrganicWeYu
+  id: CMUJobWYRiotLeader
+  name: WY Riot Control Team Leader (3rd party)
+  components:
+  - type: GhostTakeoverAvailable
+  - type: GhostRoleApplySpecial
+    squad: CMUSquadWYSecurity
+  - type: GhostRole
+    makeSentient: true
+    allowSpeech: true
+    allowMovement: true
+    name: cmu-wyriot-name-leader
+    description: cmu-wyriot-description-leader
+    reregister: false
+    job: CMUJobWYRiotLeader
+    raffle:
+      settings: short
+    rules: cmu-wyriot-rules
+
+- type: entity
+  parent: AU14BaseMobSpeciesOrganicWeYu
+  id: CMUJobWYRiotSpecialist
+  name: WY Crowd Control Specialist (3rd party)
+  components:
+  - type: GhostTakeoverAvailable
+  - type: GhostRoleApplySpecial
+    squad: CMUSquadWYSecurity
+  - type: GhostRole
+    makeSentient: true
+    allowSpeech: true
+    allowMovement: true
+    name: cmu-wyriot-name-specialist
+    description: cmu-wyriot-description-specialist
+    reregister: false
+    job: CMUJobWYRiotSpecialist
+    raffle:
+      settings: short
+    rules: cmu-wyriot-rules
+
+# The specialists' kit: WY PMC armour under a riot helmet, a beanbag riot shotgun, a baton and
+# the usual crowd-control grenades.
+- type: startingGear
+  id: CMUGearWYRiotSpecialist
+  equipment:
+    id: AU14IDCardColonyCorporateLiaison
+    outerClothing: AU14WYPMCArmor
+    jumpsuit: AU14WYPMCFatigues
+    shoes: RMCBootsPMCFilled
+    head: ArmorHelmetRiot
+    gloves: AU14PVEHandsInsulatedBlackMarine
+    belt: RMCMK80BeltPMCFilled
+    pocket1: RMCPouchShotgun
+    pocket2: AU14PouchIFAKFill
+    back: RMCSatchelLightpackWeYa
+    ears: RMCHeadsetDistressWeYa
+    suitstorage: CMUWeaponShotgunM890RiotFilled
+  storage:
+    pocket1:
+    - CMShellShotgunBeanbag
+    - CMShellShotgunBeanbag
+    - CMShellShotgunBeanbag
+    - CMShellShotgunBeanbag
+    back:
+    - CMStunbaton
+    - RMCZipties
+    - RMCZipties
+    - CMU14TearGasGrenade
+    - CMU14TearGasGrenade
+    - RMCGrenadeFlashBang
+    - RMCGrenadeFlashBang
+    - RMCMREWeYaPMC
+
+# The leader trades the shotgun for an M63 with rubber rounds.
+- type: startingGear
+  parent: CMUGearWYRiotSpecialist
+  id: CMUGearWYRiotLeader
+  equipment:
+    suitstorage: RMCWeaponSMGM63B2
+    pocket1: RMCPouchMagazineLarge
+  storage:
+    pocket1:
+    - RMCMagazineSMGM63Rubber
+    - RMCMagazineSMGM63Rubber
+    - RMCMagazineSMGM63Rubber
+    - RMCMagazineSMGM63Rubber
+    back:
+    - CMStunbaton
+    - RMCZipties
+    - RMCZipties
+    - CMU14TearGasGrenade
+    - CMU14TearGasGrenade
+    - RMCGrenadeFlashBang
+    - RMCGrenadeFlashBang
+    - RMCMREWeYaPMC
+
+# The MK221 riot shotgun comes empty; this one is loaded with eight beanbag shells.
+- type: entity
+  parent: RMCWeaponShotgunM890Riot
+  id: CMUWeaponShotgunM890RiotFilled
+  suffix: Filled, Beanbag
+  components:
+  - type: BallisticAmmoProvider
+    cycleable: false
+    whitelist:
+      tags:
+      - RMCShellShotgunBeanbag
+    capacity: 8
+    proto: CMShellShotgunBeanbag

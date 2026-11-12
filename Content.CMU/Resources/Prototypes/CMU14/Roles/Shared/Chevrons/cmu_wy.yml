@@ -89,3 +89,12 @@
   - type: RankChanger
     rank: CMURankWYCommandoGunner
     override: true
+
+- type: entity
+  parent: AU14ChevronWeYuSeniorOperator
+  id: CMUChevronWYPMCCrowdControlSpecialist
+  name: PMC crowd control specialist chevron
+  components:
+  - type: RankChanger
+    rank: CMURankWYPMCCrowdControlSpecialist
+    override: true

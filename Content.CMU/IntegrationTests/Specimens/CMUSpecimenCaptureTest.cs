@@ -152,7 +152,7 @@ public sealed class CMUSpecimenCaptureTest
     }
 
     [Test]
-    public async Task ClosedCrateNeedsCompanyAccess()
+    public async Task ClosedCrateNeedsSecurityAccess()
     {
         await using var pair = await PoolManager.GetServerClient();
         var server = pair.Server;
@@ -176,7 +176,7 @@ public sealed class CMUSpecimenCaptureTest
         await server.WaitAssertion(() =>
         {
             Assert.That(crate.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Closed));
-            Assert.That(capture.TryToggle(crate, outsider), Is.False, "Someone without Company access opened the crate.");
+            Assert.That(capture.TryToggle(crate, outsider), Is.False, "Someone without security access opened the crate.");
             Assert.That(capture.TryToggle(crate), Is.True);
             entities.DeleteEntity(crate);
             entities.DeleteEntity(outsider);

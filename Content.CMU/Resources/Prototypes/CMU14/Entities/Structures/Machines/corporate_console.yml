@@ -68,9 +68,12 @@
     sprite: _RMC14/Structures/Machines/computer.rsi
     state: terminal1_old
   - type: CorporateConsole
+    # The site's own support options. The executive detail isn't here: its leader sits on the
+    # Directorate, and the Directorate isn't summoned by a site.
     callableParties:
+      CMUWYSecurityTeam: 6600
+      CMUWYRiotControlTeam: 7700
       WYHT: 6600
       IPIESynth: 3850
-      WYExecutives: 8250
+      WYPMCParty: 17500
       WorkingJoesNoAPOLLO: 10000
-      CMUWYSecurityTeam: 6600
