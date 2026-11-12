@@ -136,8 +136,9 @@
       settings: short
     rules: cmu-wyriot-rules
 
-# The specialists' kit: WY PMC armour under a riot helmet, a beanbag riot shotgun, a baton and
-# the usual crowd-control grenades.
+# The specialists' kit: WY PMC armour with greaves, kneepads, shoulder pads and vambraces, an RC6
+# riot helmet with its face shield and visor, a beanbag riot shotgun, a telescopic baton and the
+# usual crowd-control grenades.
 - type: startingGear
   id: CMUGearWYRiotSpecialist
   equipment:
@@ -145,7 +146,7 @@
     outerClothing: AU14WYPMCArmor
     jumpsuit: AU14WYPMCFatigues
     shoes: RMCBootsPMCFilled
-    head: ArmorHelmetRiot
+    head: CMUArmorHelmetPMCRiotFilled
     gloves: AU14PVEHandsInsulatedBlackMarine
     belt: RMCMK80BeltPMCFilled
     pocket1: RMCPouchShotgun
@@ -154,13 +155,18 @@
     ears: RMCHeadsetDistressWeYa
     suitstorage: CMUWeaponShotgunM890RiotFilled
   storage:
+    outerClothing:
+    - CMUHelmetGarbPMCGreaves
+    - CMUHelmetGarbPMCKneepads
+    - CMUHelmetGarbPMCPads
+    - CMUHelmetGarbPMCBraces
     pocket1:
     - CMShellShotgunBeanbag
     - CMShellShotgunBeanbag
     - CMShellShotgunBeanbag
     - CMShellShotgunBeanbag
     back:
-    - CMStunbaton
+    - AU14TeleBaton
     - RMCZipties
     - RMCZipties
     - CMU14TearGasGrenade
@@ -177,13 +183,18 @@
     suitstorage: RMCWeaponSMGM63B2
     pocket1: RMCPouchMagazineLarge
   storage:
+    outerClothing:
+    - CMUHelmetGarbPMCGreaves
+    - CMUHelmetGarbPMCKneepads
+    - CMUHelmetGarbPMCPads
+    - CMUHelmetGarbPMCBraces
     pocket1:
     - RMCMagazineSMGM63Rubber
     - RMCMagazineSMGM63Rubber
     - RMCMagazineSMGM63Rubber
     - RMCMagazineSMGM63Rubber
     back:
-    - CMStunbaton
+    - AU14TeleBaton
     - RMCZipties
     - RMCZipties
     - CMU14TearGasGrenade
@@ -205,3 +216,14 @@
       - RMCShellShotgunBeanbag
     capacity: 8
     proto: CMShellShotgunBeanbag
+
+# The RC6 riot helmet with its face shield and riot visor fitted.
+- type: entity
+  parent: ArmorHelmetPMCRiot
+  id: CMUArmorHelmetPMCRiotFilled
+  suffix: Shield, Visor
+  components:
+  - type: StorageFill
+    contents:
+    - id: RMCRC6RiotShield
+    - id: AU14HelmetGarbRiotVisor
