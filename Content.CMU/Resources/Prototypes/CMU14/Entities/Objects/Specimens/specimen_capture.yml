@@ -1,27 +1,13 @@
-# Live xenonid capture: capture slugs sedate, the harness binds a downed specimen, and the
-# secure crate holds a bound one so it can be hauled. See CMUSpecimenCaptureSystem.
+# Live specimen capture: capture slugs sedate a specimen, handlers drag it onto an open secure
+# crate, and closing the lid seals it in. See CMUSpecimenCaptureSystem.
 
-- type: entity
-  parent: BaseItem
-  id: CMUSpecimenHarness
-  name: specimen restraint harness
-  description: Reinforced Weyland-Yutani restraint webbing for binding a downed xenonid. Holds for a few minutes before the specimen tears through it, and it can't work at it while crated.
-  components:
-  - type: Sprite
-    sprite: Objects/Misc/cablecuffs.rsi
-    state: cuff
-    color: "#9fd8b0"
-  - type: Item
-    size: Small
-  - type: CMUSpecimenHarness
-
-# Built on the AEGIS secure crate. Click it to open or close the lid; a specimen can only be
-# loaded or let out while it's open.
+# Built on the AEGIS secure crate. Click it to open or close the lid. Drag a downed specimen onto
+# the open crate and close it to seal it in; opening it lets the specimen out, and needs WY access.
 - type: entity
   parent: BaseStructureDynamic
   id: CMUSpecimenCrate
   name: secure specimen crate
-  description: A Weyland-Yutani secure crate, rated for one bound xenonid. Keeps the specimen sedated and secure while it's hauled.
+  description: A Weyland-Yutani secure crate, rated for one sedated specimen. Drag the specimen onto the open crate and close the lid. It stays sedated and sealed until someone with Company access opens it again.
   components:
   - type: Sprite
     sprite: CMU14/Objects/Specimens/specimen_crate.rsi
@@ -42,6 +28,8 @@
         - MidImpassable
         - LowImpassable
   - type: InteractionOutline
+  - type: AccessReader
+    access: [["AU14AccessCorporateWEYU"]]
   - type: CMUSpecimenCrate
 
 # Map this onto the Whiteout shuttle; it puts an empty, open crate there when the shuttle loads.

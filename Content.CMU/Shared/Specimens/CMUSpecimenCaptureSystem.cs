@@ -1,56 +1,52 @@
 using Content.Shared._RMC14.Pulling;
 using Content.Shared._RMC14.Stun;
 using Content.Shared._RMC14.Xenonids;
+using Content.Shared.Access.Systems;
 using Content.Shared.CMU14.Threats.Mobs.Biomorph;
 using Content.Shared.CMU14.Threats.Mobs.Wendigo.Pack;
-using Content.Shared.ActionBlocker;
 using Content.Shared.Actions.Components;
 using Content.Shared.Actions.Events;
-using Content.Shared.DoAfter;
 using Content.Shared.DragDrop;
 using Content.Shared.Examine;
-using Content.Shared.Hands.EntitySystems;
 using Content.Shared.Interaction;
-using Content.Shared.Interaction.Events;
-using Content.Shared.Movement.Events;
 using Content.Shared.Movement.Pulling.Components;
 using Content.Shared.Movement.Pulling.Systems;
 using Content.Shared.Popups;
 using Content.Shared.Projectiles;
 using Content.Shared.Standing;
 using Content.Shared.Stunnable;
-using Content.Shared.Verbs;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Containers;
 using Robust.Shared.Network;
+using Robust.Shared.Physics;
+using Robust.Shared.Physics.Systems;
 using Robust.Shared.Timing;
 
 namespace Content.Shared.CMU14.Specimens;
 
 /// <summary>
-///     Live xenonid capture: capture slugs sedate, a restraint harness binds a downed xenonid,
-///     and a secure crate holds a bound one so it can be hauled away.
+///     Live specimen capture: capture slugs sedate a specimen, handlers drag it onto an open secure
+///     crate, and closing the lid seals it in so it can be hauled away.
 ///
 ///     Works on every hostile creature: xenonids and their variants (neomorphs, the abomination),
 ///     wendigos (natural and lab-made) and the flesh biomorphs. Biomorphs can't be knocked over, so they're held with
 ///     a plain stun instead of paralysis.
 ///
 ///     RMC cuts every stun on a xenonid to two thirds and won't re-stun one that's already down,
-///     so a single long stun never holds. Sedation and restraint instead keep refreshing a short
-///     hold for as long as they last.
+///     so a single long stun never holds. Sedation instead keeps refreshing a short hold for as long
+///     as it lasts.
 /// </summary>
 public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
 {
-    [Dependency] private ActionBlockerSystem _actionBlocker = default!;
+    [Dependency] private AccessReaderSystem _access = default!;
     [Dependency] private SharedAudioSystem _audio = default!;
     [Dependency] private SharedContainerSystem _container = default!;
-    [Dependency] private SharedDoAfterSystem _doAfter = default!;
-    [Dependency] private SharedHandsSystem _hands = default!;
+    [Dependency] private EntityLookupSystem _lookup = default!;
+    [Dependency] private SharedPhysicsSystem _physics = default!;
     [Dependency] private SharedPopupSystem _popup = default!;
     [Dependency] private PullingSystem _pulling = default!;
     [Dependency] private StandingStateSystem _standing = default!;
     [Dependency] private SharedStunSystem _stun = default!;
-    [Dependency] private SharedTransformSystem _transform = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private INetManager _net = default!;
 
@@ -59,35 +55,28 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     /// </summary>
     public const float SedationDecay = 0.1f;
 
-    private static readonly TimeSpan RestraintRefresh = TimeSpan.FromSeconds(1);
-    private static readonly TimeSpan RestraintParalysis = TimeSpan.FromSeconds(3);
+    private static readonly TimeSpan HoldRefresh = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan HoldParalysis = TimeSpan.FromSeconds(3);
+
+    /// <summary>
+    ///     How close to the crate's centre a specimen has to lie to be sealed in: on the crate's own tile.
+    /// </summary>
+    private const float OnCrateRange = 0.45f;
 
     public override void Initialize()
     {
         SubscribeLocalEvent<CMUSedateOnHitComponent, ProjectileHitEvent>(OnSedateHit);
 
-        SubscribeLocalEvent<CMUSpecimenHarnessComponent, AfterInteractEvent>(OnHarnessAfterInteract);
-        SubscribeLocalEvent<CMUSpecimenHarnessComponent, CMUSpecimenHarnessDoAfterEvent>(OnHarnessDoAfter);
-
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ComponentStartup>(OnRestrainedStartup);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ComponentShutdown>(OnRestrainedShutdown);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, UpdateCanMoveEvent>(OnRestrainedCanMove);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, AttackAttemptEvent>(OnRestrainedAttack);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, ExaminedEvent>(OnRestrainedExamined);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, GetVerbsEvent<AlternativeVerb>>(OnRestrainedVerbs);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, CMUSpecimenUnharnessDoAfterEvent>(OnUnharnessDoAfter);
-        SubscribeLocalEvent<CMUSpecimenRestrainedComponent, CanDragEvent>(OnRestrainedCanDrag);
+        SubscribeLocalEvent<CMUSedationComponent, ExaminedEvent>(OnSedatedExamined);
+        SubscribeLocalEvent<CMUSedationComponent, CanDragEvent>(OnSedatedCanDrag);
 
         SubscribeLocalEvent<ActionComponent, ActionAttemptEvent>(OnActionAttempt);
 
         SubscribeLocalEvent<CMUSpecimenCrateComponent, ComponentInit>(OnCrateInit);
+        SubscribeLocalEvent<CMUSpecimenCrateComponent, MapInitEvent>(OnCrateMapInit);
         SubscribeLocalEvent<CMUSpecimenCrateComponent, EntityTerminatingEvent>(OnCrateTerminating);
         SubscribeLocalEvent<CMUSpecimenCrateComponent, ExaminedEvent>(OnCrateExamined);
         SubscribeLocalEvent<CMUSpecimenCrateComponent, ActivateInWorldEvent>(OnCrateActivate);
-        SubscribeLocalEvent<CMUSpecimenCrateComponent, GetVerbsEvent<AlternativeVerb>>(OnCrateVerbs);
-        SubscribeLocalEvent<CMUSpecimenCrateComponent, CMUSpecimenLoadDoAfterEvent>(OnLoadDoAfter);
-        SubscribeLocalEvent<CMUSpecimenCrateComponent, CanDropTargetEvent>(OnCrateCanDropTarget);
-        SubscribeLocalEvent<CMUSpecimenCrateComponent, DragDropTargetEvent>(OnCrateDragDropTarget);
     }
 
     #region Sedation
@@ -101,7 +90,8 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Adds sedation to a xenonid. Returns true if it is now sedated.
+    ///     Adds sedation to a specimen. Returns true if it is now sedated. Every hit on a sedated
+    ///     specimen keeps it under for at least <paramref name="sedationTime"/> more.
     /// </summary>
     public bool Sedate(EntityUid target, float amount, TimeSpan sedationTime)
     {
@@ -115,7 +105,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         sedation.LastUpdate = now;
 
         var threshold = GetSedationThreshold(target);
-        var wasSedated = sedation.Level >= threshold;
+        var wasSedated = IsSedated(target);
         sedation.Level = MathF.Min(threshold, sedation.Level + amount);
         if (sedation.Level < threshold)
         {
@@ -123,7 +113,13 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             return false;
         }
 
-        Hold(target, sedationTime);
+        var until = now + sedationTime;
+        if (sedation.SedatedUntil is not { } current || current < until)
+            sedation.SedatedUntil = until;
+
+        Dirty(target, sedation);
+        SuspendPullParalysis((target, sedation));
+        Hold(target, HoldParalysis);
         if (!wasSedated)
             _popup.PopupEntity(Loc.GetString("cmu-specimen-sedated", ("target", target)), target, PopupType.MediumCaution);
 
@@ -144,6 +140,25 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     public bool IsSubdued(EntityUid uid)
     {
         return _standing.IsDown(uid) || HasComp<StunnedComponent>(uid);
+    }
+
+    public bool IsSedated(EntityUid uid)
+    {
+        return TryComp<CMUSedationComponent>(uid, out var sedation) &&
+               sedation.SedatedUntil is { } until &&
+               _timing.CurTime < until;
+    }
+
+    /// <summary>
+    ///     Sedated, or shut in a specimen crate.
+    /// </summary>
+    public bool IsHeld(EntityUid uid)
+    {
+        if (IsSedated(uid))
+            return true;
+
+        return _container.TryGetContainingContainer(uid, out var container) &&
+               HasComp<CMUSpecimenCrateComponent>(container.Owner);
     }
 
     /// <summary>
@@ -172,108 +187,46 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         };
     }
 
-    #endregion
-
-    #region Restraint
-
-    private void OnHarnessAfterInteract(Entity<CMUSpecimenHarnessComponent> ent, ref AfterInteractEvent args)
-    {
-        if (args.Handled || !args.CanReach || args.Target is not { } target)
-            return;
-
-        if (!IsSpecimen(target))
-            return;
-
-        args.Handled = true;
-        if (HasComp<CMUSpecimenRestrainedComponent>(target))
-        {
-            _popup.PopupEntity(Loc.GetString("cmu-specimen-already-restrained", ("target", target)), args.User, args.User);
-            return;
-        }
-
-        if (!IsSubdued(target))
-        {
-            _popup.PopupEntity(Loc.GetString("cmu-specimen-must-be-down", ("target", target)), args.User, args.User);
-            return;
-        }
-
-        var doAfter = new DoAfterArgs(EntityManager, args.User, ent.Comp.Delay, new CMUSpecimenHarnessDoAfterEvent(), ent, target, ent)
-        {
-            BreakOnMove = true,
-            NeedHand = true,
-        };
-
-        if (_doAfter.TryStartDoAfter(doAfter))
-            _popup.PopupEntity(Loc.GetString("cmu-specimen-harness-start", ("user", args.User), ("target", target)), target);
-    }
-
-    private void OnHarnessDoAfter(Entity<CMUSpecimenHarnessComponent> ent, ref CMUSpecimenHarnessDoAfterEvent args)
-    {
-        if (args.Cancelled || args.Handled || args.Target is not { } target)
-            return;
-
-        args.Handled = true;
-        if (_net.IsClient || HasComp<CMUSpecimenRestrainedComponent>(target))
-            return;
-
-        Restrain(target, ent.Comp.BreakoutTime, MetaData(ent).EntityPrototype?.ID);
-        _popup.PopupEntity(Loc.GetString("cmu-specimen-harnessed", ("user", args.User), ("target", target)), target);
-        QueueDel(ent);
-    }
-
     /// <summary>
-    ///     Binds a specimen for <paramref name="breakoutTime"/> of uncontained time.
+    ///     A live xenonid knocks down whoever grabs it. Sedated, it can't, so handlers can drag it.
     /// </summary>
-    public void Restrain(EntityUid target, TimeSpan breakoutTime, string? harness = null)
+    private void SuspendPullParalysis(Entity<CMUSedationComponent> ent)
     {
-        var restrained = EnsureComp<CMUSpecimenRestrainedComponent>(target);
-        restrained.BreakFreeAt = _timing.CurTime + breakoutTime;
-        if (harness != null)
-            restrained.Harness = harness;
+        if (_net.IsClient || !TryComp<ParalyzeOnPullAttemptComponent>(ent, out var paralyze))
+            return;
 
-        Dirty(target, restrained);
-        Hold(target, RestraintParalysis);
+        ent.Comp.SuspendedPullParalysis = paralyze.Duration;
+        RemComp<ParalyzeOnPullAttemptComponent>(ent);
     }
 
-    private void OnRestrainedStartup(Entity<CMUSpecimenRestrainedComponent> ent, ref ComponentStartup args)
+    private void RestorePullParalysis(Entity<CMUSedationComponent> ent)
     {
-        _actionBlocker.UpdateCanMove(ent);
+        if (_net.IsClient || ent.Comp.SuspendedPullParalysis is not { } duration)
+            return;
 
-        // A live xenonid knocks down whoever grabs it. Bound, it can't, so handlers can drag it to a crate.
-        if (_net.IsServer && TryComp<ParalyzeOnPullAttemptComponent>(ent, out var paralyze))
-        {
-            ent.Comp.SuspendedPullParalysis = paralyze.Duration;
-            RemComp<ParalyzeOnPullAttemptComponent>(ent);
-        }
+        ent.Comp.SuspendedPullParalysis = null;
+        var paralyze = EnsureComp<ParalyzeOnPullAttemptComponent>(ent);
+        paralyze.Duration = duration;
+        Dirty(ent, paralyze);
     }
 
-    private void OnRestrainedShutdown(Entity<CMUSpecimenRestrainedComponent> ent, ref ComponentShutdown args)
+    private void OnSedatedExamined(Entity<CMUSedationComponent> ent, ref ExaminedEvent args)
     {
-        _actionBlocker.UpdateCanMove(ent);
+        if (ent.Comp.SedatedUntil is not { } until || _timing.CurTime >= until || _container.IsEntityInContainer(ent))
+            return;
 
-        if (_net.IsServer &&
-            ent.Comp.SuspendedPullParalysis is { } duration &&
-            !TerminatingOrDeleted(ent))
-        {
-            var paralyze = EnsureComp<ParalyzeOnPullAttemptComponent>(ent);
-            paralyze.Duration = duration;
-            Dirty(ent, paralyze);
-        }
+        var seconds = (int) (until - _timing.CurTime).TotalSeconds;
+        args.PushMarkup(Loc.GetString("cmu-specimen-examine-sedated", ("target", ent.Owner), ("seconds", seconds)));
     }
 
-    private void OnRestrainedCanMove(Entity<CMUSpecimenRestrainedComponent> ent, ref UpdateCanMoveEvent args)
+    private void OnSedatedCanDrag(Entity<CMUSedationComponent> ent, ref CanDragEvent args)
     {
-        if (ent.Comp.LifeStage <= ComponentLifeStage.Running)
-            args.Cancel();
-    }
-
-    private void OnRestrainedAttack(Entity<CMUSpecimenRestrainedComponent> ent, ref AttackAttemptEvent args)
-    {
-        args.Cancel();
+        if (IsSedated(ent))
+            args.Handled = true;
     }
 
     /// <summary>
-    ///     A bound or crated specimen can't use any of its abilities, acid included.
+    ///     A sedated or crated specimen can't use any of its abilities, acid included.
     /// </summary>
     private void OnActionAttempt(Entity<ActionComponent> ent, ref ActionAttemptEvent args)
     {
@@ -284,65 +237,36 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
         args.Reason = Loc.GetString("cmu-specimen-actions-blocked");
     }
 
-    /// <summary>
-    ///     Bound in a harness, or shut in a specimen crate.
-    /// </summary>
-    public bool IsHeld(EntityUid uid)
+    private void UpdateSedation()
     {
-        if (HasComp<CMUSpecimenRestrainedComponent>(uid))
-            return true;
-
-        return _container.TryGetContainingContainer(uid, out var container) &&
-               HasComp<CMUSpecimenCrateComponent>(container.Owner);
-    }
-
-    // Living xenonids can't be click-dragged. A bound one can, so it can be dropped onto a crate.
-    private void OnRestrainedCanDrag(Entity<CMUSpecimenRestrainedComponent> ent, ref CanDragEvent args)
-    {
-        args.Handled = true;
-    }
-
-    private void OnRestrainedExamined(Entity<CMUSpecimenRestrainedComponent> ent, ref ExaminedEvent args)
-    {
-        if (_container.IsEntityInContainer(ent))
-            return;
-
-        var seconds = Math.Max(0, (int) (ent.Comp.BreakFreeAt - _timing.CurTime).TotalSeconds);
-        args.PushMarkup(Loc.GetString("cmu-specimen-examine-restrained", ("target", ent.Owner), ("seconds", seconds)));
-    }
-
-    private void OnRestrainedVerbs(Entity<CMUSpecimenRestrainedComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
-    {
-        if (!args.CanAccess || !args.CanInteract || args.User == args.Target || IsSpecimen(args.User))
-            return;
-
-        var user = args.User;
-        args.Verbs.Add(new AlternativeVerb
+        var now = _timing.CurTime;
+        var query = EntityQueryEnumerator<CMUSedationComponent>();
+        while (query.MoveNext(out var uid, out var sedation))
         {
-            Text = Loc.GetString("cmu-specimen-verb-unharness"),
-            Act = () =>
+            if (sedation.SedatedUntil is not { } until || now < sedation.NextHold)
+                continue;
+
+            sedation.NextHold = now + HoldRefresh;
+
+            // A crated specimen's sedation waits until it's let out.
+            if (_container.IsEntityInContainer(uid))
             {
-                var doAfter = new DoAfterArgs(EntityManager, user, TimeSpan.FromSeconds(3), new CMUSpecimenUnharnessDoAfterEvent(), ent, ent)
-                {
-                    BreakOnMove = true,
-                };
-                _doAfter.TryStartDoAfter(doAfter);
-            },
-        });
-    }
+                sedation.SedatedUntil = until + HoldRefresh;
+                Dirty(uid, sedation);
+                continue;
+            }
 
-    private void OnUnharnessDoAfter(Entity<CMUSpecimenRestrainedComponent> ent, ref CMUSpecimenUnharnessDoAfterEvent args)
-    {
-        if (args.Cancelled || args.Handled)
-            return;
+            if (now >= until)
+            {
+                sedation.SedatedUntil = null;
+                Dirty(uid, sedation);
+                RestorePullParalysis((uid, sedation));
+                _popup.PopupEntity(Loc.GetString("cmu-specimen-woke", ("target", uid)), uid, PopupType.LargeCaution);
+                continue;
+            }
 
-        args.Handled = true;
-        if (_net.IsClient)
-            return;
-
-        var harness = Spawn(ent.Comp.Harness, _transform.GetMapCoordinates(ent));
-        _hands.PickupOrDrop(args.User, harness);
-        RemComp<CMUSpecimenRestrainedComponent>(ent);
+            Hold(uid, HoldParalysis);
+        }
     }
 
     public override void Update(float frameTime)
@@ -351,31 +275,7 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
             return;
 
         UpdateCrates();
-
-        var now = _timing.CurTime;
-        var query = EntityQueryEnumerator<CMUSpecimenRestrainedComponent>();
-        while (query.MoveNext(out var uid, out var restrained))
-        {
-            if (now < restrained.NextParalyze)
-                continue;
-
-            restrained.NextParalyze = now + RestraintRefresh;
-
-            // A contained specimen can't work at the harness, so its breakout timer waits.
-            if (_container.IsEntityInContainer(uid))
-            {
-                restrained.BreakFreeAt += RestraintRefresh;
-                Dirty(uid, restrained);
-            }
-            else if (now >= restrained.BreakFreeAt)
-            {
-                _popup.PopupEntity(Loc.GetString("cmu-specimen-broke-free", ("target", uid)), uid, PopupType.LargeCaution);
-                RemCompDeferred<CMUSpecimenRestrainedComponent>(uid);
-                continue;
-            }
-
-            Hold(uid, RestraintParalysis);
-        }
+        UpdateSedation();
     }
 
     #endregion
@@ -385,6 +285,11 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     private void OnCrateInit(Entity<CMUSpecimenCrateComponent> ent, ref ComponentInit args)
     {
         _container.EnsureContainer<ContainerSlot>(ent, ent.Comp.ContainerId);
+    }
+
+    private void OnCrateMapInit(Entity<CMUSpecimenCrateComponent> ent, ref MapInitEvent args)
+    {
+        SetBlocking(ent, ent.Comp.State != CMUSpecimenCrateState.Open);
     }
 
     private void OnCrateTerminating(Entity<CMUSpecimenCrateComponent> ent, ref EntityTerminatingEvent args)
@@ -413,16 +318,44 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
     }
 
     /// <summary>
-    ///     Opens a closed crate or closes an open one. Does nothing while the lid is moving.
+    ///     Opens a closed crate or closes an open one. Does nothing while the lid is moving. Opening
+    ///     needs the crate's access; closing seals in a downed specimen lying on the crate.
     /// </summary>
     public bool TryToggle(Entity<CMUSpecimenCrateComponent> ent, EntityUid? user = null)
     {
-        return ent.Comp.State switch
+        switch (ent.Comp.State)
         {
-            CMUSpecimenCrateState.Open => StartMoving(ent, false, user),
-            CMUSpecimenCrateState.Closed => StartMoving(ent, true, user),
-            _ => false,
-        };
+            case CMUSpecimenCrateState.Open:
+                if (_net.IsServer && GetSpecimen(ent) == null && FindSpecimenOnCrate(ent) is { } specimen)
+                    TryContain(ent, specimen);
+
+                SetBlocking(ent, true);
+                return StartMoving(ent, false, user);
+            case CMUSpecimenCrateState.Closed:
+                if (user != null && !_access.IsAllowed(user.Value, ent))
+                {
+                    _popup.PopupClient(Loc.GetString("cmu-specimen-crate-locked"), ent, user.Value, PopupType.SmallCaution);
+                    return false;
+                }
+
+                return StartMoving(ent, true, user);
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
+    ///     A downed specimen lying on the open crate, ready to be sealed in.
+    /// </summary>
+    private EntityUid? FindSpecimenOnCrate(Entity<CMUSpecimenCrateComponent> crate)
+    {
+        foreach (var uid in _lookup.GetEntitiesInRange(crate, OnCrateRange))
+        {
+            if (uid != crate.Owner && IsSpecimen(uid) && IsSubdued(uid) && !_container.IsEntityInContainer(uid))
+                return uid;
+        }
+
+        return null;
     }
 
     private bool StartMoving(Entity<CMUSpecimenCrateComponent> ent, bool open, EntityUid? user = null)
@@ -444,94 +377,35 @@ public sealed partial class CMUSpecimenCaptureSystem : EntitySystem
                 continue;
 
             crate.MovingUntil = null;
-            crate.State = crate.State == CMUSpecimenCrateState.Opening ? CMUSpecimenCrateState.Open : CMUSpecimenCrateState.Closed;
+            if (crate.State == CMUSpecimenCrateState.Opening)
+            {
+                crate.State = CMUSpecimenCrateState.Open;
+
+                // The lid is up: whatever was inside is out, and the crate can be walked over again.
+                if (_container.TryGetContainer(uid, crate.ContainerId, out var container))
+                    _container.EmptyContainer(container, true);
+
+                SetBlocking((uid, crate), false);
+            }
+            else
+            {
+                crate.State = CMUSpecimenCrateState.Closed;
+            }
+
             Dirty(uid, crate);
         }
     }
 
-    private void OnCrateVerbs(Entity<CMUSpecimenCrateComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
+    /// <summary>
+    ///     An open crate doesn't block movement, so a body can be dragged onto it. A closed one does.
+    /// </summary>
+    private void SetBlocking(Entity<CMUSpecimenCrateComponent> crate, bool blocking)
     {
-        if (!args.CanAccess || !args.CanInteract || IsSpecimen(args.User) || ent.Comp.State != CMUSpecimenCrateState.Open)
+        if (!TryComp<FixturesComponent>(crate, out var fixtures))
             return;
 
-        var user = args.User;
-        if (GetSpecimen(ent) != null)
-        {
-            args.Verbs.Add(new AlternativeVerb
-            {
-                Text = Loc.GetString("cmu-specimen-verb-release"),
-                Act = () =>
-                {
-                    if (_net.IsClient || ent.Comp.State != CMUSpecimenCrateState.Open ||
-                        !_container.TryGetContainer(ent, ent.Comp.ContainerId, out var container))
-                    {
-                        return;
-                    }
-
-                    _container.EmptyContainer(container, true);
-                },
-            });
-            return;
-        }
-
-        if (TryComp<PullerComponent>(user, out var puller) &&
-            puller.Pulling is { } pulled &&
-            HasComp<CMUSpecimenRestrainedComponent>(pulled))
-        {
-            args.Verbs.Add(new AlternativeVerb
-            {
-                Text = Loc.GetString("cmu-specimen-verb-load"),
-                Act = () => TryStartLoad(ent, user, pulled),
-            });
-        }
-    }
-
-    private bool CanLoad(Entity<CMUSpecimenCrateComponent> crate, EntityUid user, EntityUid specimen)
-    {
-        return crate.Comp.State == CMUSpecimenCrateState.Open &&
-               GetSpecimen(crate) == null &&
-               !IsSpecimen(user) &&
-               HasComp<CMUSpecimenRestrainedComponent>(specimen);
-    }
-
-    private bool TryStartLoad(Entity<CMUSpecimenCrateComponent> crate, EntityUid user, EntityUid specimen)
-    {
-        if (!CanLoad(crate, user, specimen))
-            return false;
-
-        return _doAfter.TryStartDoAfter(new DoAfterArgs(EntityManager, user, crate.Comp.LoadDelay, new CMUSpecimenLoadDoAfterEvent(), crate, crate, specimen)
-        {
-            BreakOnMove = true,
-        });
-    }
-
-    private void OnCrateCanDropTarget(Entity<CMUSpecimenCrateComponent> ent, ref CanDropTargetEvent args)
-    {
-        if (!CanLoad(ent, args.User, args.Dragged))
-            return;
-
-        args.CanDrop = true;
-        args.Handled = true;
-    }
-
-    private void OnCrateDragDropTarget(Entity<CMUSpecimenCrateComponent> ent, ref DragDropTargetEvent args)
-    {
-        if (args.Handled)
-            return;
-
-        args.Handled = TryStartLoad(ent, args.User, args.Dragged);
-    }
-
-    private void OnLoadDoAfter(Entity<CMUSpecimenCrateComponent> ent, ref CMUSpecimenLoadDoAfterEvent args)
-    {
-        if (args.Cancelled || args.Handled || args.Used is not { } specimen)
-            return;
-
-        args.Handled = true;
-        if (_net.IsClient || ent.Comp.State != CMUSpecimenCrateState.Open || !HasComp<CMUSpecimenRestrainedComponent>(specimen))
-            return;
-
-        TryContain(ent, specimen);
+        foreach (var fixture in fixtures.Fixtures.Values)
+            _physics.SetHard(crate, fixture, blocking, fixtures);
     }
 
     public bool TryContain(Entity<CMUSpecimenCrateComponent> crate, EntityUid specimen)

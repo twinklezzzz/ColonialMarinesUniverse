@@ -1,7 +1,5 @@
-using Content.Shared.DoAfter;
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
-using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
 
 namespace Content.Shared.CMU14.Specimens;
@@ -24,9 +22,10 @@ public sealed partial class CMUSedateOnHitComponent : Component
 }
 
 /// <summary>
-///     Sedation built up on a xenonid. Decays over time.
+///     Sedation built up on a specimen. Decays over time. Once it reaches the specimen's threshold
+///     the specimen is held down until <see cref="SedatedUntil"/>; the clock stops while it's crated.
 /// </summary>
-[RegisterComponent, Access(typeof(CMUSpecimenCaptureSystem))]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState, Access(typeof(CMUSpecimenCaptureSystem))]
 public sealed partial class CMUSedationComponent : Component
 {
     [DataField]
@@ -34,44 +33,22 @@ public sealed partial class CMUSedationComponent : Component
 
     [DataField]
     public TimeSpan LastUpdate;
-}
-
-/// <summary>
-///     A xenonid bound in a specimen restraint harness. Kept paralysed until it tears free,
-///     the harness is removed, or it is released from containment. The breakout timer
-///     doesn't run while the specimen is contained.
-/// </summary>
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState, Access(typeof(CMUSpecimenCaptureSystem))]
-public sealed partial class CMUSpecimenRestrainedComponent : Component
-{
-    [DataField, AutoNetworkedField]
-    public TimeSpan BreakFreeAt;
-
-    [DataField]
-    public EntProtoId Harness = "CMUSpecimenHarness";
-
-    [DataField]
-    public TimeSpan NextParalyze;
 
     /// <summary>
-    ///     The specimen's own grab-paralysis, suspended while it's bound so handlers can drag it.
+    ///     When the sedation wears off. Null while not sedated.
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public TimeSpan? SedatedUntil;
+
+    [DataField]
+    public TimeSpan NextHold;
+
+    /// <summary>
+    ///     The specimen's own grab-paralysis, suspended while it's sedated so handlers can drag it.
     ///     Null if it had none.
     /// </summary>
     [DataField]
     public TimeSpan? SuspendedPullParalysis;
-}
-
-[RegisterComponent, NetworkedComponent, Access(typeof(CMUSpecimenCaptureSystem))]
-public sealed partial class CMUSpecimenHarnessComponent : Component
-{
-    [DataField]
-    public TimeSpan Delay = TimeSpan.FromSeconds(5);
-
-    /// <summary>
-    ///     How long an uncontained specimen stays bound before it tears free.
-    /// </summary>
-    [DataField]
-    public TimeSpan BreakoutTime = TimeSpan.FromMinutes(3);
 }
 
 [Serializable, NetSerializable]
@@ -90,17 +67,15 @@ public enum CMUSpecimenCrateLayers : byte
 }
 
 /// <summary>
-///     A secure crate that holds one restrained specimen and can be pulled. It opens and closes
-///     with an animation; a specimen can only be loaded or let out while it's open.
+///     A secure crate that holds one specimen and can be pulled. Drag a downed specimen onto the
+///     open crate and close the lid to seal it in; opening the lid lets it out. Opening needs the
+///     crate's access.
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true), Access(typeof(CMUSpecimenCaptureSystem))]
 public sealed partial class CMUSpecimenCrateComponent : Component
 {
     [DataField]
     public string ContainerId = "cmu_specimen";
-
-    [DataField]
-    public TimeSpan LoadDelay = TimeSpan.FromSeconds(4);
 
     [DataField, AutoNetworkedField]
     public CMUSpecimenCrateState State = CMUSpecimenCrateState.Open;
@@ -120,12 +95,3 @@ public sealed partial class CMUSpecimenCrateComponent : Component
     [DataField]
     public SoundSpecifier? MoveSound = new SoundPathSpecifier("/Audio/_RMC14/Structures/secure_box_opening/secure_box_opening.ogg");
 }
-
-[Serializable, NetSerializable]
-public sealed partial class CMUSpecimenHarnessDoAfterEvent : SimpleDoAfterEvent;
-
-[Serializable, NetSerializable]
-public sealed partial class CMUSpecimenUnharnessDoAfterEvent : SimpleDoAfterEvent;
-
-[Serializable, NetSerializable]
-public sealed partial class CMUSpecimenLoadDoAfterEvent : SimpleDoAfterEvent;

@@ -1,12 +1,9 @@
 using System.Linq;
+using Content.Shared._RMC14.Pulling;
 using Content.Shared.Actions;
 using Content.Shared.Actions.Events;
 using Content.Shared.CMU14.Specimens;
 using Content.Shared.Movement.Pulling.Systems;
-using Content.Shared.Verbs;
-using Robust.Shared.Map;
-using Content.Shared.Standing;
-using Content.Shared.Stunnable;
 using Robust.Shared.Containers;
 using Robust.Shared.GameObjects;
 
@@ -16,6 +13,11 @@ namespace Content.IntegrationTests.CMU14.Specimens;
 [TestOf(typeof(CMUSpecimenCaptureSystem))]
 public sealed class CMUSpecimenCaptureTest
 {
+    private static int Ticks(Pair.TestPair pair, double seconds)
+    {
+        return (int) (seconds / pair.Server.Timing.TickPeriod.TotalSeconds);
+    }
+
     [TestCase("CMXenoDrone")]
     [TestCase("CMU14XenoNeomorph")]
     [TestCase("AU14Wendigo")]
@@ -23,7 +25,7 @@ public sealed class CMUSpecimenCaptureTest
     [TestCase("CMUXenoAbomination")]
     [TestCase("AU14BiomorphGrunt")]
     [TestCase("AU14BiomorphSpider")]
-    public async Task SedateRestrainContainAndBreakFree(string creature)
+    public async Task SedateCrateAndRelease(string creature)
     {
         await using var pair = await PoolManager.GetServerClient();
         var server = pair.Server;
@@ -47,152 +49,137 @@ public sealed class CMUSpecimenCaptureTest
             return true;
         }
 
-        EntityUid xeno = default;
-        EntityUid crate = default;
+        EntityUid specimen = default;
+        Entity<CMUSpecimenCrateComponent> crate = default;
         await server.WaitAssertion(() =>
         {
-            xeno = entities.SpawnEntity(creature, map.GridCoords);
-            Assert.That(capture.IsSpecimen(xeno), Is.True);
+            specimen = entities.SpawnEntity(creature, map.GridCoords);
+            Assert.That(capture.IsSpecimen(specimen), Is.True);
 
             // One hit short of the threshold leaves it standing; the next one puts it under.
-            var threshold = (int) capture.GetSedationThreshold(xeno);
+            var threshold = (int) capture.GetSedationThreshold(specimen);
             for (var i = 0; i < threshold - 1; i++)
-                Assert.That(capture.Sedate(xeno, 1, TimeSpan.FromSeconds(30)), Is.False);
+                Assert.That(capture.Sedate(specimen, 1, TimeSpan.FromSeconds(60)), Is.False);
 
-            Assert.That(capture.Sedate(xeno, 1, TimeSpan.FromSeconds(30)), Is.True);
-            Assert.That(capture.IsSubdued(xeno), Is.True);
-
-            capture.Restrain(xeno, TimeSpan.FromSeconds(60));
+            Assert.That(capture.Sedate(specimen, 1, TimeSpan.FromSeconds(60)), Is.True);
+            Assert.That(capture.IsSubdued(specimen), Is.True);
         });
 
-        // Well past any ordinary xeno stun, the restraint still holds it down.
-        await server.WaitRunTicks((int) (45 / server.Timing.TickPeriod.TotalSeconds));
+        // Well past any ordinary xeno stun, the sedation still holds it down.
+        await server.WaitRunTicks(Ticks(pair, 45));
         await server.WaitAssertion(() =>
         {
-            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True);
-            Assert.That(capture.IsSubdued(xeno), Is.True);
-            Assert.That(ActionsBlocked(xeno), Is.True, "A harnessed specimen can still use its abilities.");
+            Assert.That(capture.IsSedated(specimen), Is.True);
+            Assert.That(capture.IsSubdued(specimen), Is.True);
+            Assert.That(ActionsBlocked(specimen), Is.True, "A sedated specimen can still use its abilities.");
 
-            crate = entities.SpawnEntity("CMUSpecimenCrate", map.GridCoords);
-            var crateEnt = new Entity<CMUSpecimenCrateComponent>(crate, entities.GetComponent<CMUSpecimenCrateComponent>(crate));
-
-            // A crate is set up open; loading it doesn't need the lid moving.
-            Assert.That(crateEnt.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Open));
-            Assert.That(capture.TryContain(crateEnt, xeno), Is.True);
-            Assert.That(container.IsEntityInContainer(xeno), Is.True);
-            Assert.That(capture.GetSpecimen(crateEnt), Is.EqualTo(xeno));
-
-            // Closing runs the lid animation, then seals it.
-            Assert.That(capture.TryToggle(crateEnt), Is.True);
-            Assert.That(crateEnt.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Closing));
-            Assert.That(capture.TryToggle(crateEnt), Is.False, "The lid reversed mid-swing.");
+            // Dragged onto the open crate (here: already lying on it), closing the lid seals it in.
+            var uid = entities.SpawnEntity("CMUSpecimenCrate", map.GridCoords);
+            crate = (uid, entities.GetComponent<CMUSpecimenCrateComponent>(uid));
+            Assert.That(crate.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Open));
+            Assert.That(capture.TryToggle(crate), Is.True);
+            Assert.That(container.IsEntityInContainer(specimen), Is.True, "Closing the crate didn't seal the specimen in.");
+            Assert.That(capture.GetSpecimen(crate), Is.EqualTo(specimen));
+            Assert.That(capture.TryToggle(crate), Is.False, "The lid reversed mid-swing.");
         });
 
-        // Crated, the breakout timer is paused.
-        await server.WaitRunTicks((int) (40 / server.Timing.TickPeriod.TotalSeconds));
+        // Crated, the sedation waits.
+        await server.WaitRunTicks(Ticks(pair, 40));
         await server.WaitAssertion(() =>
         {
-            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.True, "A crated specimen broke free.");
-            Assert.That(ActionsBlocked(xeno), Is.True, "A crated specimen can still use its abilities.");
-            Assert.That(entities.GetComponent<CMUSpecimenCrateComponent>(crate).State, Is.EqualTo(CMUSpecimenCrateState.Closed), "The lid never finished closing.");
+            Assert.That(crate.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Closed), "The lid never finished closing.");
+            Assert.That(capture.IsSedated(specimen), Is.True, "A crated specimen woke up.");
+            Assert.That(ActionsBlocked(specimen), Is.True, "A crated specimen can still use its abilities.");
 
-            // Destroying the crate drops the specimen instead of deleting it.
+            Assert.That(capture.TryToggle(crate), Is.True);
+        });
+
+        // Opening the lid lets it out, still sedated for the time it had left.
+        await server.WaitRunTicks(Ticks(pair, 3));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(crate.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Open));
+            Assert.That(container.IsEntityInContainer(specimen), Is.False, "Opening the crate didn't let the specimen out.");
+            Assert.That(capture.IsSedated(specimen), Is.True);
+        });
+
+        // Then the sedation wears off.
+        await server.WaitRunTicks(Ticks(pair, 20));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(capture.IsSedated(specimen), Is.False);
             entities.DeleteEntity(crate);
-            Assert.That(entities.EntityExists(xeno), Is.True);
-            Assert.That(container.IsEntityInContainer(xeno), Is.False);
+            entities.DeleteEntity(specimen);
         });
 
-        // Out of the crate, the harness gives way.
-        await server.WaitRunTicks((int) (40 / server.Timing.TickPeriod.TotalSeconds));
+        await pair.CleanReturnAsync();
+    }
+
+    [Test]
+    public async Task HandlersDragSedatedSpecimens()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+        var capture = server.System<CMUSpecimenCaptureSystem>();
+
+        EntityUid xeno = default;
+        EntityUid handler = default;
         await server.WaitAssertion(() =>
         {
-            Assert.That(entities.HasComponent<CMUSpecimenRestrainedComponent>(xeno), Is.False);
-            Assert.That(capture.IsHeld(xeno), Is.False);
+            handler = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+            xeno = entities.SpawnEntity("CMXenoDrone", map.GridCoords);
+            Assert.That(entities.HasComponent<ParalyzeOnPullAttemptComponent>(xeno), Is.True);
+
+            // A live xenonid floors whoever grabs it. Sedated, it can be dragged.
+            Assert.That(capture.Sedate(xeno, 10, TimeSpan.FromSeconds(5)), Is.True);
+            Assert.That(entities.HasComponent<ParalyzeOnPullAttemptComponent>(xeno), Is.False);
+            Assert.That(server.System<PullingSystem>().TryStartPull(handler, xeno), Is.True, "A handler can't drag a sedated specimen.");
+        });
+
+        // Once it wakes, grabbing it is dangerous again.
+        await server.WaitRunTicks(Ticks(pair, 8));
+        await server.WaitAssertion(() =>
+        {
+            Assert.That(capture.IsSedated(xeno), Is.False);
+            Assert.That(entities.HasComponent<ParalyzeOnPullAttemptComponent>(xeno), Is.True);
             entities.DeleteEntity(xeno);
+            entities.DeleteEntity(handler);
         });
 
         await pair.CleanReturnAsync();
     }
 
     [Test]
-    public async Task HandlerLoadsDraggedSpecimen()
+    public async Task ClosedCrateNeedsCompanyAccess()
     {
         await using var pair = await PoolManager.GetServerClient();
         var server = pair.Server;
         var map = await pair.CreateTestMap();
         var entities = server.EntMan;
         var capture = server.System<CMUSpecimenCaptureSystem>();
-        var container = server.System<SharedContainerSystem>();
 
-        EntityUid xeno = default;
-        EntityUid crate = default;
+        Entity<CMUSpecimenCrateComponent> crate = default;
+        EntityUid outsider = default;
         await server.WaitAssertion(() =>
         {
-            var handler = entities.SpawnEntity("CMMobHuman", map.GridCoords);
-            xeno = entities.SpawnEntity("CMXenoDrone", new EntityCoordinates(map.Grid, 0.5f, 1.5f));
-            crate = entities.SpawnEntity("CMUSpecimenCrate", new EntityCoordinates(map.Grid, 1.5f, 0.5f));
+            var uid = entities.SpawnEntity("CMUSpecimenCrate", map.GridCoords);
+            crate = (uid, entities.GetComponent<CMUSpecimenCrateComponent>(uid));
+            outsider = entities.SpawnEntity("CMMobHuman", map.GridCoords);
 
-            Assert.That(capture.Sedate(xeno, 10, TimeSpan.FromSeconds(30)), Is.True);
-            capture.Restrain(xeno, TimeSpan.FromSeconds(120));
-
-            Assert.That(server.System<PullingSystem>().TryStartPull(handler, xeno), Is.True, "A handler can't drag a harnessed specimen.");
-
-            var verbs = server.System<SharedVerbSystem>().GetLocalVerbs(crate, handler, typeof(AlternativeVerb));
-            var load = verbs.SingleOrDefault(v => v.Text == Loc.GetString("cmu-specimen-verb-load"));
-            Assert.That(load, Is.Not.Null, "No load verb on the crate. Verbs: " + string.Join(", ", verbs.Select(v => v.Text)));
-            server.System<SharedVerbSystem>().ExecuteVerb(load!, handler, crate);
+            // Anyone may close it.
+            Assert.That(capture.TryToggle(crate, outsider), Is.True);
         });
 
-        await server.WaitRunTicks((int) (6 / server.Timing.TickPeriod.TotalSeconds));
+        await server.WaitRunTicks(Ticks(pair, 3));
         await server.WaitAssertion(() =>
         {
-            Assert.That(container.IsEntityInContainer(xeno), Is.True, "The specimen wasn't loaded.");
-        });
-
-        await pair.CleanReturnAsync();
-    }
-
-    [Test]
-    public async Task DropSpecimenOntoCrate()
-    {
-        await using var pair = await PoolManager.GetServerClient();
-        var server = pair.Server;
-        var map = await pair.CreateTestMap();
-        var entities = server.EntMan;
-        var capture = server.System<CMUSpecimenCaptureSystem>();
-        var container = server.System<SharedContainerSystem>();
-
-        EntityUid xeno = default;
-        await server.WaitAssertion(() =>
-        {
-            var handler = entities.SpawnEntity("CMMobHuman", map.GridCoords);
-            xeno = entities.SpawnEntity("CMXenoDrone", new EntityCoordinates(map.Grid, 0.5f, 1.5f));
-            var crate = entities.SpawnEntity("CMUSpecimenCrate", new EntityCoordinates(map.Grid, 1.5f, 0.5f));
-
-            // A crate won't take a specimen that isn't bound.
-            var canDrop = new Content.Shared.DragDrop.CanDropTargetEvent(handler, xeno);
-            entities.EventBus.RaiseLocalEvent(crate, ref canDrop);
-            Assert.That(canDrop.CanDrop, Is.False);
-
-            capture.Sedate(xeno, 10, TimeSpan.FromSeconds(30));
-            capture.Restrain(xeno, TimeSpan.FromSeconds(120));
-
-            var canDrag = new Content.Shared.DragDrop.CanDragEvent();
-            entities.EventBus.RaiseLocalEvent(xeno, ref canDrag);
-            Assert.That(canDrag.Handled, Is.True, "A bound specimen can't be dragged.");
-            canDrop = new Content.Shared.DragDrop.CanDropTargetEvent(handler, xeno);
-            entities.EventBus.RaiseLocalEvent(crate, ref canDrop);
-            Assert.That(canDrop.CanDrop, Is.True, "The crate won't take a bound specimen.");
-
-            var drop = new Content.Shared.DragDrop.DragDropTargetEvent(handler, xeno);
-            entities.EventBus.RaiseLocalEvent(crate, ref drop);
-            Assert.That(drop.Handled, Is.True, "Dropping the specimen didn't start loading it.");
-        });
-
-        await server.WaitRunTicks((int) (6 / server.Timing.TickPeriod.TotalSeconds));
-        await server.WaitAssertion(() =>
-        {
-            Assert.That(container.IsEntityInContainer(xeno), Is.True, "The dropped specimen wasn't loaded.");
+            Assert.That(crate.Comp.State, Is.EqualTo(CMUSpecimenCrateState.Closed));
+            Assert.That(capture.TryToggle(crate, outsider), Is.False, "Someone without Company access opened the crate.");
+            Assert.That(capture.TryToggle(crate), Is.True);
+            entities.DeleteEntity(crate);
+            entities.DeleteEntity(outsider);
         });
 
         await pair.CleanReturnAsync();

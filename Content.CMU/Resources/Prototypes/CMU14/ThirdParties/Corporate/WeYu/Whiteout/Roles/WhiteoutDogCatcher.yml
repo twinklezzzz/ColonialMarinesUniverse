@@ -124,8 +124,6 @@
     suitstorage: CMUWeaponShotgunXM38Capture
   storage:
     back:
-    - CMUSpecimenHarness
-    - CMUSpecimenHarness
     - CMCrowbar
     - CMUShellShotgunCapture
     - CMUShellShotgunCapture
