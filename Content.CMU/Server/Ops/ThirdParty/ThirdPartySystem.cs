@@ -1,3 +1,6 @@
+using Content.Shared._RMC14.Language.Prototypes;
+using Content.Shared.Database;
+using Content.Server.CMU14.Language;
 using System.Linq;
 using System.Numerics;
 using Content.Server.Access.Systems;
@@ -11,6 +14,7 @@ using Content.Server.GameTicking;
 using Content.Server.GameTicking.Presets;
 using Content.Server.CMU14.Roles; // CMU14
 using Content.Server.Preferences.Managers;
+using Content.Shared.CMU14.ForceOnForce;
 using Content.Shared.CMU14.Threats;
 using Content.Shared._RMC14.Construction;
 using Content.Shared._RMC14.CrashLand;
@@ -62,7 +66,9 @@ public sealed partial class ThirdPartySystem : EntitySystem
     [Dependency] private IdentitySystem _identity = default!;
     [Dependency] private IGameTiming _timing = default!;
     [Dependency] private RMCMapSystem _rmcMap = default!;
+    [Dependency] private PlatoonSpawnRuleSystem _platoons = default!;
     [Dependency] private SurvivorSupplementSystem _survivorSupplement = default!; // CMU14
+    [Dependency] private Content.Server.Administration.Logs.IAdminLogManager _adminLogs = default!;
     private static readonly ProtoId<JobPrototype> ThirdPartyLeaderJobId = new("AU14JobThirdPartyLeader");
     private static readonly ProtoId<JobPrototype> ThirdPartyMemberJobId = new("AU14JobThirdPartyMember");
     private static readonly ThreatMarkerType[] ThreatMarkerTypes = Enum.GetValues<ThreatMarkerType>();
@@ -201,10 +207,43 @@ public sealed partial class ThirdPartySystem : EntitySystem
     // there is no meaningful failure at this point and nothing is returned
     // summoningFaction is the faction (govfor/opfor) that called the party in, if any; their shuttle is held to that
     // faction's ship pad while the faction is shipside.
+    // caller is who called the party in from a console, if anyone; its members are told who that was
     public void SpawnThirdParty(ThirdPartyPrototype party, PartySpawnPrototype spawnProto, bool roundStart,
         Dictionary<NetUserId, (ProtoId<JobPrototype>?, EntityUid)>? assignedJobs = null, bool? overrideDropship = null,
-        string? summoningFaction = null)
-        => QueueThirdParty(party, spawnProto, roundStart, overrideDropship, true, assignedJobs, summoningFaction);
+        string? summoningFaction = null, ThirdPartyCaller? caller = null)
+    {
+        if (caller is { } calledBy)
+            LogThirdPartyCall(party, calledBy);
+
+        QueueThirdParty(party, spawnProto, roundStart, overrideDropship, true, assignedJobs, summoningFaction, caller);
+    }
+
+    /// <summary>
+    /// Admin log and admin chat line for a third party called in from a console.
+    /// </summary>
+    private void LogThirdPartyCall(ThirdPartyPrototype party, ThirdPartyCaller caller)
+    {
+        var partyName = party.DisplayName ?? party.ID;
+        var console = caller.Console is { } consoleUid ? Name(consoleUid) : "unknown console";
+
+        if (caller.Actor is { } actor)
+        {
+            _adminLogs.Add(LogType.CMUThirdPartyCall, LogImpact.Medium,
+                $"{ToPrettyString(actor):player} called in third party {partyName} ({party.ID}) for {caller.Faction} from {console}");
+        }
+        else
+        {
+            _adminLogs.Add(LogType.CMUThirdPartyCall, LogImpact.Medium,
+                $"{caller.Name} called in third party {partyName} ({party.ID}) for {caller.Faction} from {console}");
+        }
+
+        _chatManager.SendAdminAlert(Loc.GetString("cmu-third-party-call-admin-alert",
+            ("caller", caller.Name),
+            ("faction", caller.Faction),
+            ("party", partyName),
+            ("id", party.ID),
+            ("console", console)));
+    }
 
     /// <summary>
     ///     Spawns a third party right away, skipping the wait for interested players. Its members spawn as open ghost
@@ -216,7 +255,8 @@ public sealed partial class ThirdPartySystem : EntitySystem
 
     private uint QueueThirdParty(ThirdPartyPrototype party, PartySpawnPrototype spawnProto, bool roundStart,
         bool? overrideDropship, bool ready,
-        Dictionary<NetUserId, (ProtoId<JobPrototype>?, EntityUid)>? assignedJobs = null, string? summoningFaction = null)
+        Dictionary<NetUserId, (ProtoId<JobPrototype>?, EntityUid)>? assignedJobs = null, string? summoningFaction = null,
+        ThirdPartyCaller? caller = null)
     {
         var bodies = spawnProto.LeadersToSpawn.Concat(spawnProto.GruntsToSpawn).Concat(spawnProto.EntitiesToSpawn)
             .GroupBy(pair => pair.Key).ToDictionary(group => group.Key, group => group.Sum(pair => Math.Max(0, pair.Value)));
@@ -226,7 +266,7 @@ public sealed partial class ThirdPartySystem : EntitySystem
         var id = _forceInterest.QueueDeployment(party.DisplayName ?? party.ID,
             _forceInterest.GetPlayableBodies(bodies),
             interested => SpawnThirdPartySteps(party, spawnProto, roundStart,
-                assignments.Where(pair => interested.Contains(pair.Key)).ToDictionary(), overrideDropship, summoningFaction).GetEnumerator(),
+                assignments.Where(pair => interested.Contains(pair.Key)).ToDictionary(), overrideDropship, summoningFaction, caller).GetEnumerator(),
             ready, assignments.Keys);
         _queuedParties.Add(id, party);
         return id;
@@ -247,7 +287,7 @@ public sealed partial class ThirdPartySystem : EntitySystem
 
     private IEnumerable<ForceDeploymentStep> SpawnThirdPartySteps(ThirdPartyPrototype party, PartySpawnPrototype spawnProto, bool roundStart,
         Dictionary<NetUserId, (ProtoId<JobPrototype>?, EntityUid)>? assignedJobs, bool? overrideDropship,
-        string? summoningFaction = null)
+        string? summoningFaction = null, ThirdPartyCaller? caller = null)
     {
         const float SpawnTogetherRadius = 8f;
         using var preparation = new ShuttlePreparation(_mapLoader);
@@ -759,6 +799,40 @@ public sealed partial class ThirdPartySystem : EntitySystem
             }
         }
 
+        // In Force on Force a party whose allegiance matches exactly one side's platoon is part
+        // of that side: identification treats its members as teammates of it.
+        var alignedSide = ResolveFoFAlignedSide(party);
+        if (alignedSide != null)
+        {
+            foreach (var mob in spawnedLeaders.Concat(spawnedGrunts))
+            {
+                var side = _entityManager.EnsureComponent<ForceOnForceSideComponent>(mob);
+                side.Side = alignedSide;
+                _entityManager.Dirty(mob, side);
+            }
+        }
+
+        if (party.SpeaksColonyLanguage)
+        {
+            var languages = _entityManager.System<CMUCharacterLanguageSystem>();
+            foreach (var mob in spawnedLeaders.Concat(spawnedGrunts))
+                languages.TeachColonyLanguage(mob);
+        }
+
+        if (party.SpeaksCallerLanguage && caller?.Languages is { Count: > 0 } callerLanguages)
+        {
+            var languages = _entityManager.System<CMUCharacterLanguageSystem>();
+            foreach (var mob in spawnedLeaders.Concat(spawnedGrunts))
+                languages.AddLanguages(mob, callerLanguages, party.DefaultsToCallerLanguage ? (ProtoId<LanguagePrototype>?) callerLanguages[0] : null);
+        }
+
+        if (caller is { } calledBy)
+        {
+            var callerSystem = _entityManager.System<CMUThirdPartyCallerSystem>();
+            foreach (var mob in spawnedLeaders.Concat(spawnedGrunts))
+                callerSystem.ApplyCaller(mob, calledBy);
+        }
+
         // Spawn ents
         _sawmill.Debug("[ThirdPartySystem] Spawning ents...");
         foreach ((string protoId, int count) in entityBodies)
@@ -1027,6 +1101,26 @@ public sealed partial class ThirdPartySystem : EntitySystem
 
             _scheduledForces[i] = id;
         }
+    }
+
+    // A party fights for the side whose platoon shares its allegiance. When both sides rolled
+    // platoons of that allegiance the tie stays unaligned and shows the question mark to both.
+    private string? ResolveFoFAlignedSide(ThirdPartyPrototype party)
+    {
+        var ticker = _entityManager.System<GameTicker>();
+        var preset = ticker.CurrentPreset?.ID ?? ticker.Preset?.ID;
+        if (!string.Equals(preset, "ForceOnForce", StringComparison.OrdinalIgnoreCase))
+            return null;
+
+        if (party.Allegiance is not { } allegiance)
+            return null;
+
+        var govfor = _platoons.SelectedGovforPlatoon?.Allegiance == allegiance;
+        var opfor = _platoons.SelectedOpforPlatoon?.Allegiance == allegiance;
+        if (govfor == opfor)
+            return null;
+
+        return govfor ? "govfor" : "opfor";
     }
 
     private bool TrySpawnAtMarker(string protoId,
