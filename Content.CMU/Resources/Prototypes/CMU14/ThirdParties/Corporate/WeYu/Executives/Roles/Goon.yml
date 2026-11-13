@@ -41,7 +41,7 @@
   greeting: cmu-weyuexec-greeting-security
   icon: RMCJobIconPMCGoonStandard
   joinNotifyCrew: false
-  supervisors: cmu-weyuexec-supervisors-director
+  supervisors: cmu-weyuexec-supervisors-protection
   accessGroups:
   - CMUWYSecurity
   hidden: false
