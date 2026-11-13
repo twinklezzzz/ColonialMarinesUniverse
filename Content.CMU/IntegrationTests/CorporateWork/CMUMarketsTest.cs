@@ -1,3 +1,4 @@
+using System.Linq;
 using Content.Shared.GameTicking;
 using Content.Server.CMU14.ColonyEconomy;
 using Content.Server.CMU14.CorporateWork;
@@ -221,7 +222,7 @@ public sealed class CMUMarketsTest
     }
 
     [Test]
-    public async Task OnlyMassCasualtiesHitTheStock()
+    public async Task CasualtiesHitTheStock()
     {
         await using var pair = await PoolManager.GetServerClient();
         var server = pair.Server;
@@ -254,16 +255,28 @@ public sealed class CMUMarketsTest
                 markets.GetPrice(wy);
                 Assert.That(markets.CountCasualties(wy).Staff, Is.EqualTo(4));
 
-                // Half dead isn't more than half: news of the first casualties, but no change in price.
-                mobState.ChangeMobState(staff[0], Content.Shared.Mobs.MobState.Dead);
-                mobState.ChangeMobState(staff[1], Content.Shared.Mobs.MobState.Dead);
+                // The first casualty makes the newswire and knocks the stock down, once.
                 var before = markets.GetPrice(wy)!.Value;
-                markets.UpdateRoundEvents();
-                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f), "Ordinary losses moved the stock.");
+                mobState.ChangeMobState(staff[0], Content.Shared.Mobs.MobState.Dead);
                 Assert.That(markets.GetVisibleNews(false), Has.Count.EqualTo(1), "The first casualty didn't make the newswire.");
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + CMUMarketsSystem.FirstCasualtyShock)).Within(0.05f),
+                    "The first casualty didn't move the stock.");
 
-                // Three of four dead is a mass-casualty event.
+                // More deaths that can still be revived, even most of the staff, don't.
+                before = markets.GetPrice(wy)!.Value;
+                mobState.ChangeMobState(staff[1], Content.Shared.Mobs.MobState.Dead);
                 mobState.ChangeMobState(staff[2], Content.Shared.Mobs.MobState.Dead);
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f), "Revivable losses moved the stock.");
+
+                // One unrevivable is a quarter, not enough. Two of four is a mass-casualty event.
+                var unrevivable = server.System<Content.Shared._RMC14.Medical.Unrevivable.RMCUnrevivableSystem>();
+                unrevivable.MakeUnrevivable(staff[0]);
+                markets.UpdateRoundEvents();
+                Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before).Within(0.01f), "One unrevivable of four tanked the stock.");
+
+                unrevivable.MakeUnrevivable(staff[1]);
+                Assert.That(markets.CountCasualties(wy), Is.EqualTo((4, 3, 2)));
                 markets.UpdateRoundEvents();
                 Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + CMUMarketsSystem.MassCasualtyShock)).Within(0.05f));
 
@@ -298,7 +311,7 @@ public sealed class CMUMarketsTest
         var staff = new List<EntityUid>();
         var mindIds = new List<EntityUid>();
         EntityUid terminal = default;
-        EntityUid ghost = default;
+        var ghosts = new List<EntityUid>();
         var before = 0f;
 
         await server.WaitAssertion(() =>
@@ -320,14 +333,17 @@ public sealed class CMUMarketsTest
                 staff.Add(body);
             }
 
-            // Two dead, and one who ghosted out of their body for good: three of four lost.
+            // One dead, and two who ghosted out of their bodies for good: half the staff lost for good.
             mobState.ChangeMobState(staff[0], Content.Shared.Mobs.MobState.Dead);
-            mobState.ChangeMobState(staff[1], Content.Shared.Mobs.MobState.Dead);
-            ghost = entities.SpawnEntity("MobObserver", map.GridCoords);
-            Assert.That(minds.TryGetMind(staff[2], out var ghostMind, out var ghostMindComp));
-            minds.TransferTo(ghostMind, ghost, mind: ghostMindComp);
+            for (var i = 1; i <= 2; i++)
+            {
+                var ghostBody = entities.SpawnEntity("MobObserver", map.GridCoords);
+                ghosts.Add(ghostBody);
+                Assert.That(minds.TryGetMind(staff[i], out var ghostMind, out var ghostMindComp));
+                minds.TransferTo(ghostMind, ghostBody, mind: ghostMindComp);
+            }
 
-            Assert.That(markets.CountCasualties(wy), Is.EqualTo((4, 3, 1)));
+            Assert.That(markets.CountCasualties(wy), Is.EqualTo((4, 3, 2)));
             before = markets.GetPrice(wy)!.Value;
         });
 
@@ -340,7 +356,8 @@ public sealed class CMUMarketsTest
                 entities.DeleteEntity(uid);
             foreach (var mind in mindIds)
                 entities.DeleteEntity(mind);
-            entities.DeleteEntity(ghost);
+            foreach (var ghost in ghosts)
+                entities.DeleteEntity(ghost);
             entities.DeleteEntity(terminal);
         });
 
@@ -379,10 +396,14 @@ public sealed class CMUMarketsTest
                 mobState.ChangeMobState(bodies[1], Content.Shared.Mobs.MobState.Dead);
                 Assert.That(markets.CountCasualties(wy).Dead, Is.EqualTo(2));
 
+                // Left to rot past revival.
+                server.System<Content.Shared._RMC14.Medical.Unrevivable.RMCUnrevivableSystem>().MakeUnrevivable(bodies[0]);
+                Assert.That(markets.CountCasualties(wy).Permanent, Is.EqualTo(1));
+
                 var before = markets.GetPrice(wy)!.Value;
                 markets.UpdateRoundEvents();
                 Assert.That(markets.GetPrice(wy)!.Value, Is.EqualTo(before * (1 + CMUMarketsSystem.MassCasualtyShock)).Within(0.05f),
-                    "Two of three unclaimed bodies dead isn't a mass-casualty event.");
+                    "One of three unclaimed bodies unrevivable isn't a mass-casualty event.");
             }
             finally
             {
@@ -470,6 +491,58 @@ public sealed class CMUMarketsTest
                         entities.DeleteEntity(body);
                 }
             }
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    /// <summary>
+    ///     Every team the corporate console can call works for a company with a stock listing, so
+    ///     its casualties move that stock. Working Joes are equipment, not staff.
+    /// </summary>
+    [Test]
+    public async Task CorporatePartiesAreLinkedToTheirStock()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var protos = server.ProtoMan;
+        var factory = server.ResolveDependency<IComponentFactory>();
+
+        await server.WaitAssertion(() =>
+        {
+            var listed = protos.EnumeratePrototypes<CMUMarketCommodityPrototype>()
+                .Where(c => c.Kind == CMUMarketKind.Stock)
+                .SelectMany(c => c.RoundForces)
+                .ToHashSet();
+
+            var checkedParties = 0;
+            foreach (var console in protos.EnumeratePrototypes<Robust.Shared.Prototypes.EntityPrototype>())
+            {
+                if (console.Abstract || !console.TryGetComponent<Content.Shared.CMU14.ColonyEconomy.CorporateConsoleComponent>(out var comp, factory))
+                    continue;
+
+                foreach (var partyId in comp.CallableParties.Keys)
+                {
+                    Assert.That(protos.TryIndex<Content.Shared.CMU14.Threats.ThirdPartyPrototype>(partyId, out var party), $"{console.ID} calls unknown party {partyId}.");
+                    Assert.That(protos.TryIndex(party!.PartySpawn, out var spawn), $"{partyId} has no party spawn.");
+                    foreach (var member in spawn!.LeadersToSpawn.Keys.Concat(spawn.GruntsToSpawn.Keys))
+                    {
+                        Assert.That(protos.TryIndex<Robust.Shared.Prototypes.EntityPrototype>(member, out var body), $"{partyId} spawns unknown {member}.");
+                        if (!body!.TryGetComponent<Content.Server.Ghost.Roles.Components.GhostRoleComponent>(out var role, factory) || role.JobProto is not { } jobId)
+                            continue;
+
+                        var job = protos.Index(jobId);
+                        if (job.RoundForce == "WORKING_JOE")
+                            continue;
+
+                        Assert.That(job.RoundForce, Is.Not.Null.And.AnyOf(listed.Cast<object>().ToArray()),
+                            $"{member} in {partyId} works for {job.RoundForce ?? "nobody"}, which has no stock listing.");
+                        checkedParties++;
+                    }
+                }
+            }
+
+            Assert.That(checkedParties, Is.GreaterThan(0), "Found no corporate parties to check.");
         });
 
         await pair.CleanReturnAsync();

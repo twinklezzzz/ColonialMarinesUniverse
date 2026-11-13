@@ -40,12 +40,13 @@ public sealed partial class CMUMarketsSystem
     public const int EarningsNews = 1000;
 
     /// <summary>
-    ///     A mass-casualty event: more than this share of a company's people dead...
+    ///     The first casualties among a company's people make the newswire and knock this off its stock.
     /// </summary>
-    public const float MassCasualtyDead = 0.5f;
+    public const float FirstCasualtyShock = -0.10f;
 
     /// <summary>
-    ///     ...or more than this share dead for good.
+    ///     A mass-casualty event: more than this share of a company's people dead for good
+    ///     (unrevivable, ghosted out, or no body left).
     /// </summary>
     public const float MassCasualtyPermanent = 0.3f;
 
@@ -89,8 +90,8 @@ public sealed partial class CMUMarketsSystem
     }
 
     /// <summary>
-    ///     A company's first death makes the newswire. Deaths only move the stock once they add up
-    ///     to a mass-casualty event, checked every candle.
+    ///     A company's first death makes the newswire and drops its stock. After that, deaths only
+    ///     move the stock once enough are permanent to make a mass-casualty event, checked every candle.
     /// </summary>
     private void OnMobStateChanged(MobStateChangedEvent args)
     {
@@ -114,7 +115,7 @@ public sealed partial class CMUMarketsSystem
         AddNews(now, now, Loc.GetString("cmu-markets-news-casualty",
             ("symbol", stock.Commodity.Symbol),
             ("company", Loc.GetString(stock.Commodity.Name))), CMUMarketKind.Stock);
-        UpdateAllUi();
+        Shock(stock.Commodity.ID, FirstCasualtyShock);
     }
 
     /// <summary>
@@ -175,12 +176,9 @@ public sealed partial class CMUMarketsSystem
             if (market.Commodity.RoundForces.Count == 0 || _massCasualtyReported.Contains(market.Commodity.ID))
                 continue;
 
-            var (staff, dead, permanent) = CountCasualties(market);
-            if (staff < MassCasualtyMinStaff ||
-                dead <= staff * MassCasualtyDead && permanent <= staff * MassCasualtyPermanent)
-            {
+            var (staff, _, permanent) = CountCasualties(market);
+            if (staff < MassCasualtyMinStaff || permanent <= staff * MassCasualtyPermanent)
                 continue;
-            }
 
             _massCasualtyReported.Add(market.Commodity.ID);
             ReportSetback(market.Commodity.RoundForces[0], MassCasualtyShock,
