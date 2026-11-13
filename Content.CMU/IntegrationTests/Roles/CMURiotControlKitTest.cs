@@ -106,8 +106,6 @@ public sealed class CMURiotControlKitTest
     [TestCase("CMUGearWYIAAuditor", "jumpsuit", "CMJumpsuitLiaison")]
     [TestCase("CMUGearWYIAAuditor", "belt", "RMCM77BeltPMCFilled")]
     [TestCase("CMUGearWYIASeniorAuditor", "pocket1", "CMUMobilePhone")]
-    [TestCase("CMUGearWYIAProtection", "outerClothing", "AU14WYPPOArmor")]
-    [TestCase("CMUGearWYIAProtection", "belt", "RMCMK80BeltPMCFilled")]
     [TestCase("CMUGearWYRecoveryTechnician", "suitstorage", "CMUWeaponShotgunXM38Capture")]
     [TestCase("CMUGearWYRecoveryOperator", "suitstorage", "RMCWeaponRifleM54C2")]
     [TestCase("CMUGearWYRecoveryLeader", "suitstorage", "RMCWeaponRifleM54C2")]

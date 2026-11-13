@@ -24,13 +24,7 @@ cmu-wyia-prefix-senior = IA. Sr. Aud.
 cmu-wyia-name-auditor = WY Internal Affairs Auditor
 cmu-wyia-description-auditor = An auditor from the Office of Internal Affairs. Check the books, interview the staff and find what doesn't add up.
 cmu-wyia-prefix-auditor = IA. Aud.
-cmu-wyia-name-pps = WY Internal Affairs Protection Specialist
-cmu-wyia-description-pps = Lead the Personal Protection detail assigned to an Internal Affairs audit. Keep the auditors safe wherever the audit takes them.
-cmu-wyia-prefix-pps = PPS.
-cmu-wyia-name-ppo = WY Internal Affairs Protection Officer
-cmu-wyia-description-ppo = A Personal Protection Officer assigned to an Internal Affairs audit. Stay with the auditors, and make sure the people they want to talk to stay put.
 cmu-wyia-supervisors-senior = The Internal Affairs Senior Auditor
-cmu-wyia-supervisors-pps = The Internal Affairs Protection Specialist
 cmu-wyia-greeting = You are with the Weyland-Yutani Office of Internal Affairs, sent to audit a Company site. Examine its records, accounts and staff conduct. Staff found in breach of Company policy may be relieved of duty and held for review. Report your findings to head office.
 cmu-wyia-rules = You are a WY Internal Affairs auditor or protection officer. You investigate. You are not an execution squad. Any staff member you relieve of duty is detained, not harmed, unless they resist with force.
 
