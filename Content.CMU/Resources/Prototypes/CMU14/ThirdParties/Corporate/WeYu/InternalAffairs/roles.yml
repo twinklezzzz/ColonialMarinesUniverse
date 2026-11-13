@@ -1,6 +1,6 @@
 # WY Internal Affairs Team: an audit from head office, sent when a site's books, its share price or its
 # people don't add up. A senior auditor and an auditor with the authority of the Directorate's Office of
-# Internal Affairs, and two Corporate Security officers as their escort. Called in through the corporate
+# Internal Affairs, and a Personal Protection detail of a specialist and two officers. Called in through the corporate
 # affairs console, and as easily sent against the people who called it.
 
 - type: job
@@ -131,10 +131,10 @@
 
 - type: job
   parent: CMJobBase
-  id: CMUJobWYIAEscort
+  id: CMUJobWYIAProtectionSpecialist
   roundSide: ThirdParty
   roundForce: WY
-  roundRole: WYIAEscort
+  roundRole: WYIAProtectionSpecialist
   roundComponents:
   - type: RegulationAppearance # third-party teams keep a regulation look
   - type: NpcFactionMember
@@ -153,34 +153,36 @@
       RMCSkillPolice: 2
       RMCSkillConstruction: 2
   - type: JobPrefix
-    prefix: au14-job-prefix-wyguard
+    prefix: cmu-wyia-prefix-pps
   - type: TacticalMapIcon
     icon:
       sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
-      state: weya_goon_standard
-  name: cmu-wyia-name-escort
-  description: cmu-wyia-description-escort
-  playTimeTracker: CMUJobWYIAEscort
+      state: weya_goon_lead
+  name: cmu-wyia-name-pps
+  description: cmu-wyia-description-pps
+  playTimeTracker: CMUJobWYIAProtectionSpecialist
   ranks:
-    CMURankWYSecSeniorOfficer: []
-  startingGear: CMUGearWYSecurityTeamOfficer
-  spawnMenuRoleName: WY Internal Affairs Escort (3rd party)
+    CMURankWYSecPPS: []
+  startingGear: CMUGearWYIAProtection
+  spawnMenuRoleName: WY Internal Affairs Protection Specialist (3rd party)
   greeting: cmu-wyia-greeting
-  icon: "RMCJobIconPMCGoonStandard"
+  icon: "RMCJobIconPMCGoonLead"
   joinNotifyCrew: false
   supervisors: cmu-wyia-supervisors-senior
   accessGroups:
   - CMUWYSecurity
   - AUPrisonStaff
+  access:
+  - CMUAccessWYArmory
   hidden: false
 
 - type: playTimeTracker
-  id: CMUJobWYIAEscort
+  id: CMUJobWYIAProtectionSpecialist
 
 - type: entity
   parent: AU14BaseMobSpeciesOrganicWeYu
-  id: CMUJobWYIAEscort
-  name: WY Internal Affairs Escort (3rd party)
+  id: CMUJobWYIAProtectionSpecialist
+  name: WY Internal Affairs Protection Specialist (3rd party)
   components:
   - type: GhostTakeoverAvailable
   - type: GhostRoleApplySpecial
@@ -189,10 +191,82 @@
     makeSentient: true
     allowSpeech: true
     allowMovement: true
-    name: cmu-wyia-name-escort
-    description: cmu-wyia-description-escort
+    name: cmu-wyia-name-pps
+    description: cmu-wyia-description-pps
     reregister: false
-    job: CMUJobWYIAEscort
+    job: CMUJobWYIAProtectionSpecialist
+    raffle:
+      settings: short
+    rules: cmu-wyia-rules
+
+- type: job
+  parent: CMJobBase
+  id: CMUJobWYIAProtectionOfficer
+  chevrons:
+    CMURankWYSecPPO:
+      entity: CMUChevronWYSecPPO
+      requirements: []
+  roundSide: ThirdParty
+  roundForce: WY
+  roundRole: WYIAProtectionOfficer
+  roundComponents:
+  - type: RegulationAppearance # third-party teams keep a regulation look
+  - type: NpcFactionMember
+    factions:
+    - AUWeYu
+  - type: Skills
+    skills:
+      RMCSkillOverwatch: 1
+      RMCSkillFirearms: 2
+      RMCSkillCqc: 2
+      RMCSkillEndurance: 2
+      RMCSkillFireman: 2
+      RMCSkillEngineer: 2
+      RMCSkillIntel: 1
+      RMCSkillVehicles: 1
+      RMCSkillPolice: 2
+      RMCSkillConstruction: 2
+  - type: JobPrefix
+    prefix: cmu-job-prefix-personal-protection
+  - type: TacticalMapIcon
+    icon:
+      sprite: /Textures/_RMC14/Interface/cm_job_icons.rsi
+      state: weya_goon_standard
+  name: cmu-wyia-name-ppo
+  description: cmu-wyia-description-ppo
+  playTimeTracker: CMUJobWYIAProtectionOfficer
+  ranks:
+    CMURankWYSecPPO: []
+  startingGear: CMUGearWYIAProtection
+  spawnMenuRoleName: WY Internal Affairs Protection Officer (3rd party)
+  greeting: cmu-wyia-greeting
+  icon: "RMCJobIconPMCGoonStandard"
+  joinNotifyCrew: false
+  supervisors: cmu-wyia-supervisors-pps
+  accessGroups:
+  - CMUWYSecurity
+  - AUPrisonStaff
+  hidden: false
+
+- type: playTimeTracker
+  id: CMUJobWYIAProtectionOfficer
+
+- type: entity
+  parent: AU14BaseMobSpeciesOrganicWeYu
+  id: CMUJobWYIAProtectionOfficer
+  name: WY Internal Affairs Protection Officer (3rd party)
+  components:
+  - type: GhostTakeoverAvailable
+  - type: GhostRoleApplySpecial
+    squad: CMUSquadWYSecurity
+  - type: GhostRole
+    makeSentient: true
+    allowSpeech: true
+    allowMovement: true
+    name: cmu-wyia-name-ppo
+    description: cmu-wyia-description-ppo
+    reregister: false
+    job: CMUJobWYIAProtectionOfficer
     raffle:
       settings: short
     rules: cmu-wyia-rules
@@ -220,3 +294,18 @@
 - type: startingGear
   parent: CMUGearWYIAAuditor
   id: CMUGearWYIASeniorAuditor
+
+# The Personal Protection kit, with cuffs for anyone the auditors relieve of duty.
+- type: startingGear
+  parent: CMUGearWYProtectionBase
+  id: CMUGearWYIAProtection
+  equipment:
+    id: CMUIDCardWYPersonalProtection
+  storage:
+    back:
+    - CMStunbaton
+    - RMCWeaponTaser
+    - RMCHandcuffs
+    - RMCHandcuffs
+    - RMCMREWeYa
+    - CMUGuidebookSecurityHandbook
