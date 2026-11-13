@@ -1,12 +1,13 @@
 # WY Riot Control Team: PMC Dispatch's crowd-control contractors, called in through the corporate
 # affairs console when colonists turn on Company property. A team leader and four Crowd Control
-# Specialists with beanbag riot shotguns, batons, tear gas and flashbangs.
+# Specialists with beanbag riot shotguns, batons, tear gas and flashbangs, and a grenadier with an M81.
 - type: partySpawn
   id: CMUWYRiotControlSpawn
   leadersToSpawn:
     CMUJobWYRiotLeader: 1
   gruntsToSpawn:
     CMUJobWYRiotSpecialist: 4
+    CMUJobWYRiotGrenadier: 1
   scalewithpop: false
   spawnTogether: true
 
@@ -19,5 +20,5 @@
   weight: 0
   minplayers: 0
   maxplayers: 400
-  ghostsNeeded: 5
+  ghostsNeeded: 6
   roundstart: false

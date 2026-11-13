@@ -137,7 +137,7 @@
     rules: cmu-wyriot-rules
 
 # The specialists' kit: WY PMC armour with greaves, kneepads, shoulder pads and vambraces, an RC6
-# riot helmet with its face shield and visor, a beanbag riot shotgun, a telescopic baton and the
+# riot helmet with the riot visor, a gas mask with a WY filter against their own tear gas, a beanbag riot shotgun, a telescopic baton and the
 # usual crowd-control grenades.
 - type: startingGear
   id: CMUGearWYRiotSpecialist
@@ -147,6 +147,7 @@
     jumpsuit: AU14WYPMCFatigues
     shoes: RMCBootsPMCFilled
     head: CMUArmorHelmetPMCRiotFilled
+    mask: CMUMaskGasWYFilled
     gloves: AU14PVEHandsInsulatedBlackMarine
     belt: RMCMK80BeltPMCFilled
     pocket1: RMCPouchShotgun
@@ -217,7 +218,7 @@
     capacity: 8
     proto: CMShellShotgunBeanbag
 
-# The RC6 riot helmet with its face shield and riot visor fitted.
+# The RC6 riot helmet with the riot visor fitted instead of its own face shield.
 - type: entity
   parent: ArmorHelmetPMCRiot
   id: CMUArmorHelmetPMCRiotFilled
@@ -225,5 +226,86 @@
   components:
   - type: StorageFill
     contents:
-    - id: RMCRC6RiotShield
     - id: AU14HelmetGarbRiotVisor
+
+# A gas mask with a WY X-16 filter already fitted.
+- type: entity
+  parent: CMUMaskGas
+  id: CMUMaskGasWYFilled
+  suffix: WY filter
+  components:
+  - type: ItemSlots
+    slots:
+      filter:
+        name: filter
+        startingItem: CMUGasMaskFilterWY
+        insertSound: /Audio/Items/screwdriver.ogg
+        ejectSound: /Audio/Items/screwdriver.ogg
+        whitelist:
+          tags:
+          - CMUGasMaskFilter
+
+# The grenadier: a Crowd Control Specialist with an M81 riot launcher and a belt of tear gas and flashbangs.
+- type: job
+  parent: CMUJobWYRiotSpecialist
+  id: CMUJobWYRiotGrenadier
+  roundRole: WYRiotGrenadier
+  name: cmu-wyriot-name-grenadier
+  description: cmu-wyriot-description-grenadier
+  playTimeTracker: CMUJobWYRiotGrenadier
+  startingGear: CMUGearWYRiotGrenadier
+  spawnMenuRoleName: WY Crowd Control Grenadier (3rd party)
+
+- type: playTimeTracker
+  id: CMUJobWYRiotGrenadier
+
+- type: entity
+  parent: AU14BaseMobSpeciesOrganicWeYu
+  id: CMUJobWYRiotGrenadier
+  name: WY Crowd Control Grenadier (3rd party)
+  components:
+  - type: GhostTakeoverAvailable
+  - type: GhostRoleApplySpecial
+    squad: CMUSquadWYSecurity
+  - type: GhostRole
+    makeSentient: true
+    allowSpeech: true
+    allowMovement: true
+    name: cmu-wyriot-name-grenadier
+    description: cmu-wyriot-description-grenadier
+    reregister: false
+    job: CMUJobWYRiotGrenadier
+    raffle:
+      settings: short
+    rules: cmu-wyriot-rules
+
+- type: startingGear
+  parent: CMUGearWYRiotSpecialist
+  id: CMUGearWYRiotGrenadier
+  equipment:
+    suitstorage: CMUWeaponLauncherM81
+    belt: RMCBeltGrenade
+    pocket1: RMCPouchExplosive
+  storage:
+    outerClothing:
+    - CMUHelmetGarbPMCGreaves
+    - CMUHelmetGarbPMCKneepads
+    - CMUHelmetGarbPMCPads
+    - CMUHelmetGarbPMCBraces
+    belt:
+    - CMU14TearGasGrenade
+    - CMU14TearGasGrenade
+    - CMU14TearGasGrenade
+    - CMU14TearGasGrenade
+    - RMCGrenadeFlashBang
+    - RMCGrenadeFlashBang
+    - RMCGrenadeFlashBang
+    - RMCGrenadeFlashBang
+    pocket1:
+    - CMU14TearGasGrenade
+    - RMCGrenadeFlashBang
+    back:
+    - AU14TeleBaton
+    - RMCZipties
+    - RMCZipties
+    - RMCMREWeYaPMC

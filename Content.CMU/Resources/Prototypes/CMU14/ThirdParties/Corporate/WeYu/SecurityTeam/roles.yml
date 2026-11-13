@@ -36,7 +36,7 @@
   playTimeTracker: CMUJobWYSecurityTeamSergeant
   ranks:
     CMURankWYSecSergeant: []
-  startingGear: CMUGearWYSecuritySergeant
+  startingGear: CMUGearWYSecurityTeamSergeant
   spawnMenuRoleName: WY Security Team Sergeant (3rd party)
   greeting: cmu-wysecteam-greeting
   icon: "RMCJobIconPMCGoonLead"
@@ -106,7 +106,7 @@
   playTimeTracker: CMUJobWYSecurityTeamOfficer
   ranks:
     CMURankWYSecOfficer: []
-  startingGear: AU14GearWYGuard
+  startingGear: CMUGearWYSecurityTeamOfficer
   spawnMenuRoleName: WY Security Team Officer (3rd party)
   greeting: cmu-wysecteam-greeting
   icon: "RMCJobIconPMCGoonStandard"
@@ -139,3 +139,45 @@
     raffle:
       settings: short
     rules: cmu-wysecteam-rules
+
+# The team's own kit, so the round-start guards are untouched: the security uniform rig, the M77 holster
+# rig on the belt, an NSG-23 rifle in suit storage, and the taser, baton and cuffs in the satchel.
+- type: startingGear
+  id: CMUGearWYSecurityTeamOfficer
+  equipment:
+    id: AU14IDCardWYGuard
+    outerClothing: CMUArmorM4PMCCorporate
+    jumpsuit: AU14WYSecurityUniformRig
+    shoes: RMCBootsPMCFilled
+    head: AU14CivBallCapBlack
+    belt: RMCM77BeltPMCFilled
+    back: RMCSatchelLightpackBlack
+    ears: AU14ColonyWeylandHeadset
+    ears2: RMCM5CameraGear
+    suitstorage: RMCWeaponRifleSSG45
+    pocket1: RMCPouchMagazineLargePMC
+    pocket2: AU14PouchIFAKFill
+  storage:
+    pocket1:
+    - RMCMagazineRifleSSG45
+    - RMCMagazineRifleSSG45
+    - RMCMagazineRifleSSG45
+    - RMCMagazineRifleSSG45
+    back:
+    - RMCWeaponTaser
+    - CMStunbaton
+    - RMCHandcuffs
+    - RMCHandcuffs
+    - RMCHandcuffs
+    - CMU14TearGasGrenade
+    - RMCGrenadeFlashBang
+    - RMCMREWeYa
+    - CMUGuidebookSecurityHandbook
+
+- type: startingGear
+  parent: CMUGearWYSecurityTeamOfficer
+  id: CMUGearWYSecurityTeamSergeant
+  equipment:
+    id: CMUIDCardWYSecuritySergeant
+    outerClothing: CMUArmorM4PMCCorporateLead
+

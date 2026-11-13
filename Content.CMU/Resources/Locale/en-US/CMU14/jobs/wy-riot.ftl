@@ -7,6 +7,8 @@ cmu-wyriot-name-specialist = WY Crowd Control Specialist
 cmu-wyriot-description-specialist = A PMC Dispatch crowd control specialist. Beanbags, batons and tear gas: the Company wants its property back and its colonists quiet, not dead.
 cmu-wyriot-prefix-specialist = RCT.
 cmu-wyriot-supervisors-leader = The riot control team leader
+cmu-wyriot-name-grenadier = WY Crowd Control Grenadier
+cmu-wyriot-description-grenadier = A PMC Dispatch crowd control specialist with an M81 riot launcher. Break up the crowd from a distance with tear gas and flashbangs.
 cmu-wyriot-greeting = You are a Weyland-Yutani riot control contractor, sent in by PMC Dispatch because colonists have turned on Company property. Restore order with non-lethal force, protect Company staff and property, and hand the ringleaders to the Corporate Liaison.
 cmu-wyriot-rules = You are a WY riot control contractor. Use non-lethal force against unarmed rioters. Lethal force is for those who are armed and show intent to use it.
 
