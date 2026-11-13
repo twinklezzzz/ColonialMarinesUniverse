@@ -73,6 +73,9 @@
     callableParties:
       CMUWYSecurityTeam: 6600
       CMUWYRiotControlTeam: 7700
+      CMUWYInternalAffairsTeam: 4400
+      CMUWYAssetRecoveryTeam: 9900
+      CMUWYBiohazardUnit: 11000
       WYHT: 6600
       IPIESynth: 3850
       WYPMCParty: 17500

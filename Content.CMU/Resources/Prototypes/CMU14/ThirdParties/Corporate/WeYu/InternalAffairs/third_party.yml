@@ -1,0 +1,23 @@
+# WY Internal Affairs Team, called in through the corporate affairs console. A senior auditor, an auditor
+# and two Corporate Security officers as escort. Jobs in roles.yml.
+- type: partySpawn
+  id: CMUWYInternalAffairsSpawn
+  leadersToSpawn:
+    CMUJobWYIASeniorAuditor: 1
+  gruntsToSpawn:
+    CMUJobWYIAAuditor: 1
+    CMUJobWYIAEscort: 2
+  scalewithpop: false
+  spawnTogether: true
+
+- type: thirdParty
+  id: CMUWYInternalAffairsTeam
+  displayName: WY Internal Affairs Team
+  partyspawn: CMUWYInternalAffairsSpawn
+  entrymethod: shuttle
+  dropshippath: /Maps/CMU14/Dropships/rmc_ert_pmc_shuttle.yml
+  weight: 0
+  minplayers: 0
+  maxplayers: 400
+  ghostsNeeded: 4
+  roundstart: false

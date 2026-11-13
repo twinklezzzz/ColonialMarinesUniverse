@@ -140,14 +140,15 @@
       settings: short
     rules: cmu-wysecteam-rules
 
-# The team's own kit, so the round-start guards are untouched: the security uniform rig, the M77 holster
+# The team's own kit, so the round-start guards are untouched: the Kutjevo security uniform (lead variant
+# for the Sergeant), the M77 holster
 # rig on the belt, an NSG-23 rifle in suit storage, and the taser, baton and cuffs in the satchel.
 - type: startingGear
   id: CMUGearWYSecurityTeamOfficer
   equipment:
     id: AU14IDCardWYGuard
     outerClothing: CMUArmorM4PMCCorporate
-    jumpsuit: AU14WYSecurityUniformRig
+    jumpsuit: RMCJumpsuitVeteranPMCKutjevo
     shoes: RMCBootsPMCFilled
     head: AU14CivBallCapBlack
     belt: RMCM77BeltPMCFilled
@@ -180,4 +181,5 @@
   equipment:
     id: CMUIDCardWYSecuritySergeant
     outerClothing: CMUArmorM4PMCCorporateLead
+    jumpsuit: RMCJumpsuitVeteranPMCKutjevoLead
 
