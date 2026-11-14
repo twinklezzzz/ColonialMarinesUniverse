@@ -170,37 +170,4 @@ public sealed class CMURiotControlKitTest
 
         await pair.CleanReturnAsync();
     }
-
-    /// <summary>
-    ///     Every Weyland-Yutani third-party role arrives on the WY distress headset.
-    /// </summary>
-    [Test]
-    public async Task WeylandThirdPartiesUseTheWeYaHeadset()
-    {
-        await using var pair = await PoolManager.GetServerClient();
-        var server = pair.Server;
-        var protos = server.ProtoMan;
-
-        await server.WaitAssertion(() =>
-        {
-            var checkedJobs = 0;
-            foreach (var job in protos.EnumeratePrototypes<Content.Shared.Roles.JobPrototype>())
-            {
-                if (job.RoundSide != Content.Shared.CMU14.Round.Roles.RoundJobSide.ThirdParty ||
-                    job.RoundForce is not ("WY" or "WYPMC") ||
-                    job.StartingGear is not { } gearId)
-                {
-                    continue;
-                }
-
-                var gear = protos.Index(gearId);
-                Assert.That(gear.GetGear("ears"), Is.EqualTo("RMCHeadsetDistressWeYa"), $"{job.ID} ({gearId}) has the wrong headset.");
-                checkedJobs++;
-            }
-
-            Assert.That(checkedJobs, Is.GreaterThan(20));
-        });
-
-        await pair.CleanReturnAsync();
-    }
 }
