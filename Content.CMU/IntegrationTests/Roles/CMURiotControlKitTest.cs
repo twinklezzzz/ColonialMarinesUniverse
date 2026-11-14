@@ -96,15 +96,14 @@ public sealed class CMURiotControlKitTest
     }
 
     [TestCase("CMUGearWYBioTechnician", "suitstorage", "RMCWeaponRifleM54C2")]
-    [TestCase("CMUGearWYBioTechnician", "outerClothing", "CMUSuitBioWeYaContainment")]
-    [TestCase("CMUGearWYBioTechnician", "mask", "CMUMaskGasWYFilled")]
+    [TestCase("CMUGearWYBioTechnician", "outerClothing", "CMUSuitBioWYSec")]
+    [TestCase("CMUGearWYBioTechnician", "head", "CMUHoodBioWeYaFilled")]
     [TestCase("CMUGearWYBioSterilizer", "back", "RMCWeaponFlamer")]
     [TestCase("CMUGearWYBioSterilizer", "pocket1", "RMCPouchFuelTank")]
     [TestCase("CMUGearWYBioLeader", "back", "RMCWeaponFlamer")]
     [TestCase("CMUGearWYBioLeader", "suitstorage", "RMCWeaponRifleM54C2")]
     [TestCase("CMUGearWYBioMedic", "belt", "AU14BeltMedicBagSupportSynth")]
-    [TestCase("CMUGearWYIAAuditor", "jumpsuit", "CMJumpsuitLiaison")]
-    [TestCase("CMUGearWYIAAuditor", "belt", "RMCM77BeltPMCFilled")]
+    [TestCase("CMUGearWYIAAuditor", "jumpsuit", "CMUJumpsuitLiaisonHolsterM77")]
     [TestCase("CMUGearWYIASeniorAuditor", "pocket1", "CMUMobilePhone")]
     [TestCase("CMUGearWYRecoveryTechnician", "suitstorage", "CMUWeaponShotgunXM38Capture")]
     [TestCase("CMUGearWYRecoveryOperator", "suitstorage", "RMCWeaponRifleM54C2")]
@@ -127,6 +126,79 @@ public sealed class CMURiotControlKitTest
             Assert.That(entities.GetComponent<MetaDataComponent>(item!.Value).EntityPrototype?.ID, Is.EqualTo(expected));
 
             entities.DeleteEntity(mob);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    /// <summary>
+    ///     The bio hood doubles as the unit's gas mask, so it comes with a filter fitted.
+    ///     The auditors' M77 is in a shoulder holster under the jacket, not on a belt.
+    /// </summary>
+    [Test]
+    public async Task HoodFilterAndShoulderHolster()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var map = await pair.CreateTestMap();
+        var entities = server.EntMan;
+
+        await server.WaitAssertion(() =>
+        {
+            var inventory = server.System<InventorySystem>();
+            var containers = server.System<SharedContainerSystem>();
+            string? Proto(EntityUid uid) => entities.GetComponent<MetaDataComponent>(uid).EntityPrototype?.ID;
+
+            var tech = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+            server.System<SharedStationSpawningSystem>().EquipStartingGear(tech, "CMUGearWYBioTechnician");
+            Assert.That(inventory.TryGetSlotEntity(tech, "head", out var hood), Is.True);
+            Assert.That(server.System<ItemSlotsSystem>().GetItemOrNull(hood!.Value, "filter") is { } filter ? Proto(filter) : null,
+                Is.EqualTo("CMUGasMaskFilterWY"), "The bio hood has no filter.");
+
+            var auditor = entities.SpawnEntity("CMMobHuman", map.GridCoords);
+            server.System<SharedStationSpawningSystem>().EquipStartingGear(auditor, "CMUGearWYIAAuditor");
+            Assert.That(inventory.TryGetSlotEntity(auditor, "belt", out _), Is.False, "The auditor wears a belt holster.");
+            Assert.That(inventory.TryGetSlotEntity(auditor, "jumpsuit", out var suit), Is.True);
+            var webbing = entities.GetComponent<Content.Shared._RMC14.Webbing.WebbingClothingComponent>(suit!.Value).Webbing;
+            Assert.That(webbing, Is.Not.Null, "The suit has no shoulder holster.");
+            var held = containers.GetContainer(webbing!.Value, StorageComponent.ContainerId).ContainedEntities.Select(Proto).ToList();
+            Assert.That(held, Does.Contain("RMCWeaponPistolM77"));
+
+            entities.DeleteEntity(tech);
+            entities.DeleteEntity(auditor);
+        });
+
+        await pair.CleanReturnAsync();
+    }
+
+    /// <summary>
+    ///     Every Weyland-Yutani third-party role arrives on the WY distress headset.
+    /// </summary>
+    [Test]
+    public async Task WeylandThirdPartiesUseTheWeYaHeadset()
+    {
+        await using var pair = await PoolManager.GetServerClient();
+        var server = pair.Server;
+        var protos = server.ProtoMan;
+
+        await server.WaitAssertion(() =>
+        {
+            var checkedJobs = 0;
+            foreach (var job in protos.EnumeratePrototypes<Content.Shared.Roles.JobPrototype>())
+            {
+                if (job.RoundSide != Content.Shared.CMU14.Round.Roles.RoundJobSide.ThirdParty ||
+                    job.RoundForce is not ("WY" or "WYPMC") ||
+                    job.StartingGear is not { } gearId)
+                {
+                    continue;
+                }
+
+                var gear = protos.Index(gearId);
+                Assert.That(gear.GetGear("ears"), Is.EqualTo("RMCHeadsetDistressWeYa"), $"{job.ID} ({gearId}) has the wrong headset.");
+                checkedJobs++;
+            }
+
+            Assert.That(checkedJobs, Is.GreaterThan(20));
         });
 
         await pair.CleanReturnAsync();

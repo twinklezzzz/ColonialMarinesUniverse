@@ -67,7 +67,7 @@
   id: CMUGearWeYuProtectionSpecialist
   equipment:
     id: CMUIDCardWeYuProtectionSpecialist
-    ears: RMCHeadsetDistressGoon
+    ears: RMCHeadsetDistressWeYa
 
 - type: playTimeTracker
   id: CMUJobWeYuProtectionSpecialist

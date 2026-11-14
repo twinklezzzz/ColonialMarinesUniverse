@@ -130,16 +130,16 @@
       settings: short
     rules: cmu-wyia-rules
 
-# Office clothes, a briefcase of paperwork and a sidearm the auditor hopes not to need.
+# Office clothes, a briefcase of paperwork, and an M77 in a shoulder holster under the jacket that the
+# auditor hopes not to need.
 - type: startingGear
   id: CMUGearWYIAAuditor
   equipment:
     id: CMUIDCardCorporateExecutive
-    jumpsuit: CMJumpsuitLiaison
+    jumpsuit: CMUJumpsuitLiaisonHolsterM77
     shoes: RMCShoesLaceup
-    ears: AU14ColonyWeylandHeadset
+    ears: RMCHeadsetDistressWeYa
     back: RMCSatchelLightpackBlack
-    belt: RMCM77BeltPMCFilled
     pocket1: CMUMobilePhone
   inhand:
   - RMCBriefcasePaperPen
@@ -153,3 +153,23 @@
 - type: startingGear
   parent: CMUGearWYIAAuditor
   id: CMUGearWYIASeniorAuditor
+
+- type: entity
+  parent: RMCWebbingHolsterBlack
+  id: CMUWebbingHolsterBlackM77
+  suffix: Filled, M77
+  components:
+  - type: StorageFill
+    contents:
+    - id: RMCWeaponPistolM77
+      amount: 1
+    - id: CMMagazinePistolM77AP
+      amount: 2
+
+- type: entity
+  parent: CMJumpsuitLiaison
+  id: CMUJumpsuitLiaisonHolsterM77
+  suffix: Shoulder holster, M77
+  components:
+  - type: WebbingClothing
+    startingWebbing: CMUWebbingHolsterBlackM77

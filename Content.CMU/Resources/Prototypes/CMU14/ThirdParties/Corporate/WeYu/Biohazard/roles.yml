@@ -288,32 +288,32 @@
       settings: short
     rules: cmu-wybio-rules
 
-# The WY bio suit, with suit storage for a weapon and the unit's tools.
+# The MK I bio hood with a WY filter already in its gas mask slot.
 - type: entity
-  parent: RMCSuitBioWeYa
-  id: CMUSuitBioWeYaContainment
-  name: WeYu-TSS MK I - containment suit
-  description: The Weyland-Yutani TerraScientia bio-suit, refitted for PMC Dispatch containment work with a weapon harness and tool clips.
-  suffix: Containment, WeYu
+  parent: RMCHoodBioWeYaAlt
+  id: CMUHoodBioWeYaFilled
+  suffix: WY filter
   components:
-  - type: AllowSuitStorage
-    whitelist:
-      components:
-      - Gun
-      tags:
-      - Stunbaton
-      - Radio
+  - type: ItemSlots
+    slots:
+      filter:
+        name: filter
+        startingItem: CMUGasMaskFilterWY
+        insertSound: /Audio/Items/screwdriver.ogg
+        ejectSound: /Audio/Items/screwdriver.ogg
+        whitelist:
+          tags:
+          - CMUGasMaskFilter
 
-# Sealed against what they're there to burn: the containment suit and bio hood, a WY-filtered gas mask
-# and MOPP gloves and boots.
+# Sealed against what they're there to burn: the armoured WY bio suit, the bio hood with a WY filter in
+# its gas mask slot, and MOPP gloves and boots.
 - type: startingGear
   id: CMUGearWYBioTechnician
   equipment:
     id: AU14IDCardColonyCorporateLiaison
     jumpsuit: AU14WYPMCFatigues
-    outerClothing: CMUSuitBioWeYaContainment
-    head: RMCHoodBioWeYa
-    mask: CMUMaskGasWYFilled
+    outerClothing: CMUSuitBioWYSec
+    head: CMUHoodBioWeYaFilled
     gloves: RMCHandsVeteranCBRN
     shoes: RMCBootsCBRN
     ears: RMCHeadsetDistressWeYa
@@ -342,9 +342,8 @@
   equipment:
     id: AU14IDCardColonyCorporateLiaison
     jumpsuit: AU14WYPMCFatigues
-    outerClothing: CMUSuitBioWeYaContainment
-    head: RMCHoodBioWeYa
-    mask: CMUMaskGasWYFilled
+    outerClothing: CMUSuitBioWYSec
+    head: CMUHoodBioWeYaFilled
     gloves: RMCHandsVeteranCBRN
     shoes: RMCBootsCBRN
     ears: RMCHeadsetDistressWeYa

@@ -59,7 +59,7 @@
   id: CMUGearWeYuLawyer
   equipment:
     id: CMUIDCardWeYuLawyer
-    ears: RMCHeadsetDistressLawyerWeYa
+    ears: RMCHeadsetDistressWeYa
     jumpsuit: CMJumpsuitLiaisonBlue
     outerClothing: RMCJacketCorporateBlue
     back: CMSatchel

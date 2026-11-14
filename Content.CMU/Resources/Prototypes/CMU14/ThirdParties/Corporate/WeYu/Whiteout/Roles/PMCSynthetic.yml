@@ -94,7 +94,7 @@
   id: CMUGearPMCSynthetic
   equipment:
     head: ArmorHelmetPMCOfficer
-    ears: RMCHeadsetDistressPMC
+    ears: RMCHeadsetDistressWeYa
     back: RMCPMCSyntheticSmartpack
     belt: RMCBeltMedicBagPMCFilled
     suitstorage: RMCScabbardMacheteFilled

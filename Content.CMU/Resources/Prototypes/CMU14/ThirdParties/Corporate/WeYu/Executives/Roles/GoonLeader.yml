@@ -75,7 +75,7 @@
   id: CMUGearWeYuGoonLeader
   equipment:
     id: CMUIDCardWeYuGoonLeader
-    ears: RMCHeadsetDistressGoonLeader
+    ears: RMCHeadsetDistressWeYa
 
 - type: playTimeTracker
   id: CMUJobWeYuGoonLeader
