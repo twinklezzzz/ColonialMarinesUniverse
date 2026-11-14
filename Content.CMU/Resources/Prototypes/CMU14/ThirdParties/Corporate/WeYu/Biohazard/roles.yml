@@ -288,9 +288,9 @@
       settings: short
     rules: cmu-wybio-rules
 
-# The MK I bio hood with a WY filter already in its gas mask slot.
+# The MK II bio hood with a WY filter already in its gas mask slot.
 - type: entity
-  parent: RMCHoodBioWeYaAlt
+  parent: RMCHoodBioWeYa
   id: CMUHoodBioWeYaFilled
   suffix: WY filter
   components:
